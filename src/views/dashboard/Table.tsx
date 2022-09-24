@@ -14,11 +14,11 @@ import TableContainer from '@mui/material/TableContainer'
 import { ThemeColor } from 'src/@core/layouts/types'
 
 interface RowType {
-  age: number
+  rows: number
   name: string
   date: string
-  email: string
-  salary: string
+  vendor: string
+  errors: number
   status: string
   designation: string
 }
@@ -35,14 +35,14 @@ const rows: RowType[] = [
     status: 'success',
     date: '09/27/2018',
     name: 'Daily Dog Treats',
-    rows: '1,958,623',
+    rows: 1958623,
     vendor: 'Mochi Dog Fyle Systems',
     designation: 'SFTP'
   },
   {
     errors: 61,
     date: '09/23/2016',
-    rows: '2,389,635',
+    rows: 2389635,
     status: 'success',
     name: 'Dog Bones',
     vendor: 'Mochi Dog Fyle Systems',
@@ -51,7 +51,7 @@ const rows: RowType[] = [
   {
     errors: 59,
     date: '10/15/2017',
-    name: 'Physicianss',
+    name: 'Physicians',
     status: 'failed',
     rows: 0,
     vendor: 'HCA',
