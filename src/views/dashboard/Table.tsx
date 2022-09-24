@@ -31,85 +31,83 @@ interface StatusObj {
 
 const rows: RowType[] = [
   {
-    age: 27,
-    status: 'current',
+    errors: 27,
+    status: 'success',
     date: '09/27/2018',
-    name: 'Sally Quinn',
-    salary: '$19586.23',
-    email: 'eebsworth2m@sbwire.com',
-    designation: 'Human Resources Assistant'
+    name: 'Daily Dog Treats',
+    rows: '1,958,623',
+    vendor: 'Mochi Dog Fyle Systems',
+    designation: 'SFTP'
   },
   {
-    age: 61,
+    errors: 61,
     date: '09/23/2016',
-    salary: '$23896.35',
-    status: 'professional',
-    name: 'Margaret Bowers',
-    email: 'kocrevy0@thetimes.co.uk',
-    designation: 'Nuclear Power Engineer'
+    rows: '2,389,635',
+    status: 'success',
+    name: 'Dog Bones',
+    vendor: 'Mochi Dog Fyle Systems',
+    designation: 'S3'
   },
   {
-    age: 59,
+    errors: 59,
     date: '10/15/2017',
-    name: 'Minnie Roy',
-    status: 'rejected',
-    salary: '$18991.67',
-    email: 'ediehn6@163.com',
-    designation: 'Environmental Specialist'
+    name: 'Physicianss',
+    status: 'failed',
+    rows: 0,
+    vendor: 'HCA',
+    designation: 'SFTP'
   },
   {
-    age: 30,
+    errors: 1225212,
     date: '06/12/2018',
-    status: 'resigned',
-    salary: '$19252.12',
-    name: 'Ralph Leonard',
-    email: 'dfalloona@ifeng.com',
-    designation: 'Sales Representative'
+    status: 'failed',
+    rows: 0,
+    name: 'Specialty Mapping',
+    vendor: 'HCA',
+    designation: 'SFTP'
   },
   {
-    age: 66,
-    status: 'applied',
+    errors: 42,
+    status: 'errors',
     date: '03/24/2018',
-    salary: '$13076.28',
-    name: 'Annie Martin',
-    designation: 'Operator',
-    email: 'sganderton2@tuttocitta.it'
+    rows: 13076,
+    name: 'Dental Claims',
+    designation: 'S3',
+    vendor: 'Coyne Enterprises LLC'
   },
   {
-    age: 33,
+    errors: 0,
     date: '08/25/2017',
-    salary: '$10909.52',
-    name: 'Adeline Day',
-    status: 'professional',
-    email: 'hnisius4@gnu.org',
-    designation: 'Senior Cost Accountant'
+    rows: 1090952,
+    name: 'Procedures',
+    status: 'success',
+    vendor: 'Coyne Enterprises LLC',
+    designation: 'SFTP'
   },
   {
-    age: 61,
-    status: 'current',
+    errors: 2,
+    status: 'errors',
     date: '06/01/2017',
-    salary: '$17803.80',
-    name: 'Lora Jackson',
-    designation: 'Geologist',
-    email: 'ghoneywood5@narod.ru'
+    rows: 17803,
+    name: 'Specialty Mapping',
+    designation: 'SFTP',
+    vendor: 'Mochi Dog Fyle Systems',
   },
   {
-    age: 22,
+    errors: 0,
     date: '12/03/2017',
-    salary: '$12336.17',
-    name: 'Rodney Sharp',
-    status: 'professional',
-    designation: 'Cost Accountant',
-    email: 'dcrossman3@google.co.jp'
+    rows: 1233617,
+    name: 'Physicians',
+    status: 'success',
+    designation: 'S3',
+    vendor: 'ABC'
   }
 ]
 
 const statusObj: StatusObj = {
-  applied: { color: 'info' },
-  rejected: { color: 'error' },
-  current: { color: 'primary' },
-  resigned: { color: 'warning' },
-  professional: { color: 'success' }
+  failed: { color: 'error' },
+  errors: { color: 'warning' },
+  success: { color: 'success' }
 }
 
 const DashboardTable = () => {
@@ -119,11 +117,11 @@ const DashboardTable = () => {
         <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell>Feed</TableCell>
+              <TableCell>Vendor</TableCell>
               <TableCell>Date</TableCell>
-              <TableCell>Salary</TableCell>
-              <TableCell>Age</TableCell>
+              <TableCell>Rows</TableCell>
+              <TableCell>Errors</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
@@ -136,10 +134,10 @@ const DashboardTable = () => {
                     <Typography variant='caption'>{row.designation}</Typography>
                   </Box>
                 </TableCell>
-                <TableCell>{row.email}</TableCell>
+                <TableCell>{row.vendor}</TableCell>
                 <TableCell>{row.date}</TableCell>
-                <TableCell>{row.salary}</TableCell>
-                <TableCell>{row.age}</TableCell>
+                <TableCell>{row.rows}</TableCell>
+                <TableCell>{row.errors}</TableCell>
                 <TableCell>
                   <Chip
                     label={row.status}
