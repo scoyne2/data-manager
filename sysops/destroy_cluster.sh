@@ -1,0 +1,1 @@
+eksctl delete cluster --region=us-west-2 --name=EKS-data-manager --profile personal

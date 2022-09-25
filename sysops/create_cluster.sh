@@ -1,0 +1,1 @@
+eksctl create cluster -f sysops/cluster.yml --profile personal
