@@ -9,120 +9,25 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import Typography from '@mui/material/Typography'
 import TableContainer from '@mui/material/TableContainer'
+import {getFeedStatus, getColumns,  RowType, statusObj} from '../../@core/api/FeedsAPI'
 
-// ** Types Imports
-import { ThemeColor } from 'src/@core/layouts/types'
 
-interface RowType {
-  rows: number
-  name: string
-  date: string
-  vendor: string
-  errors: number
-  status: string
-  designation: string
-}
+const rows = getFeedStatus();
+const headerValues = getColumns();
 
-interface StatusObj {
-  [key: string]: {
-    color: ThemeColor
-  }
-}
+let header: JSX.Element[] = [];
+headerValues.forEach((value) => {
+  header.push(<TableCell>{value}</TableCell>)
+})
 
-const rows: RowType[] = [
-  {
-    errors: 27,
-    status: 'success',
-    date: '09/27/2018',
-    name: 'Daily Dog Treats',
-    rows: 1958623,
-    vendor: 'Mochi Dog Fyle Systems',
-    designation: 'SFTP'
-  },
-  {
-    errors: 61,
-    date: '09/23/2016',
-    rows: 2389635,
-    status: 'success',
-    name: 'Dog Bones',
-    vendor: 'Mochi Dog Fyle Systems',
-    designation: 'S3'
-  },
-  {
-    errors: 59,
-    date: '10/15/2017',
-    name: 'Physicians',
-    status: 'failed',
-    rows: 0,
-    vendor: 'HCA',
-    designation: 'SFTP'
-  },
-  {
-    errors: 1225212,
-    date: '06/12/2018',
-    status: 'failed',
-    rows: 0,
-    name: 'Specialty Mapping',
-    vendor: 'HCA',
-    designation: 'SFTP'
-  },
-  {
-    errors: 42,
-    status: 'errors',
-    date: '03/24/2018',
-    rows: 13076,
-    name: 'Dental Claims',
-    designation: 'S3',
-    vendor: 'Coyne Enterprises LLC'
-  },
-  {
-    errors: 0,
-    date: '08/25/2017',
-    rows: 1090952,
-    name: 'Procedures',
-    status: 'success',
-    vendor: 'Coyne Enterprises LLC',
-    designation: 'SFTP'
-  },
-  {
-    errors: 2,
-    status: 'errors',
-    date: '06/01/2017',
-    rows: 17803,
-    name: 'Specialty Mapping',
-    designation: 'SFTP',
-    vendor: 'Mochi Dog Fyle Systems',
-  },
-  {
-    errors: 0,
-    date: '12/03/2017',
-    rows: 1233617,
-    name: 'Physicians',
-    status: 'success',
-    designation: 'S3',
-    vendor: 'ABC'
-  }
-]
-
-const statusObj: StatusObj = {
-  failed: { color: 'error' },
-  errors: { color: 'warning' },
-  success: { color: 'success' }
-}
-
-const DashboardTable = () => {
+const DashboardTable = (minWidth=800) => {
   return (
     <Card>
       <TableContainer>
-        <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
+        <Table sx={{ minWidth: minWidth }} aria-label='table in dashboard'>
           <TableHead>
             <TableRow>
-              <TableCell>Feed</TableCell>
-              <TableCell>Vendor</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Rows</TableCell>
-              <TableCell>Errors</TableCell>
-              <TableCell>Status</TableCell>
+            { header }
             </TableRow>
           </TableHead>
           <TableBody>
@@ -153,6 +58,7 @@ const DashboardTable = () => {
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </TableContainer>
     </Card>

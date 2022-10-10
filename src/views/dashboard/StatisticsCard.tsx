@@ -12,45 +12,17 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
 // ** Icons Imports
-import TrendingUp from 'mdi-material-ui/TrendingUp'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
-import Alert from 'mdi-material-ui/Alert'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
+
+import {getStats, StatsType} from '../../@core/api/FeedsAPI'
+
+const stats = getStats();
 
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
 
-interface DataType {
-  stats: string
-  title: string
-  color: ThemeColor
-  icon: ReactElement
-}
-
-const salesData: DataType[] = [
-  {
-    stats: '4.21M',
-    title: 'Rows',
-    color: 'primary',
-    icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '215',
-    title: 'Files',
-    color: 'success',
-    icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '72',
-    color: 'warning',
-    title: 'Errors',
-    icon: <Alert sx={{ fontSize: '1.75rem' }} />
-  }
-]
-
 const renderStats = () => {
-  return salesData.map((item: DataType, index: number) => (
+  return stats.map((item: StatsType, index: number) => (
     <Grid item xs={12} sm={2} key={index}>
       <Box key={index} sx={{ display: 'flex', alignItems: 'left' }}>
         <Avatar
@@ -79,7 +51,7 @@ const StatisticsCard = () => {
   return (
     <Card>
       <CardHeader
-        title='Data Manager Health'
+        title= "Data Manager"
         action={
           <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
             <DotsVertical />
