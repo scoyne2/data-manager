@@ -8,6 +8,8 @@ import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import InputAdornment from '@mui/material/InputAdornment'
 import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
 
 
 // ** Icons Imports
@@ -48,14 +50,14 @@ const FormNewFeed = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Select
-                fullWidth
-                label='Feed Type'
-              >
-                <MenuItem value={1}>SFTP</MenuItem>
-                <MenuItem value={2}>S3</MenuItem>
-                </Select>
-            </Grid>
+            <FormControl fullWidth>
+              <InputLabel>Feed Type</InputLabel>
+              <Select label='Feed Type' defaultValue='1'>
+                <MenuItem value='1'>SFTP</MenuItem>
+                <MenuItem value='2'>S3</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
 
 
             <Grid item xs={12}>

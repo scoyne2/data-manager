@@ -4,7 +4,6 @@ import { ReactElement } from 'react'
 
 // ** Icons Imports
 import TrendingUp from 'mdi-material-ui/TrendingUp'
-import DotsVertical from 'mdi-material-ui/DotsVertical'
 import Alert from 'mdi-material-ui/Alert'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 
