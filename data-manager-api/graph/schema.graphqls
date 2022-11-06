@@ -1,0 +1,45 @@
+type Feed {
+  id: ID!
+  vendor: String!
+  feedName: String!
+  feedType: String!
+}
+
+type FileStats {
+    id: ID!
+    rows: Int!
+    name: String!
+    date: String!
+    vendor: String!
+    errors: Int!
+    status: String!
+    designation: String!
+}
+
+type Query {
+  feed(id: String!): Feed!
+  feeds: [Feed!]!
+  fileStat(id: String!): FileStats!
+  fileStats: [FileStats!]!
+}
+
+input NewFeed {
+  vendor: String!
+  feedName: String!
+  feedType: String!
+}
+
+input NewFileStats {
+    rows: Int!
+    name: String!
+    date: String!
+    vendor: String!
+    errors: Int!
+    status: String!
+    designation: String!
+}
+
+type Mutation {
+  createFeed(input: NewFeed!): Feed!
+  createFileStats(input: NewFileStats!): FileStats!
+}
