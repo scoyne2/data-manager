@@ -14,6 +14,7 @@ import (
 func main() {
 
 	feedService := feed.NewService(
+		// TODO connect to postgress DB
 		feed.NewMemoryRepository(),
 	)
 
