@@ -20,11 +20,11 @@ headerValues.forEach((value) => {
   header.push(<TableCell>{value}</TableCell>)
 })
 
-const DashboardTable = (minWidth=800) => {
+const DashboardTable = () => {
   return (
     <Card>
       <TableContainer>
-        <Table sx={{ minWidth: minWidth }} aria-label='table in dashboard'>
+        <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
           <TableHead>
             <TableRow>
             { header }
