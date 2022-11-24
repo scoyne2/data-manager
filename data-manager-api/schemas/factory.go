@@ -28,20 +28,26 @@ var feedType = graphql.NewObject(graphql.ObjectConfig{
 },
 )
 
-// GenerateSchema will create a GraphQL Schema and set the Resolvers found in the GopherService
+// GenerateSchema will create a GraphQL Schema and set the Resolvers found in the FeedService
 // For all the needed fields
 func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
 
 	// RootQuery
 	fields := graphql.Fields{
-		// We define the Feeds query
 		"feeds": &graphql.Field{
-			// It will return a list of feedType, a List is an Slice
 			Type: graphql.NewList(feedType),
-			// We change the Resolver to use the feedRepo instead, allowing us to access all Feeds
 			Resolve: fs.ResolveFeeds,
-			// Description explains the field
 			Description: "Query all Feeds",
+		},
+		"feed": &graphql.Field{
+			Type: feedType,
+			Resolve: fs.ResolveFeed,
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type: graphql.Int,
+				},
+			},
+			Description: "Query a specific feed",
 		},
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
