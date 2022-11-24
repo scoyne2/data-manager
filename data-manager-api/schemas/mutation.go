@@ -20,11 +20,18 @@ var addFeedArgs = graphql.FieldConfigArgument{
 	},
 }
 
+var deleteFeedArgs = graphql.FieldConfigArgument{
+	"id": &graphql.ArgumentConfig{
+		Type: graphql.NewNonNull(graphql.Int),
+	},
+}
+
 func generateRootMutation(fs *feed.FeedService) *graphql.Object {
 
 	mutationFields := graphql.Fields{
 		"addFeed": generateGraphQLField(feedType, fs.AddFeed, "Add a new feed", addFeedArgs),
 		"updateFeed": generateGraphQLField(feedType, fs.UpdateFeed, "Update an existing feed", addFeedArgs),
+		"deleteFeed": generateGraphQLField(graphql.String, fs.DeleteFeed, "Delete existing feed", deleteFeedArgs),
 	}
 	mutationConfig := graphql.ObjectConfig{Name: "RootMutation", Fields: mutationFields}
 

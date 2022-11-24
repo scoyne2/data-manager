@@ -73,3 +73,8 @@ func (fs FeedService) AddFeed(p graphql.ResolveParams) (interface{}, error) {
 	return fs.feeds.AddFeed(feed)
 }
 
+func (fs FeedService) DeleteFeed(p graphql.ResolveParams) (interface{}, error) {
+	id := p.Args["id"].(int)
+	return fs.feeds.DeleteFeed(id)
+}
+

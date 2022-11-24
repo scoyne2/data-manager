@@ -2,6 +2,7 @@ package feed
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 )
 
@@ -46,7 +47,7 @@ func (imr *InMemoryRepository) GetFeed(id int) (Feed, error) {
 	if ok {
 		return feed, nil
 	}
-	return Feed{}, errors.New("no such feed exists")
+	return Feed{}, fmt.Errorf("Feed Id %x does not exist", id)
 }
 
 func (imr *InMemoryRepository) UpdateFeed(feed Feed) (Feed, error) {
@@ -61,8 +62,17 @@ func (imr *InMemoryRepository) UpdateFeed(feed Feed) (Feed, error) {
 func (imr *InMemoryRepository) AddFeed(feed Feed) (Feed, error) {
 	_, ok := imr.feeds[feed.ID]
 	if ok {
-		return Feed{}, errors.New("Feed ID already exists")
+		return Feed{}, fmt.Errorf("Feed Id %x already exists", feed.ID)
 	}
 	imr.feeds[feed.ID] = feed
 	return feed, nil
+}
+
+func (imr *InMemoryRepository) DeleteFeed(id int) (string, error) {
+	_, ok := imr.feeds[id]
+	if ok {
+		delete(imr.feeds, id)
+		return fmt.Sprintf("Feed Id %x deleted", id), nil
+	}
+	return "", fmt.Errorf("Feed Id %x does not exist", id)
 }

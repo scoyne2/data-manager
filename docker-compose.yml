@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+    postgres:
+        image: postgres:latest
+        restart: always
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+        ports:
+          - '5438:5432'
+        volumes:
+          - ./database/postgres-data:/var/lib/postgresql/data
+          - ./database/data_manager_setup.sql:/docker-entrypoint-initdb.d/data_manager_setup.sql
+    api:
+        build: data-manager-api/.
+        ports:
+          - '8080:8080'
+    web:
+        build: .
+        ports:
+          - '3000:3000'
