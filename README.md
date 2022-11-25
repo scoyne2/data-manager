@@ -15,6 +15,10 @@ Get the container ID: `docker ps -f "name=postgres"`
 Access the container, replaceing CONTAINER_ID: `docker exec -it CONTAINER_ID /bin/bash`
 Bring up psql commands: `psql -U postgres`
 
+## Database Admin
+In your browser navigate to http://localhost:5050/
+Use dummy credentials username: admin@admin.com password: root
+
 ## Sysops
 TODO add documentation
 

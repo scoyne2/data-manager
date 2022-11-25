@@ -3,19 +3,49 @@ services:
     postgres:
         image: postgres:latest
         restart: always
+        hostname: postgres
         environment:
           - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=postgres
+        networks:
+          - dm
         ports:
-          - '5438:5432'
+          - '5432:5432'
         volumes:
           - ./database/postgres-data:/var/lib/postgresql/data
           - ./database/data_manager_setup.sql:/docker-entrypoint-initdb.d/data_manager_setup.sql
+    database-admin:
+      image: dpage/pgadmin4:latest
+      restart: always
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@admin.com
+        PGADMIN_DEFAULT_PASSWORD: root
+      ports:
+        - "5050:80"
+      volumes:
+        - ./database/servers.json:/pgadmin4/servers.json
+        - ./database/admin:/var/lib/pgadmin
+      links:
+        - "postgres:pgsql-server"
+      depends_on:
+        - postgres
+      networks:
+        - dm
     api:
         build: data-manager-api/.
         ports:
           - '8080:8080'
+        links:
+          - postgres
+        networks:
+          - dm
     web:
         build: .
         ports:
           - '3000:3000'
+        links:
+          - api
+        networks:
+          - dm
+networks:
+  dm:
