@@ -2,7 +2,6 @@ package feed
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"sync"
 	_ "github.com/lib/pq"
@@ -74,31 +73,34 @@ func (pr *PostgressRepository) UpdateFeed(feed Feed) (Feed, error) {
 	UPDATE feeds
 	SET vendor = $2, feed_name = $3, feed_method = $4
 	WHERE id = $1;`
+
 	_, err := pr.db.Exec(sqlStatement, feed.ID, feed.Vendor, feed.FeedName, feed.FeedMethod)
 	if err != nil {
 		return Feed{}, err
 	}
 	return feed, nil
-
 }
 
-func (imr *PostgressRepository) AddFeed(feed Feed) (Feed, error) {
-	// _, ok := imr.feeds[feed.ID]
-	// if ok {
-	// 	return Feed{}, errors.New("Feed ID already exists")
-	// }
-	// imr.feeds[feed.ID] = feed
-	// return feed, nil
-	return Feed{}, errors.New("not yet implemented")
+func (pr *PostgressRepository) AddFeed(feed Feed) (Feed, error) {
+	sqlStatement := `
+	INSERT INTO feeds (vendor, feed_name, feed_method)
+	VALUES ($1, $2, $3);`
 
+	_, err := pr.db.Exec(sqlStatement, feed.Vendor, feed.FeedName, feed.FeedMethod)
+	if err != nil {
+		return Feed{}, err
+	}
+	return feed, nil
 }
 
-func (imr *PostgressRepository) DeleteFeed(id int) (string, error) {
-	// _, ok := imr.feeds[id]
-	// if ok {
-	// 	delete(imr.feeds, id)
-	// 	return fmt.Sprintf("Feed Id %x deleted", id), nil
-	// }
-	// return "", fmt.Errorf("Feed Id %x does not exist", id)
-	return "", errors.New("not yet implemented")
+func (pr *PostgressRepository) DeleteFeed(id int) (string, error) {
+	sqlStatement := `
+	DELETE FROM feeds
+	WHERE id = $1;`
+
+	_, err := pr.db.Exec(sqlStatement, id)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("Feed Id %x deleted", id), nil
 }
