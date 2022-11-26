@@ -3,6 +3,9 @@ package feed
 import (
 	"database/sql"
 	"fmt"
+	"errors"
+	"strconv"
+	"os"
 	"sync"
 	_ "github.com/lib/pq"
 )
@@ -12,18 +15,20 @@ type PostgressRepository struct {
 	sync.Mutex
 }
 
-const (
-	DB_HOST     = "postgres"
-	DB_PORT     = 5432
-	DB_USER     = "postgres"
-	DB_PASSWORD = "postgres"
-	DB_NAME     = "postgres"
-)
 
+var POSTGRES_HOST string = os.Getenv("POSTGRES_HOST")
+var POSTGRES_PORT string = os.Getenv("POSTGRES_PORT")
+var POSTGRES_USER string = os.Getenv("POSTGRES_USER")
+var POSTGRES_PASSWORD string= os.Getenv("POSTGRES_PASSWORD")
+var POSTGRES_DB_NAME string = os.Getenv("POSTGRES_DB_NAME")
 
 func NewPostgressRepository() *PostgressRepository {
+	port, err := strconv.Atoi(POSTGRES_PORT)
+    if err != nil {
+        panic(err)
+    }
 	dbinfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-    DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME)
+    POSTGRES_HOST, port, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB_NAME)
 
 	db, err := sql.Open("postgres", dbinfo)
 	if err != nil {
@@ -69,6 +74,13 @@ func (pr *PostgressRepository) GetFeed(id int) (Feed, error) {
 }
 
 func (pr *PostgressRepository) UpdateFeed(feed Feed) (Feed, error) {
+	// check if feed exists first
+	rows := pr.db.QueryRow("SELECT id, vendor, feed_name, feed_method FROM feeds WHERE id=$1;", feed.ID)
+	var f Feed
+	e := rows.Scan(&f.ID, &f.Vendor, &f.FeedName, &f.FeedMethod)
+	if e == sql.ErrNoRows {
+		return Feed{}, fmt.Errorf("Could not compelte update, ID %x does not exist", feed.ID)
+	}
 	// TODO this also needs to modify the S3 trigger
 	sqlStatement := `
 	UPDATE feeds

@@ -1,19 +1,13 @@
 # Data Manager
 
-## Deploy Locally
-From the root of the project run: `docker-compose up`
+## Deploy Containers Locally
+From the root of the project run: `make deploy_containers`
 
 ### Front End
 In your browser navigate to http://localhost:3000/
 
 ### GraphQLAPI
 In your browser navigate to http://localhost:8080/sandbox
-
-### Database
-To access the db once its running:
-Get the container ID: `docker ps -f "name=postgres"`
-Access the container, replaceing CONTAINER_ID: `docker exec -it CONTAINER_ID /bin/bash`
-Bring up psql commands: `psql -U postgres`
 
 ## Database Admin
 In your browser navigate to http://localhost:5050/
@@ -22,7 +16,8 @@ Use dummy credentials username: admin@admin.com password: root
 ## Sysops
 TODO add documentation
 
-
+# Deploy infrastructure
+Run `make deploy_infra`
 
 # Future Work
 Implement postgres resolver for GraphQL

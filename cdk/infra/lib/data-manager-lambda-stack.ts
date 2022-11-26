@@ -12,8 +12,7 @@ export class DataManagerLambdaStack extends cdk.Stack {
     const lambdaFunction = this.buildLambda('data-manager-lambda', path.join(__dirname, '../../lambda'), 'main');
 
     // Create the S3 bucket for trigger
-    // TODO pass in bucket name as an env variable
-    const bucketName =  'data-manager-trigger'
+    const bucketName = process.env.TRIGGER_BUCKET_NAME
     const bucket = new s3.Bucket(this, 'data-manager-trigger-bucket', {
       autoDeleteObjects: false,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
