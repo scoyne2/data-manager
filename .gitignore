@@ -109,3 +109,6 @@ dist
 
 database/postgres-data/
 database/admin/
+
+*cdk.out
+cdk/lambda/vendor

@@ -69,6 +69,7 @@ func (pr *PostgressRepository) GetFeed(id int) (Feed, error) {
 }
 
 func (pr *PostgressRepository) UpdateFeed(feed Feed) (Feed, error) {
+	// TODO this also needs to modify the S3 trigger
 	sqlStatement := `
 	UPDATE feeds
 	SET vendor = $2, feed_name = $3, feed_method = $4
@@ -82,6 +83,7 @@ func (pr *PostgressRepository) UpdateFeed(feed Feed) (Feed, error) {
 }
 
 func (pr *PostgressRepository) AddFeed(feed Feed) (Feed, error) {
+	// TODO this also needs to add a S3 trigger
 	sqlStatement := `
 	INSERT INTO feeds (vendor, feed_name, feed_method)
 	VALUES ($1, $2, $3);`
@@ -94,6 +96,7 @@ func (pr *PostgressRepository) AddFeed(feed Feed) (Feed, error) {
 }
 
 func (pr *PostgressRepository) DeleteFeed(id int) (string, error) {
+	// TODO this also needs to remove the S3 trigger
 	sqlStatement := `
 	DELETE FROM feeds
 	WHERE id = $1;`
