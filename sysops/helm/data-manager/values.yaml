@@ -7,7 +7,14 @@ api:
   service:
     type: ClusterIP
     port: 80
+    targetPort: 8080
   replicaCount: 1
+  env:
+    postgres_user: admin
+    postgres_password: ""
+    postgres_port: "5432"
+    postgres_host: data-manager-postgresql
+    postgres_db_name: postgres
   image:
     repository: ""
     pullPolicy: IfNotPresent
@@ -24,6 +31,8 @@ frontend:
     type: ClusterIP
     port: 3000
   replicaCount: 1
+  env:
+    graphql_url: "http://data-manager-api:8181/graphql"
   image:
     repository: ""
     pullPolicy: IfNotPresent

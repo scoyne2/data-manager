@@ -15,4 +15,5 @@ deploy_helm:
 	 . --values values.yaml --set api.image.repository=${AWS_ACCOUNT}.dkr.ecr.us-west-2.amazonaws.com/data-manager-api \
 	 --set frontend.image.repository=${AWS_ACCOUNT}.dkr.ecr.us-west-2.amazonaws.com/data-manager-frontend \
 	 --set postgresql.auth.postgresPassword=${POSTGRES_PASSWORD} --set postgresql.auth.password=${POSTGRES_PASSWORD} \
-	 --set postgresql.primary.initdb.password=${POSTGRES_PASSWORD} --set postgresql.primary.initdb.user=${POSTGRES_USER}
+	 --set postgresql.primary.initdb.password=${POSTGRES_PASSWORD} --set postgresql.primary.initdb.user=${POSTGRES_USER } \
+	 --set api.env.postgres_password=${POSTGRES_PASSWORD}

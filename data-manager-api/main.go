@@ -1,14 +1,13 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/scoyne2/data-manager-api/feed"
 	"github.com/scoyne2/data-manager-api/schemas"
-
 )
 
 func main() {
@@ -34,6 +33,10 @@ func CorsMiddleware(next http.Handler) http.Handler {
     })
 }
 
+func check(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "<h1>Health check</h1>")
+}
+
 // StartServer will trigger the server with a Playground
 func StartServer(schema *graphql.Schema) {
 	h := handler.New(&handler.Config{
@@ -42,15 +45,16 @@ func StartServer(schema *graphql.Schema) {
 		GraphiQL: false,
 	})
 
+	http.HandleFunc("/health_check", check)
 	http.Handle("/graphql", CorsMiddleware(h))
 
-
-	// Access via http://localhost:8080/sandbox
+	// Access via http://localhost:8181/sandbox
 	http.Handle("/sandbox", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write(sandboxHTML)
 	}))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("Server starting on port 8181...")
+	http.ListenAndServe(":8181", nil)
 }
 
 var sandboxHTML = []byte(`
@@ -64,7 +68,7 @@ var sandboxHTML = []byte(`
    target: "#sandbox",
    // Pass through your server href if you are embedding on an endpoint.
    // Otherwise, you can pass whatever endpoint you want Sandbox to start up with here.
-   initialEndpoint: "http://localhost:8080/graphql",
+   initialEndpoint: "http://localhost:8181/graphql",
  });
  // advanced options: https://www.apollographql.com/docs/studio/explorer/sandbox#embedding-sandbox
 </script>

@@ -26,15 +26,15 @@ spec:
           imagePullPolicy: {{ .Values.api.image.pullPolicy }}
           env:
             - name: "POSTGRES_USER"
-              value: admin
+              value:  {{ .Values.api.env.postgres_user }}
             - name: "POSTGRES_PASSWORD"
-              value: admin123
+              value:  {{ .Values.api.env.postgres_password }}
             - name: "POSTGRES_PORT"
-              value: "5432"
+              value: "{{ .Values.api.env.postgres_port }}"
             - name: "POSTGRES_HOST"
-              value: data-manager-postgresql
+              value: {{ .Values.api.env.postgres_host }}
             - name: "POSTGRES_DB_NAME"
-              value: postgres
+              value: {{ .Values.api.env.postgres_db_name }}
           ports:
             - name: http
               containerPort: {{ .Values.api.service.port }}

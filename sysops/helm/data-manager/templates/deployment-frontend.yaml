@@ -26,7 +26,7 @@ spec:
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           env:
             - name: "GRAPHQL_URL"
-              value: "http://data-manager-api:8080/graphql"
+              value: {{ .Values.frontend.env.graphql_url }}
           ports:
             - name: http
               containerPort: {{ .Values.frontend.service.port }}
