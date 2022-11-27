@@ -3,7 +3,6 @@ package feed
 import (
 	"database/sql"
 	"fmt"
-	"errors"
 	"strconv"
 	"os"
 	"sync"
@@ -74,14 +73,13 @@ func (pr *PostgressRepository) GetFeed(id int) (Feed, error) {
 }
 
 func (pr *PostgressRepository) UpdateFeed(feed Feed) (Feed, error) {
-	// check if feed exists first
+	// Check if feed exists first
 	rows := pr.db.QueryRow("SELECT id, vendor, feed_name, feed_method FROM feeds WHERE id=$1;", feed.ID)
 	var f Feed
 	e := rows.Scan(&f.ID, &f.Vendor, &f.FeedName, &f.FeedMethod)
 	if e == sql.ErrNoRows {
-		return Feed{}, fmt.Errorf("Could not compelte update, ID %x does not exist", feed.ID)
+		return Feed{}, fmt.Errorf("could not compelte update, ID %x does not exist", feed.ID)
 	}
-	// TODO this also needs to modify the S3 trigger
 	sqlStatement := `
 	UPDATE feeds
 	SET vendor = $2, feed_name = $3, feed_method = $4
@@ -95,7 +93,6 @@ func (pr *PostgressRepository) UpdateFeed(feed Feed) (Feed, error) {
 }
 
 func (pr *PostgressRepository) AddFeed(feed Feed) (Feed, error) {
-	// TODO this also needs to add a S3 trigger
 	sqlStatement := `
 	INSERT INTO feeds (vendor, feed_name, feed_method)
 	VALUES ($1, $2, $3);`
@@ -108,7 +105,6 @@ func (pr *PostgressRepository) AddFeed(feed Feed) (Feed, error) {
 }
 
 func (pr *PostgressRepository) DeleteFeed(id int) (string, error) {
-	// TODO this also needs to remove the S3 trigger
 	sqlStatement := `
 	DELETE FROM feeds
 	WHERE id = $1;`
@@ -118,4 +114,35 @@ func (pr *PostgressRepository) DeleteFeed(id int) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("Feed Id %x deleted", id), nil
+}
+
+
+
+func (pr *PostgressRepository) GetFeedStatuses() ([]FeedStatusResults, error) {
+	sqlStatement := `
+	SELECT fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status,
+	f.vendor, f.feed_name, f.feed_method
+	FROM feed_status fs
+	INNER JOIN feeds f
+	ON fs.feed_id = f.id`
+	rows, err := pr.db.Query(sqlStatement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var feedStatus []FeedStatusResults
+	for rows.Next() {
+		var f FeedStatusResults
+		err = rows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.Vendor, &f.FeedName, &f.FeedMethod)
+		if err != nil {
+		return nil, err
+		}
+		feedStatus = append(feedStatus, f)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return feedStatus, nil
 }

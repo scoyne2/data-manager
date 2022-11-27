@@ -9,20 +9,21 @@ import (
 type Resolver interface {
 	ResolveFeed(p graphql.ResolveParams) (interface{}, error)
 	ResolveFeeds(p graphql.ResolveParams) (interface{}, error)
+	ResolveFeedStatuses(p graphql.ResolveParams) (interface{}, error)
 }
 
 type FeedService struct {
-	feeds Repository
+	repo Repository
 }
 
 func NewService(repo Repository,) FeedService {
 	return FeedService{
-		feeds: repo,
+		repo: repo,
 	}
 }
 
 func (fs FeedService) ResolveFeeds(p graphql.ResolveParams) (interface{}, error) {
-	feeds, err := fs.feeds.GetFeeds()
+	feeds, err := fs.repo.GetFeeds()
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +35,7 @@ func (fs FeedService) ResolveFeed(p graphql.ResolveParams) (interface{}, error) 
 	if !ok {
 		return nil, errors.New("id has to be an int")
 	}
-	feed, err := fs.feeds.GetFeed(id)
+	feed, err := fs.repo.GetFeed(id)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +54,7 @@ func (fs FeedService) UpdateFeed(p graphql.ResolveParams) (interface{}, error) {
 	feed.FeedName = feedName
 	feed.FeedMethod = feedMethod
 
-	return fs.feeds.UpdateFeed(feed)
+	return fs.repo.UpdateFeed(feed)
 }
 
 
@@ -70,11 +71,18 @@ func (fs FeedService) AddFeed(p graphql.ResolveParams) (interface{}, error) {
 	feed.FeedName = feedName
 	feed.FeedMethod = feedMethod
 
-	return fs.feeds.AddFeed(feed)
+	return fs.repo.AddFeed(feed)
 }
 
 func (fs FeedService) DeleteFeed(p graphql.ResolveParams) (interface{}, error) {
 	id := p.Args["id"].(int)
-	return fs.feeds.DeleteFeed(id)
+	return fs.repo.DeleteFeed(id)
 }
 
+func (fs FeedService) ResolveFeedStatuses(p graphql.ResolveParams) (interface{}, error) {
+	feedstatuses, err := fs.repo.GetFeedStatuses()
+	if err != nil {
+		return nil, err
+	}
+	return feedstatuses, nil
+}

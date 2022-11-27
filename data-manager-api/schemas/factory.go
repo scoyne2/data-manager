@@ -16,11 +16,50 @@ var feedType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "The name of the vendor",
 		},
-		"feedName": &graphql.Field{
+		"feed_name": &graphql.Field{
 			Type:        graphql.String,
 			Description: "The name of the feed",
 		},
-		"feedMethod": &graphql.Field{
+		"feed_method": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The method by which the feed is received",
+		},
+	},
+},
+)
+
+var feedStatusType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "FeedStatus",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type:        graphql.ID,
+			Description: "The ID that is used to identify unique feed status",
+		},
+		"process_date": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The date the feed was processed",
+		},
+		"record_count": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "The number of records successfully processed",
+		},
+		"error_count": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "The number of records that had errors",
+		},
+		"status": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The status of the feed",
+		},
+		"vendor": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The name of the vendor",
+		},
+		"feed_name": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The name of the feed",
+		},
+		"feed_method": &graphql.Field{
 			Type:        graphql.String,
 			Description: "The method by which the feed is received",
 		},
@@ -48,6 +87,11 @@ func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
 				},
 			},
 			Description: "Query a specific feed",
+		},
+		"feedstatuses": &graphql.Field{
+			Type: graphql.NewList(feedStatusType),
+			Resolve: fs.ResolveFeedStatuses,
+			Description: "Query all Feed Statuses",
 		},
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}

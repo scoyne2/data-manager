@@ -1,67 +1,68 @@
 // ** MUI Imports
-import Card from '@mui/material/Card'
-import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
-import Select from '@mui/material/Select'
-import CardHeader from '@mui/material/CardHeader'
-import CardContent from '@mui/material/CardContent'
-import InputAdornment from '@mui/material/InputAdornment'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
-
+import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Select from "@mui/material/Select";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import InputAdornment from "@mui/material/InputAdornment";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 
 // ** Icons Imports
-import DownloadBoxOutline from 'mdi-material-ui/DownloadBoxOutline'
-import OfficeBuilding from 'mdi-material-ui/OfficeBuilding'
+import DownloadBoxOutline from "mdi-material-ui/DownloadBoxOutline";
+import OfficeBuilding from "mdi-material-ui/OfficeBuilding";
 
 const FormNewFeed = () => {
   return (
     <Card>
-      <CardHeader title='Add New Feed' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title="Add New Feed"
+        titleTypographyProps={{ variant: "h6" }}
+      />
       <CardContent>
-        <form onSubmit={e => e.preventDefault()}>
+        <form onSubmit={(e) => e.preventDefault()}>
           <Grid container spacing={5}>
-          <Grid item xs={12}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
-                label='Vendor'
+                label="Vendor"
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position='start'>
+                    <InputAdornment position="start">
                       <OfficeBuilding />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label='Feed Name'
+                label="Feed Name"
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position='start'>
+                    <InputAdornment position="start">
                       <DownloadBoxOutline />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
             <Grid item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel>Feed Type</InputLabel>
-              <Select label='Feed Type' defaultValue='1'>
-                <MenuItem value='1'>SFTP</MenuItem>
-                <MenuItem value='2'>S3</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
+              <FormControl fullWidth>
+                <InputLabel>Feed Type</InputLabel>
+                <Select label="Feed Type" defaultValue="1">
+                  <MenuItem value="1">SFTP</MenuItem>
+                  <MenuItem value="2">S3</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
 
             <Grid item xs={12}>
-              <Button type='submit' variant='contained' size='large'>
+              <Button type="submit" variant="contained" size="large">
                 Submit
               </Button>
             </Grid>
@@ -69,7 +70,7 @@ const FormNewFeed = () => {
         </form>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default FormNewFeed
+export default FormNewFeed;

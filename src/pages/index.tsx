@@ -1,18 +1,17 @@
 // ** MUI Imports
-import Grid from '@mui/material/Grid'
+import Grid from "@mui/material/Grid";
 
 // ** Styled Component Import
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
+import ApexChartWrapper from "src/@core/styles/libs/react-apexcharts";
 
-import Table from 'src/views/dashboard/Table'
-import StatisticsCard from 'src/views/dashboard/StatisticsCard'
-
+import Table from "src/views/dashboard/Table";
+import StatisticsCard from "src/views/dashboard/StatisticsCard";
 
 const Dashboard = () => {
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
-        <Grid item xs={12} >
+        <Grid item xs={12}>
           <StatisticsCard />
         </Grid>
         <Grid item xs={12}>
@@ -20,7 +19,7 @@ const Dashboard = () => {
         </Grid>
       </Grid>
     </ApexChartWrapper>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

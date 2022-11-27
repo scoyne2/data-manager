@@ -1,29 +1,29 @@
 // ** Icon imports
-import HomeOutline from 'mdi-material-ui/HomeOutline'
-import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
-import CogOutline from 'mdi-material-ui/CogOutline'
+import HomeOutline from "mdi-material-ui/HomeOutline";
+import AlertCircleOutline from "mdi-material-ui/AlertCircleOutline";
+import CogOutline from "mdi-material-ui/CogOutline";
 
 // ** Type import
-import { VerticalNavItemsType } from 'src/@core/layouts/types'
+import { VerticalNavItemsType } from "src/@core/layouts/types";
 
 const navigation = (): VerticalNavItemsType => {
   return [
     {
-      title: 'Monitor',
+      title: "Monitor",
       icon: HomeOutline,
-      path: '/'
+      path: "/",
     },
     {
-      title: 'Feed Settings',
+      title: "Feed Settings",
       icon: CogOutline,
-      path: '/feed-settings'
+      path: "/feed-settings",
     },
     {
-      title: 'Logs',
+      title: "Logs",
       icon: AlertCircleOutline,
-      path: '/logs',
-    }
-  ]
-}
+      path: "/logs",
+    },
+  ];
+};
 
-export default navigation
+export default navigation;

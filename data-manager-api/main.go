@@ -14,7 +14,6 @@ import (
 func main() {
 
 	feedService := feed.NewService(
-		// feed.NewMemoryRepository(),
 		feed.NewPostgressRepository(),
 	)
 
@@ -26,6 +25,15 @@ func main() {
 	StartServer(schema)
 }
 
+func CorsMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // allow cross domain AJAX requests
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+        next.ServeHTTP(w,r)
+    })
+}
+
 // StartServer will trigger the server with a Playground
 func StartServer(schema *graphql.Schema) {
 	h := handler.New(&handler.Config{
@@ -34,7 +42,8 @@ func StartServer(schema *graphql.Schema) {
 		GraphiQL: false,
 	})
 
-	http.Handle("/graphql", h)
+	http.Handle("/graphql", CorsMiddleware(h))
+
 
 	// Access via http://localhost:8080/sandbox
 	http.Handle("/sandbox", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
