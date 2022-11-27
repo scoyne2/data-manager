@@ -5,6 +5,7 @@ From the root of the project run: `make deploy_containers`
 
 ### Front End
 In your browser navigate to http://localhost:3000/
+TODO pass in graphql url as a variable, currently its hardcoded in frontend/src/pages/_app.tsx as "http://localhost:8080/graphql"
 
 ### GraphQLAPI
 In your browser navigate to http://localhost:8080/sandbox

@@ -45,18 +45,22 @@ const DashboardTable = () => {
   const { loading, error, data } =
     useQuery<FeedStatusesType>(GET_FEED_STATUSES);
   const tableBody: JSX.Element[] = [];
-  if (loading) {
-    tableBody.push(
-      <TableRow>
-        <TableCell>Loading...</TableCell>
-      </TableRow>
-    );
-  }
+  console.log(loading);
+  console.log(error);
+  console.log(data);
   if (error) {
     console.error(error);
     tableBody.push(
       <TableRow>
         <TableCell>Error!</TableCell>
+      </TableRow>
+    );
+  }
+
+  if (loading) {
+    tableBody.push(
+      <TableRow>
+        <TableCell>Loading...</TableCell>
       </TableRow>
     );
   }

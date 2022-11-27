@@ -6,7 +6,7 @@ api:
   serviceName: api
   service:
     type: ClusterIP
-    port: 80
+    port: 8080
     targetPort: 8080
   replicaCount: 1
   env:
@@ -30,9 +30,10 @@ frontend:
   service:
     type: ClusterIP
     port: 3000
+    targetPort: 3000
   replicaCount: 1
   env:
-    graphql_url: "http://data-manager-api:8181/graphql"
+    graphql_url: "http://localhost:8080/graphql"
   image:
     repository: ""
     pullPolicy: IfNotPresent
@@ -85,8 +86,8 @@ pgadmin4:
   replicaCount: 1
   service:
     type: ClusterIP
-    port: 80
-    targetPort: 5050
+    port: 5050
+    targetPort: 80
   env:
     email: admin@admin.com
     password: admin
