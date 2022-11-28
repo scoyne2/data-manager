@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 amd64/node:16.17-alpine
+FROM arm64v8/node:16.17-alpine
 
 RUN mkdir -p /home/app/ && chown -R node:node /home/app
 WORKDIR /home/app
