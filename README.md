@@ -8,7 +8,7 @@ In your browser navigate to http://localhost:3000/
 TODO pass in graphql url as a variable, currently its hardcoded in frontend/src/pages/_app.tsx as "http://localhost:8080/graphql"
 
 ### GraphQLAPI
-In your browser navigate to http://localhost:8080/sandbox
+In your browser navigate to http://localhost/sandbox
 
 ## Database Admin
 In your browser navigate to http://localhost:5050/

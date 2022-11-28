@@ -42,10 +42,8 @@ type ExtendedAppProps = AppProps & {
 };
 
 const clientSideEmotionCache = createEmotionCache();
-
-console.log("env url", process.env.GRAPHQL_URL)
 const client = new ApolloClient({
-  uri: "http://localhost:8080/graphql",
+  uri: "http://localhost/api/graphql",
   cache: new InMemoryCache(),
 });
 

@@ -5,7 +5,7 @@
 api:
   serviceName: api
   service:
-    type: ClusterIP
+    type: NodePort
     port: 8080
     targetPort: 8080
   replicaCount: 1
@@ -28,7 +28,7 @@ api:
 frontend:
   serviceName: frontend
   service:
-    type: ClusterIP
+    type: NodePort
     port: 3000
     targetPort: 3000
   replicaCount: 1
@@ -85,12 +85,12 @@ pgadmin4:
   serviceName: databaseadmin
   replicaCount: 1
   service:
-    type: ClusterIP
+    type: NodePort
     port: 5050
-    targetPort: 80
+    targetPort: 5050
   env:
-    email: admin@admin.com
-    password: admin
+    email: ""
+    password: ""
   serverDefinitions:
     enabled: true
     servers:
@@ -102,3 +102,6 @@ pgadmin4:
        Host: "data-manager-postgresql"
        SSLMode: "disable"
        MaintenanceDB: "postgres"
+
+ingress:
+  host: localhost
