@@ -6,11 +6,8 @@ endif
 deploy_infra:
 	cd cdk/infra && TRIGGER_BUCKET_NAME=${TRIGGER_BUCKET_NAME} cdk deploy
 
-deploy_containers:
-	docker-compose up
-
 deploy_helm:
-	#bash sysops/push_to_ecr.sh
+	bash scripts/push_to_ecr.sh
 	cd sysops/helm/data-manager && helm upgrade --install data-manager \
 	 . --values values.yaml --set api.image.repository=${AWS_ACCOUNT}.dkr.ecr.us-west-2.amazonaws.com/data-manager-api \
 	 --set frontend.image.repository=${AWS_ACCOUNT}.dkr.ecr.us-west-2.amazonaws.com/data-manager-frontend \

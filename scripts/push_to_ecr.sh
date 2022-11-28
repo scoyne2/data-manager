@@ -1,4 +1,4 @@
-## run this from the root directory like: bash sysops/push_to_ecr.sh
+## run this from the root directory like: bash scripts/push_to_ecr.sh
 
 set -a
 source .env
