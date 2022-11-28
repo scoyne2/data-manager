@@ -82,12 +82,19 @@ postgresql:
           (2, '03/24/2018', 13076, 0, 'success');
 
 pgadmin4:
-  serviceName: databaseadmin
   replicaCount: 1
   service:
-    type: NodePort
-    port: 5050
-    targetPort: 5050
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    hosts:
+      - host: "kubernetes.docker.admin"
+        paths:
+          - path: /
+            pathType: Prefix
   env:
     email: ""
     password: ""
@@ -104,7 +111,10 @@ pgadmin4:
        MaintenanceDB: "postgres"
 
 ingressfrontend:
-  host: localhost
+  host: ""
 
-ingressbackend:
-  host: localhost
+ingressapi:
+  host: ""
+
+ingresspgadmin:
+  host: ""

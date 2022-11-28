@@ -48,7 +48,7 @@ func StartServer(schema *graphql.Schema) {
 	http.HandleFunc("/health_check", check)
 	http.Handle("/graphql", CorsMiddleware(h))
 
-	// Access via http://localhost:8080/sandbox
+	// Access via http://localhost/sandbox
 	http.Handle("/sandbox", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write(sandboxHTML)
 	}))
@@ -68,7 +68,7 @@ var sandboxHTML = []byte(`
    target: "#sandbox",
    // Pass through your server href if you are embedding on an endpoint.
    // Otherwise, you can pass whatever endpoint you want Sandbox to start up with here.
-   initialEndpoint: "http://localhost:8080/graphql",
+   initialEndpoint: "http://localhost/graphql",
  });
  // advanced options: https://www.apollographql.com/docs/studio/explorer/sandbox#embedding-sandbox
 </script>

@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: data-manager-ingress-api
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: {{ .Values.ingressapi.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: data-manager-api
+            port:
+              number: 8080

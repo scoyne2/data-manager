@@ -5,7 +5,7 @@ From the root of the project run: `make deploy_containers`
 
 ### Front End
 In your browser navigate to http://localhost:3000/
-TODO pass in graphql url as a variable, currently its hardcoded in frontend/src/pages/_app.tsx as "http://localhost:8080/graphql"
+TODO pass in graphql url as a variable, currently its hardcoded in frontend/src/pages/_app.tsx as "http://localhost/graphql"
 
 ### GraphQLAPI
 In your browser navigate to http://localhost/sandbox
@@ -14,15 +14,14 @@ In your browser navigate to http://localhost/sandbox
 In your browser navigate to http://localhost:5050/
 Use dummy credentials username: admin@admin.com password: root
 
-## Sysops
-TODO add documentation
 
 # Deploy infrastructure
 Run `make deploy_infra`
 
 # Future Work
-Implement postgres resolver for GraphQL
-Connect front end to use GraphQL for Feed CRUD
+Use terraform to deploy an EKS cluster
+Convert the CDK lambda to terraform
+Cleanup the front end (lots of code left from template is not in use)
 
 Stub out api integrations for:
 Execute source setup
