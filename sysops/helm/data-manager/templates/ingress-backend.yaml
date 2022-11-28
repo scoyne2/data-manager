@@ -1,22 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: data-manager-ingress
+  name: data-manager-ingress-backend
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
-  - host:  {{ .Values.ingress.host }}
+  - host: {{ .Values.ingressbackend.host }}
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: data-manager-frontend
-            port:
-              number: 3000
       - path: /api(/|$)(.*)
         pathType: Prefix
         backend:
@@ -24,7 +17,7 @@ spec:
             name: data-manager-api
             port:
               number: 8080
-      - path: /pgadmin4(/|$)(.*)
+      - path: /pgadmin(/|$)(.*)
         pathType: Prefix
         backend:
           service:

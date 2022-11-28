@@ -103,5 +103,8 @@ pgadmin4:
        SSLMode: "disable"
        MaintenanceDB: "postgres"
 
-ingress:
+ingressfrontend:
+  host: localhost
+
+ingressbackend:
   host: localhost
