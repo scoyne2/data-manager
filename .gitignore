@@ -112,3 +112,10 @@ database/admin/
 
 *cdk.out
 cdk/lambda/vendor
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate.backup
+app.zip
+app

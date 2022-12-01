@@ -20,29 +20,3 @@ Use dummy credentials username: admin@admin.com password: root
 
 # Deploy infrastructure
 Run `make deploy_infra`
-
-# Future Work
-Use terraform to deploy an EKS cluster
-Convert the CDK lambda to terraform
-Cleanup the front end (lots of code left from template is not in use)
-
-Add codecov
-Add tests for the go api
-Add docs on the go api
-Add tests for the go lambda
-Add docs on the go lambdapi
-Add docs on the frontend
-Add tests on the frontend
-
-
-Stub out api integrations for:
-Execute source setup
-Execute destination setup
-File received
-Read file status
-Read logs
-Sla check
-
-Implement features for:
-Data preview
-Data quality
