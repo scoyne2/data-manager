@@ -28,7 +28,7 @@ resource "random_id" "unique_suffix" {
   byte_length = 2
 }
 
-resource "aws_lambda_function" "lambda_func" {
+resource "aws_lambda_function" "data_manager_filter_lambda_func" {
   filename         = data.archive_file.zip.output_path
   function_name    = local.app_id
   handler          = "app"
@@ -55,4 +55,32 @@ resource "aws_iam_role" "iam_for_lambda" {
   ]
 }
 EOF
+}
+
+resource "aws_s3_bucket" "data_manager_trigger_s3" {
+  bucket = "data-manager-trigger"
+}
+
+resource "aws_s3_bucket_acl" "data_manager_trigger_acl" {
+  bucket = aws_s3_bucket.data_manager_trigger_s3.id
+  acl    = "private"
+}
+
+resource "aws_lambda_permission" "allow_bucket" {
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.data_manager_filter_lambda_func.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.data_manager_trigger_s3.arn
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.data_manager_trigger_s3.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.data_manager_filter_lambda_func.arn
+    events              = ["s3:ObjectCreated:*"]
+  }
+
+  depends_on = [aws_lambda_permission.allow_bucket]
 }
