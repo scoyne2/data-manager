@@ -2,11 +2,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: data-manager-ingress-frontend
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    ingressclass.kubernetes.io/is-default-class: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: alb
   rules:
-  - host: {{ .Values.ingressfrontend.host }}
-    http:
+  - http:
       paths:
       - path: /
         pathType: Prefix

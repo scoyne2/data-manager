@@ -10,7 +10,7 @@
 
 The following explain the support command in this project in Make file
 
-### How to build
+### How to build the Go Lambda
 
 Run the following command to generate go binary
 

@@ -5,8 +5,8 @@ dependencies:
 - name: pgadmin4
   repository: https://helm.runix.net
   version: 1.13.6
-- name: nginx-ingress-controller
-  repository: https://charts.bitnami.com/bitnami
-  version: 9.3.22
-digest: sha256:47e6cc3b678121c42192b168854b2c83889b8b77b4b5714bb56d06e8d737ca2f
-generated: "2022-11-27T14:09:22.182168-08:00"
+- name: aws-load-balancer-controller
+  repository: https://aws.github.io/eks-charts
+  version: 1.4.6
+digest: sha256:e0514b511b26deb34bfdd97066f12335adb03eb8c1a5a1b3404fa8a0756168ac
+generated: "2022-11-30T18:59:31.505237-08:00"

@@ -1,9 +1,10 @@
 apiVersion: networking.k8s.io/v1
-kind: Ingress
+kind: LoadBalancer
 metadata:
   name: data-manager-ingress-api
+
 spec:
-  ingressClassName: nginx
+  ingressClassName: alb
   rules:
   - host: {{ .Values.ingressapi.host }}
     http:
