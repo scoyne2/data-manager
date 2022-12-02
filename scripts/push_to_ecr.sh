@@ -4,7 +4,7 @@ set -a
 source .env
 set +a
 
-docker build -t data-manager-api data-manager-api/. --platform linux/amd64
+docker build -t data-manager-api api/. --platform linux/amd64
 docker tag data-manager-api:latest $AWS_ACCOUNT.dkr.ecr.us-west-2.amazonaws.com/data-manager-api:latest
 
 docker build -t data-manager-frontend frontend/. --platform linux/amd64
