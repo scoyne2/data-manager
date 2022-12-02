@@ -4,9 +4,9 @@
 
 aws-load-balancer-controller:
   clusterName: data-manager-eks
-  # serviceAccount:
-  #   create: false
-  #   name: aws-load-balancer-controller
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller
 
 api:
   serviceName: api

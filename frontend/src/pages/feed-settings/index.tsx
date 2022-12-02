@@ -1,5 +1,5 @@
 import Grid from "@mui/material/Grid";
-import FormNewFeed from "src/views/form-layouts/FormNewFeed";
+import FormNewFeed from "src/views/feed-settings/FormNewFeed";
 
 const FormLayouts = () => {
   return (

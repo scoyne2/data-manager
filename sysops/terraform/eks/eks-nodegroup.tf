@@ -61,7 +61,7 @@ resource "aws_security_group_rule" "data-manager-eks-node-ingress-self" {
   from_port                = 0
   protocol                 = "-1"
   security_group_id        = aws_security_group.data-manager-eks-nodegroup.id
-  source_security_group_id = aws_security_group.data-manager-eks-cluster-sg.id
+  source_security_group_id = aws_security_group.data_manager_eks_cluster_sg.id
   to_port                  = 65535
   type                     = "ingress"
 }
@@ -71,23 +71,23 @@ resource "aws_security_group_rule" "data-manager-eks-node-ingress-cluster" {
   from_port                = 1025
   protocol                 = "tcp"
   security_group_id        = aws_security_group.data-manager-eks-nodegroup.id
-  source_security_group_id = aws_security_group.data-manager-eks-cluster-sg.id
+  source_security_group_id = aws_security_group.data_manager_eks_cluster_sg.id
   to_port                  = 65535
   type                     = "ingress"
 }
 
-resource "aws_security_group_rule" "data-manager-eks-cluster-ingress-node-https" {
+resource "aws_security_group_rule" "data_manager_eks_cluster_ingress_node_https" {
   description              = "Allow pods to communicate with the cluster API Server"
   from_port                = 443
   protocol                 = "tcp"
   security_group_id        = aws_security_group.data-manager-eks-nodegroup.id
-  source_security_group_id = aws_security_group.data-manager-eks-cluster-sg.id
+  source_security_group_id = aws_security_group.data_manager_eks_cluster_sg.id
   to_port                  = 443
   type                     = "ingress"
 }
 
 resource "aws_eks_node_group" "data-manager-eks-nodegroup" {
-  cluster_name    = aws_eks_cluster.data-manager-eks-cluster.name
+  cluster_name    = aws_eks_cluster.data_manager_eks_cluster.name
   node_group_name = "data-manager-eks"
   node_role_arn   = aws_iam_role.data-manager-eks-nodegroup-iam.arn
   subnet_ids      = aws_subnet.data-manager-eks-subnet[*].id
