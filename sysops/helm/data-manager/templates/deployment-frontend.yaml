@@ -20,6 +20,7 @@ spec:
       labels:
         {{- include "data-manager.selectorLabels" . | nindent 8 }}
     spec:
+      serviceAccountName: aws-load-balancer-controller
       containers:
         - name: frontend
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"

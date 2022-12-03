@@ -110,7 +110,9 @@ dist
 # Terraform
 .terraform/
 .terraform.lock.hcl
+.terraform.tfstate.lock.info
 terraform.tfstate.backup
+terraform.tfstate
 app.zip
 app
 

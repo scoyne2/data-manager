@@ -100,8 +100,14 @@ resource "aws_iam_role" "aws_node" {
   depends_on = [aws_iam_openid_connect_provider.cluster_aws_iam_openid_connect_provider]
 }
 
-resource "aws_iam_role_policy_attachment" "aws_node" {
+resource "aws_iam_role_policy_attachment" "aws_node_EKS" {
   role       = aws_iam_role.aws_node.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  depends_on = [aws_iam_role.aws_node]
+}
+
+resource "aws_iam_role_policy_attachment" "aws_node_ELB" {
+  role       = aws_iam_role.aws_node.name
+  policy_arn = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
   depends_on = [aws_iam_role.aws_node]
 }
