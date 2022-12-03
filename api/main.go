@@ -68,7 +68,7 @@ var sandboxHTML = []byte(`
    target: "#sandbox",
    // Pass through your server href if you are embedding on an endpoint.
    // Otherwise, you can pass whatever endpoint you want Sandbox to start up with here.
-   initialEndpoint: "http://postgres/graphql",
+   initialEndpoint: "http://localhost/graphql",
  });
  // advanced options: https://www.apollographql.com/docs/studio/explorer/sandbox#embedding-sandbox
 </script>
