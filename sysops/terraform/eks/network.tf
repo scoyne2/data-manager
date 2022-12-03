@@ -27,7 +27,7 @@ resource "aws_subnet" "data-manager-eks-subnet" {
   tags = {
     "Name"                                      = "data-manager-eks-node"
     "kubernetes.io/cluster/${var.cluster-name}" = "shared"
-    "kubernetes.io/role/elb	" = "1"
+    "kubernetes.io/role/elb" = "1"
   }
 }
 

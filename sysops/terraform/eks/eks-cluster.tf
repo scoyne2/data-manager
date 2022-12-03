@@ -67,7 +67,7 @@ data "tls_certificate" "cluster_tls_certificate" {
 
 resource "aws_iam_openid_connect_provider" "cluster_aws_iam_openid_connect_provider" {
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.cluster_tls_certificate.certificates.[*].sha1_fingerprint]
+  thumbprint_list = [data.tls_certificate.cluster_tls_certificate.certificates.0.sha1_fingerprint]
   url             = data.tls_certificate.cluster_tls_certificate.url
 
 }
@@ -80,7 +80,7 @@ data "aws_iam_policy_document" "oidc_role_policy" {
     condition {
       test     = "StringEquals"
       variable = "${replace(aws_iam_openid_connect_provider.cluster_aws_iam_openid_connect_provider.url, "https://", "")}:sub"
-      values   = ["system:serviceaccount:kube-system:aws-node"]
+      values   = ["system:serviceaccount:default:aws-load-balancer-controller"]
     }
 
     principals {
@@ -95,7 +95,7 @@ resource "aws_iam_role" "aws_node" {
   assume_role_policy = data.aws_iam_policy_document.oidc_role_policy.json
   tags = {
     "ServiceAccountName"      = "aws-node"
-    "ServiceAccountNameSpace" = "kube-system"
+    "ServiceAccountNameSpace" = "default"
   }
   depends_on = [aws_iam_openid_connect_provider.cluster_aws_iam_openid_connect_provider]
 }
@@ -105,38 +105,3 @@ resource "aws_iam_role_policy_attachment" "aws_node" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   depends_on = [aws_iam_role.aws_node]
 }
-
-locals {
-  kubeconfig = <<-KUBECONFIG
-    ---
-    apiVersion: v1
-    clusters:
-    - cluster:
-        server: ${aws_eks_cluster.data_manager_eks_cluster.endpoint}
-        certificate-authority-data: ${aws_eks_cluster.data_manager_eks_cluster.certificate_authority.0.data}
-      name: eks-test
-    contexts:
-    - context:
-        cluster: eks-test
-        user: aws
-      name: eks-test
-    current-context: eks-test
-    kind: Config
-    preferences: {}
-    users:
-    - name: aws
-      user:
-        exec:
-          apiVersion: client.authentication.k8s.io/v1beta1
-          command: aws-iam-authenticator
-          args:
-            - "token"
-            - "-i"
-            - "${var.cluster-name}"
-  KUBECONFIG
-}
-
-output "kubeconfig" {
-  value = "${local.kubeconfig}"
-}
-

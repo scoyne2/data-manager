@@ -1,6 +1,6 @@
 apiVersion: v2
 name: data-manager
-description: A tool for ingesting flat files
+description: A tool for configuring and monitoring flat file ingestion into a data lake
 type: application
 version: 1.0.0
 appVersion: "1.0.0"

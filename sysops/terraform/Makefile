@@ -1,5 +1,5 @@
 build_lambda:
-	cd data-manager-file-notifications && GOARCH=amd64 GOOS=linux  go build -v -ldflags '-s -w' -a -tags netgo -installsuffix netgo -o ../data-manager-file-notifications/build/bin/app .
+	cd lambda && GOARCH=amd64 GOOS=linux  go build -v -ldflags '-s -w' -a -tags netgo -installsuffix netgo -o ../build/bin/app .
 
 init:
 	terraform init
