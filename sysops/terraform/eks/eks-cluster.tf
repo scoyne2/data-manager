@@ -106,8 +106,8 @@ resource "aws_iam_role_policy_attachment" "aws_node_EKS" {
   depends_on = [aws_iam_role.aws_node]
 }
 
-resource "aws_iam_role_policy_attachment" "aws_node_ELB" {
+resource "aws_iam_role_policy_attachment" "aws_node_LB" {
   role       = aws_iam_role.aws_node.name
-  policy_arn = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
-  depends_on = [aws_iam_role.aws_node]
+  policy_arn = aws_iam_policy.load_balancer_controller_iam_policy.arn
+  depends_on = [aws_iam_role.aws_node, aws_iam_policy.load_balancer_controller_iam_policy]
 }

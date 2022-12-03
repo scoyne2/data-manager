@@ -4,15 +4,28 @@ resource "aws_iam_policy" "load_balancer_controller_iam_policy" {
 
   policy = jsonencode({
     "Version": "2012-10-17",
-    "Statement": [{
+    "Statement": [
+        {
             "Effect": "Allow",
             "Action": [
-                "iam:CreateServiceLinkedRole",
+                "iam:CreateServiceLinkedRole"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "iam:AWSServiceName": "elasticloadbalancing.amazonaws.com"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
                 "ec2:DescribeAccountAttributes",
                 "ec2:DescribeAddresses",
                 "ec2:DescribeAvailabilityZones",
                 "ec2:DescribeInternetGateways",
                 "ec2:DescribeVpcs",
+                "ec2:DescribeVpcPeeringConnections",
                 "ec2:DescribeSubnets",
                 "ec2:DescribeSecurityGroups",
                 "ec2:DescribeInstances",
