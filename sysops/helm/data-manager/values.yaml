@@ -19,7 +19,7 @@ api:
     postgres_user: admin
     postgres_password: ""
     postgres_port: "5432"
-    postgres_host: data-manager-postgresql
+    postgres_host: postgres
     postgres_db_name: postgres
   image:
     repository: ""
