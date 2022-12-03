@@ -50,6 +50,7 @@ frontend:
     maxReplicas: 5
     targetCPUUtilizationPercentage: 80
 
+# https://github.com/bitnami/charts/blob/main/bitnami/postgresql/values.yaml
 postgresql:
   image:
     debug: true
@@ -61,6 +62,11 @@ postgresql:
     database: "postgres"
 
   primary:
+    volumePermissions:
+      enabled: true
+    persistence:
+      enabled: false # TODO set to true, use EBS
+      existingClaim: postgres-pvc
     initdb:
       user: "admin"
       password: ""
@@ -87,7 +93,10 @@ postgresql:
           (2, '10/15/2017', 0, 500, 'failed'),
           (2, '03/24/2018', 13076, 0, 'success');
 
+# https://github.com/rowanruseler/helm-charts/blob/master/charts/pgadmin4/values.yaml
 pgadmin4:
+  persistentVolume:
+    enabled: false
   replicaCount: 1
   service:
     type: ClusterIP
@@ -95,10 +104,13 @@ pgadmin4:
     targetPort: 80
   ingress:
     enabled: true
-    ingressClassName: "nginx"
+    ingressClassName: "alb"
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      ingressclass.kubernetes.io/is-default-class: "true"
     hosts:
-      - host: "kubernetes.docker.admin"
-        paths:
+      - paths:
           - path: /
             pathType: Prefix
   env:
