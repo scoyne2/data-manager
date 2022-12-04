@@ -1,9 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: data-manager-{{ .Values.frontend.serviceName }}
+  name: data-manager-frontend
   labels:
     {{- include "data-manager.labels" . | nindent 4 }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}
 spec:
   type: {{ .Values.frontend.service.type }}
   ports:

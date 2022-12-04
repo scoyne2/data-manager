@@ -43,7 +43,8 @@ type ExtendedAppProps = AppProps & {
 
 const clientSideEmotionCache = createEmotionCache();
 const client = new ApolloClient({
-  uri: "http://k8s-default-datamana-5daf7a349c-928193015.us-west-2.elb.amazonaws.com/graphql",
+  // TODO pass this in a build time
+  uri: "http://api.datamanagertool.com/graphql",
   cache: new InMemoryCache(),
 });
 

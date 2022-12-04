@@ -2,6 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+domainName: ""
+
+# https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
 aws-load-balancer-controller:
   clusterName: data-manager-eks
   serviceAccount:
@@ -23,7 +26,7 @@ api:
     postgres_db_name: postgres
   image:
     repository: ""
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     tag: "latest"
   autoscaling:
     enabled: false
@@ -39,10 +42,10 @@ frontend:
     targetPort: 3000
   replicaCount: 1
   env:
-    graphql_url: "http://localhost:8080/graphql"
+    graphqlUrl: http://api.datamanagertool.com/graphql" # Does not yet work / might need to be passed at build time
   image:
     repository: ""
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     tag: "latest"
   autoscaling:
     enabled: false
@@ -109,8 +112,10 @@ pgadmin4:
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
       ingressclass.kubernetes.io/is-default-class: "true"
+      external-dns.alpha.kubernetes.io/hostname: "pgadmin4.datamanagertool.com"
     hosts:
-      - paths:
+      - host: "pgadmin4.datamanagertool.com"
+        paths:
           - path: /
             pathType: Prefix
   env:
@@ -127,12 +132,3 @@ pgadmin4:
        Host: "data-manager-postgresql"
        SSLMode: "disable"
        MaintenanceDB: "postgres"
-
-ingressfrontend:
-  host: ""
-
-ingressapi:
-  host: ""
-
-ingresspgadmin:
-  host: ""

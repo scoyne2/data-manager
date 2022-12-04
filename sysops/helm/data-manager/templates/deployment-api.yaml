@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: data-manager-{{ .Values.api.serviceName }}
+  name: data-manager-api
   labels:
     {{- include "data-manager.labels" . | nindent 4 }}
 spec:
@@ -26,6 +26,8 @@ spec:
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.api.image.pullPolicy }}
           env:
+            - name: "API_HOST"
+              value: api.{{ .Values.domainName }}
             - name: "POSTGRES_USER"
               value:  {{ .Values.api.env.postgres_user }}
             - name: "POSTGRES_PASSWORD"
@@ -33,7 +35,7 @@ spec:
             - name: "POSTGRES_PORT"
               value: "{{ .Values.api.env.postgres_port }}"
             - name: "POSTGRES_HOST"
-              value: {{ .Values.api.env.postgres_host }}
+              value: "postgres"
             - name: "POSTGRES_DB_NAME"
               value: {{ .Values.api.env.postgres_db_name }}
           ports:

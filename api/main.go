@@ -3,12 +3,15 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/scoyne2/data-manager-api/feed"
 	"github.com/scoyne2/data-manager-api/schemas"
 )
+
+var API_HOST string = os.Getenv("API_HOST")
 
 func main() {
 
@@ -26,7 +29,7 @@ func main() {
 
 func CorsMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // allow cross domain AJAX requests
+        // TODO limit to correctaddress
         w.Header().Set("Access-Control-Allow-Origin", "*")
         w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
         next.ServeHTTP(w,r)
@@ -48,17 +51,18 @@ func StartServer(schema *graphql.Schema) {
 	http.HandleFunc("/health_check", check)
 	http.Handle("/graphql", CorsMiddleware(h))
 
-	// Access via http://localhost/sandbox
+	// Access via http://$API_HOST/sandbox
 	http.Handle("/sandbox", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write(sandboxHTML)
 	}))
 
 	fmt.Println("Server starting on port 8080...")
+	fmt.Printf("Access Sandbox at http://%s/sandbox", API_HOST)
 	http.ListenAndServe(":8080", nil)
 }
 
-var sandboxHTML = []byte(`
-<!DOCTYPE html>
+
+var sandboxHtmlString = fmt.Sprintf(`<!DOCTYPE html>
 <html lang="en">
 <body style="margin: 0; overflow-x: hidden; overflow-y: hidden">
 <div id="sandbox" style="height:100vh; width:100vw;"></div>
@@ -68,9 +72,12 @@ var sandboxHTML = []byte(`
    target: "#sandbox",
    // Pass through your server href if you are embedding on an endpoint.
    // Otherwise, you can pass whatever endpoint you want Sandbox to start up with here.
-   initialEndpoint: "http://localhost/graphql",
+   initialEndpoint: "http://%s/graphql",
  });
  // advanced options: https://www.apollographql.com/docs/studio/explorer/sandbox#embedding-sandbox
 </script>
 </body>
-</html>`)
+</html>`, API_HOST)
+
+var sandboxHTML = []byte(sandboxHtmlString)
+

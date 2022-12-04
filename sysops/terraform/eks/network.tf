@@ -54,3 +54,9 @@ resource "aws_route_table_association" "data-manager-eks-rta" {
   subnet_id      = aws_subnet.data-manager-eks-subnet[count.index].id
   route_table_id = aws_route_table.data-manager-eks-rt.id
 }
+
+
+resource "aws_route53_zone" "main" {
+  name = "datamanagertool.com"
+  force_destroy = true
+}
