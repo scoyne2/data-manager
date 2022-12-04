@@ -28,6 +28,8 @@ spec:
           env:
             - name: "API_HOST"
               value: api.{{ .Values.domainName }}
+            - name: "FRONT_END_URL"
+              value: app.{{ .Values.domainName }}
             - name: "POSTGRES_USER"
               value:  {{ .Values.api.env.postgres_user }}
             - name: "POSTGRES_PASSWORD"
@@ -35,7 +37,7 @@ spec:
             - name: "POSTGRES_PORT"
               value: "{{ .Values.api.env.postgres_port }}"
             - name: "POSTGRES_HOST"
-              value: "postgres"
+              value: "{{ .Values.api.env.postgres_host }}"
             - name: "POSTGRES_DB_NAME"
               value: {{ .Values.api.env.postgres_db_name }}
           ports:

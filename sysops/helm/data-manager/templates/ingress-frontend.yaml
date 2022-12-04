@@ -6,12 +6,11 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     ingressclass.kubernetes.io/is-default-class: "true"
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}
-    # kubernetes.io/ingress.class: "alb"
+    external-dns.alpha.kubernetes.io/hostname: app.{{ .Values.domainName }}
 spec:
   ingressClassName: "alb"
   rules:
-    - host: {{ .Values.domainName }}
+    - host: app.{{ .Values.domainName }}
       http:
         paths:
         - path: /

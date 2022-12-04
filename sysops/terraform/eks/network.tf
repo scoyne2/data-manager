@@ -37,6 +37,7 @@ resource "aws_internet_gateway" "data-manager-eks-gw" {
   tags = {
     "Name" = var.cluster-name
   }
+  depends_on = [aws_vpc.data-manager-eks-vpc]
 }
 
 resource "aws_route_table" "data-manager-eks-rt" {
@@ -46,6 +47,7 @@ resource "aws_route_table" "data-manager-eks-rt" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.data-manager-eks-gw.id
   }
+  depends_on = [aws_internet_gateway.data-manager-eks-gw]
 }
 
 resource "aws_route_table_association" "data-manager-eks-rta" {
@@ -53,10 +55,4 @@ resource "aws_route_table_association" "data-manager-eks-rta" {
 
   subnet_id      = aws_subnet.data-manager-eks-subnet[count.index].id
   route_table_id = aws_route_table.data-manager-eks-rt.id
-}
-
-
-resource "aws_route53_zone" "main" {
-  name = "datamanagertool.com"
-  force_destroy = true
 }

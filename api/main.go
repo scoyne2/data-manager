@@ -12,6 +12,8 @@ import (
 )
 
 var API_HOST string = os.Getenv("API_HOST")
+var FRONT_END_URL string = os.Getenv("FRONT_END_URL")
+
 
 func main() {
 
@@ -29,8 +31,8 @@ func main() {
 
 func CorsMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // TODO limit to correctaddress
-        w.Header().Set("Access-Control-Allow-Origin", "*")
+		frontEnd := fmt.Sprintf("http://%s.com", FRONT_END_URL)
+        w.Header().Set("Access-Control-Allow-Origin", frontEnd)
         w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
         next.ServeHTTP(w,r)
     })
@@ -57,7 +59,7 @@ func StartServer(schema *graphql.Schema) {
 	}))
 
 	fmt.Println("Server starting on port 8080...")
-	fmt.Printf("Access Sandbox at http://%s/sandbox", API_HOST)
+	fmt.Println(API_HOST)
 	http.ListenAndServe(":8080", nil)
 }
 
