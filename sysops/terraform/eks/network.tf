@@ -56,3 +56,58 @@ resource "aws_route_table_association" "data-manager-eks-rta" {
   subnet_id      = aws_subnet.data-manager-eks-subnet[count.index].id
   route_table_id = aws_route_table.data-manager-eks-rt.id
 }
+
+# This data source looks up the public DNS zone
+data "aws_route53_zone" "public" {
+  name         = "datamanagertool.com"
+  private_zone = false
+}
+
+
+# This creates an SSL certificate
+resource "aws_acm_certificate" "cert" {
+  domain_name       = "datamanagertool.com"
+  validation_method = "DNS"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "cert_validation" {
+  allow_overwrite = true
+  name            = tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_name
+  records         = [ tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_value ]
+  type            = tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_type
+  zone_id         = data.aws_route53_zone.public.id
+  ttl             = 60
+}
+
+# This tells terraform to cause the route53 validation to happen
+resource "aws_acm_certificate_validation" "cert_validation" {
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [ aws_route53_record.cert_validation.fqdn ]
+}
+
+# This creates an SSL certificate
+resource "aws_acm_certificate" "api_cert" {
+  domain_name       = "api.datamanagertool.com"
+  validation_method = "DNS"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "api_cert_validation" {
+  allow_overwrite = true
+  name            = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_name
+  records         = [ tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_value ]
+  type            = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_type
+  zone_id         = data.aws_route53_zone.public.id
+  ttl             = 60
+}
+
+# This tells terraform to cause the route53 validation to happen
+resource "aws_acm_certificate_validation" "api_cert_validation" {
+  certificate_arn         = aws_acm_certificate.api_cert.arn
+  validation_record_fqdns = [ aws_route53_record.api_cert_validation.fqdn ]
+}

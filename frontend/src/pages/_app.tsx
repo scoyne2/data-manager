@@ -33,7 +33,7 @@ import "react-perfect-scrollbar/dist/css/styles.css";
 // ** Global css styles
 import "../../styles/globals.css";
 
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink } from "@apollo/client";
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -42,9 +42,19 @@ type ExtendedAppProps = AppProps & {
 };
 
 const clientSideEmotionCache = createEmotionCache();
+
+// TODO pass this in at build time
+// const DOMAIN_NAME = process.env.DOMAIN_NAME;
+// console.log(DOMAIN_NAME);
+const uri = "http://api.datamanagertool.com/graphql"
+
 const client = new ApolloClient({
-  // TODO pass this in a build time
-  uri: "http://api.datamanagertool.com/graphql",
+  link: new HttpLink({
+      uri: uri,
+      // fetchOptions: {
+      //   mode: 'no-cors'
+      // }
+  }),
   cache: new InMemoryCache(),
 });
 

@@ -31,9 +31,12 @@ func main() {
 
 func CorsMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		frontEnd := fmt.Sprintf("http://%s.com", FRONT_END_URL)
-        w.Header().Set("Access-Control-Allow-Origin", frontEnd)
-        w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+		//frontEnd := fmt.Sprintf("http://%s", FRONT_END_URL)
+        w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+        w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Authorization")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
         next.ServeHTTP(w,r)
     })
 }
@@ -50,6 +53,7 @@ func StartServer(schema *graphql.Schema) {
 		GraphiQL: false,
 	})
 
+	http.HandleFunc("/", check)
 	http.HandleFunc("/health_check", check)
 	http.Handle("/graphql", CorsMiddleware(h))
 
