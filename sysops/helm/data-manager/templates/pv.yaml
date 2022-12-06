@@ -1,14 +1,12 @@
 apiVersion: v1
-kind: PersistentVolume # Create a PV
+kind: PersistentVolume
 metadata:
-  name: postgresql-pv # Sets PV's name
-  labels:
-    type: local # Sets PV's type to local
+  name: postgres-pv
 spec:
-  storageClassName: manual
+  storageClassName: gp2
   capacity:
-    storage: 2Gi # Sets PV Volume
+    storage: 10Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/volume" # Sets the volume's path
+    path: "/bitnami/postgresql"
