@@ -7,28 +7,12 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
     ingressclass.kubernetes.io/is-default-class: "true"
     external-dns.alpha.kubernetes.io/hostname: api.{{ .Values.domainName }}
-    # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-west-2:852056369035:certificate/2d31bb38-6956-4b43-ab61-555c5d917337"
-    # alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-west-2:852056369035:certificate/2d31bb38-6956-4b43-ab61-555c5d917337"
-    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    # alb.ingress.kubernetes.io/ssl-redirect: '443'
-    # alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
-    # alb.ingress.kubernetes.io/group: data-manager-api
-    # alb.ingress.kubernetes.io/backend-protocol: HTTP
 spec:
   ingressClassName: "alb"
   rules:
     - host: api.{{ .Values.domainName }}
       http:
         paths:
-        # - path: /
-        #   pathType: Prefix
-        #   backend:
-        #     service:
-        #       name: ssl-redirect
-        #       port:
-        #         name: use-annotation
         - path: /
           pathType: Prefix
           backend:
