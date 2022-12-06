@@ -47,7 +47,7 @@ const clientSideEmotionCache = createEmotionCache();
 const DOMAIN_NAME = process.env.DOMAIN_NAME;
 console.log(DOMAIN_NAME);
 const uri = "http://api.datamanagertool.com/graphql"
-// const uri = "http://api."+DOMAIN_NAME+".com/graphql"
+//const uri = "http://api." + DOMAIN_NAME + ".com/graphql"
 
 const client = new ApolloClient({
   link: new HttpLink({
