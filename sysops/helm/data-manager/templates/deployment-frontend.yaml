@@ -26,8 +26,8 @@ spec:
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           env:
-            - name: "GRAPHQL_URL"
-              value: {{ .Values.frontend.env.graphqlUrl }}
+            - name: "DOMAIN_NAME"
+              value: {{ .Values.domainName }}
           ports:
             - name: http
               containerPort: {{ .Values.frontend.service.port }}

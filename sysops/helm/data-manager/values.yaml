@@ -45,8 +45,6 @@ frontend:
     port: 3000
     targetPort: 3000
   replicaCount: 1
-  env:
-    graphqlUrl: http://api.datamanagertool.com/graphql" # Does not yet work / might need to be passed at build time
   image:
     repository: ""
     pullPolicy: Always
@@ -59,6 +57,9 @@ frontend:
 
 # https://github.com/bitnami/charts/blob/main/bitnami/postgresql/values.yaml
 postgresql:
+  volumePermissions:
+    enabled: true
+
   image:
     debug: true
 
@@ -69,11 +70,9 @@ postgresql:
     database: "postgres"
 
   primary:
-    volumePermissions:
-      enabled: true
     persistence:
-      enabled: false # TODO set to true, use EBS
-      existingClaim: postgres-pvc
+      enabled: true # TODO set to true, use EBS
+      #existingClaim: postgres-pvc
     initdb:
       user: "admin"
       password: ""
