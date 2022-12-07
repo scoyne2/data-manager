@@ -26,7 +26,7 @@ spec:
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           env:
-            - name: "DOMAIN_NAME"
+            - name: "NEXT_PUBLIC_API_DOMAIN"
               value: {{ .Values.domainName }}
           ports:
             - name: http

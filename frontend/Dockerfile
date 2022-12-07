@@ -6,8 +6,8 @@ COPY --chown=node:node . .
 
 USER node
 
-ARG DOMAIN_NAME
-ENV DOMAIN_NAME=$DOMAIN_NAME
+ARG NEXT_PUBLIC_DOMAIN_NAME
+ENV NEXT_PUBLIC_DOMAIN_NAME=$NEXT_PUBLIC_DOMAIN_NAME
 
 RUN yarn install --frozen-lockfile
 RUN yarn build

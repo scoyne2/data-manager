@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "data-manager.labels" . | nindent 4 }}
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}
+    external-dns.alpha.kubernetes.io/hostname: app.{{ .Values.domainName }}
 spec:
   type: {{ .Values.frontend.service.type }}
   ports:

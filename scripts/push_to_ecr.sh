@@ -13,7 +13,7 @@ aws ecr get-login-password --region us-west-2 --profile $AWS_PROFILE | docker lo
 docker build -t data-manager-api api/. --platform linux/amd64
 docker tag data-manager-api:latest $AWS_ACCOUNT.dkr.ecr.us-west-2.amazonaws.com/data-manager-api:latest
 
-docker build -t data-manager-frontend frontend/. --platform linux/amd64 --build-arg DOMAIN_NAME=${DOMAIN_NAME}
+docker build -t data-manager-frontend frontend/. --platform linux/amd64 --build-arg NEXT_PUBLIC_DOMAIN_NAME=${DOMAIN_NAME}
 docker tag data-manager-frontend:latest $AWS_ACCOUNT.dkr.ecr.us-west-2.amazonaws.com/data-manager-frontend:latest
 
 docker push $AWS_ACCOUNT.dkr.ecr.us-west-2.amazonaws.com/data-manager-api:latest
