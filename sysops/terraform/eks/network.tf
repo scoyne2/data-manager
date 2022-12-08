@@ -1,7 +1,11 @@
+locals {
+  envs = { for tuple in regexall("(.*)=(.*)", file("../../.env")) : tuple[0] => sensitive(tuple[1]) }
+}
+
 provider "aws" {
   shared_config_files      = ["~/.aws/config"]
   shared_credentials_files = ["~/.aws/credentials"]
-  profile                  = "personal"
+  profile                  = local.envs["AWS_PROFILE"]
 }
 
 data "aws_availability_zones" "available" {
@@ -59,19 +63,19 @@ resource "aws_route_table_association" "data-manager-eks-rta" {
 
 # This data source looks up the public DNS zone
 data "aws_route53_zone" "datamanager_route53" {
-  name         = "datamanagertool.com"
+  name         = local.envs["DOMAIN_NAME"]
   private_zone = false
 }
 
 # This creates an SSL certificate
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "datamanagertool.com"
+  domain_name       = local.envs["DOMAIN_NAME"]
   validation_method = "DNS"
   lifecycle {
     create_before_destroy = true
   }
   subject_alternative_names = [
-    "*.datamanagertool.com"
+    format("*.%s", local.envs["DOMAIN_NAME"])
   ]
 }
 
