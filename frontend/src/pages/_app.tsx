@@ -56,6 +56,8 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+
+
 // ** Pace Loader
 if (themeConfig.routingLoader) {
   Router.events.on("routeChangeStart", () => {

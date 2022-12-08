@@ -42,14 +42,13 @@ headerValues.forEach((value) => {
 });
 
 const DashboardTable = () => {
-  const { loading, error, data } =
-    useQuery<FeedStatusesType>(GET_FEED_STATUSES);
+  const { loading, error, data } = useQuery<FeedStatusesType>(GET_FEED_STATUSES);
   const tableBody: JSX.Element[] = [];
   if (error) {
     console.log(error);
     tableBody.push(
       <TableRow>
-        <TableCell>Error! {error}</TableCell>
+        <TableCell>Error: {error.message}</TableCell>
       </TableRow>
     );
   }
@@ -61,6 +60,7 @@ const DashboardTable = () => {
       </TableRow>
     );
   }
+
 
   data?.feedstatuses.forEach((row: FeedStatusType) =>
     tableBody.push(
