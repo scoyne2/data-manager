@@ -1,6 +1,9 @@
 const path = require('path')
 
 module.exports = {
+  env: {
+    NEXT_PUBLIC_DOMAIN_NAME: process.env.NEXT_PUBLIC_DOMAIN_NAME
+  },
   trailingSlash: true,
   reactStrictMode: false,
   experimental: {

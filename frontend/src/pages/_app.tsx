@@ -43,11 +43,8 @@ type ExtendedAppProps = AppProps & {
 
 const clientSideEmotionCache = createEmotionCache();
 
-// TODO pass this in at build time
-// const DOMAIN_NAME = process.env.DOMAIN_NAME;
-// console.log(DOMAIN_NAME);
-const uri = "https://api.datamanagertool.com/graphql"
-//const uri = "http://api." + DOMAIN_NAME + ".com/graphql"
+let DOMAIN_NAME = process.env.NEXT_PUBLIC_DOMAIN_NAME;
+const uri = "http://api." + DOMAIN_NAME + ".com/graphql"
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -55,7 +52,6 @@ const client = new ApolloClient({
   }),
   cache: new InMemoryCache(),
 });
-
 
 
 // ** Pace Loader
