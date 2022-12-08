@@ -8,6 +8,8 @@ hostedZoneId: ""
 
 awsRegion: "us-west-2"
 
+certificateARN: "arn:aws:acm:us-west-2:852056369035:certificate/2dcbe880-48aa-4ed6-bd22-722945d7d801"
+
 # https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
 aws-load-balancer-controller:
   clusterName: data-manager-eks

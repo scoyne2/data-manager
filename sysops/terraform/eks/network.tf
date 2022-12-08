@@ -58,11 +58,10 @@ resource "aws_route_table_association" "data-manager-eks-rta" {
 }
 
 # This data source looks up the public DNS zone
-data "aws_route53_zone" "public" {
+data "aws_route53_zone" "datamanager_route53" {
   name         = "datamanagertool.com"
   private_zone = false
 }
-
 
 # This creates an SSL certificate
 resource "aws_acm_certificate" "cert" {
@@ -71,43 +70,33 @@ resource "aws_acm_certificate" "cert" {
   lifecycle {
     create_before_destroy = true
   }
+  subject_alternative_names = [
+    "*.datamanagertool.com"
+  ]
 }
 
+# Prepare to validate the domains
 resource "aws_route53_record" "cert_validation" {
-  allow_overwrite = true
-  name            = tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_name
-  records         = [ tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_value ]
-  type            = tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_type
-  zone_id         = data.aws_route53_zone.public.id
-  ttl             = 60
-}
-
-# This tells terraform to cause the route53 validation to happen
-resource "aws_acm_certificate_validation" "cert_validation" {
-  certificate_arn         = aws_acm_certificate.cert.arn
-  validation_record_fqdns = [ aws_route53_record.cert_validation.fqdn ]
-}
-
-# This creates an SSL certificate
-resource "aws_acm_certificate" "api_cert" {
-  domain_name       = "api.datamanagertool.com"
-  validation_method = "DNS"
-  lifecycle {
-    create_before_destroy = true
+  for_each = {
+    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+   # Skips the domain if it doesn't contain a wildcard
+    if length(regexall("\\*\\..+", dvo.domain_name)) > 0
   }
-}
 
-resource "aws_route53_record" "api_cert_validation" {
   allow_overwrite = true
-  name            = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_name
-  records         = [ tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_value ]
-  type            = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_type
-  zone_id         = data.aws_route53_zone.public.id
+  name            = each.value.name
+  records         = [each.value.record]
   ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.datamanager_route53.zone_id
 }
 
 # This tells terraform to cause the route53 validation to happen
-resource "aws_acm_certificate_validation" "api_cert_validation" {
-  certificate_arn         = aws_acm_certificate.api_cert.arn
-  validation_record_fqdns = [ aws_route53_record.api_cert_validation.fqdn ]
+resource "aws_acm_certificate_validation" "certificate_validation" {
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }

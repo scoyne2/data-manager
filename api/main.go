@@ -30,7 +30,7 @@ func main() {
 
 func CorsMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		frontEnd := fmt.Sprintf("http://%s", FRONT_END_URL)
+		frontEnd := fmt.Sprintf("https://%s", FRONT_END_URL)
 		w.Header().Set("Access-Control-Allow-Origin", frontEnd)
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
@@ -76,7 +76,7 @@ var sandboxHtmlString = fmt.Sprintf(`<!DOCTYPE html>
    target: "#sandbox",
    // Pass through your server href if you are embedding on an endpoint.
    // Otherwise, you can pass whatever endpoint you want Sandbox to start up with here.
-   initialEndpoint: "http://%s/graphql",
+   initialEndpoint: "https://%s/graphql",
  });
  // advanced options: https://www.apollographql.com/docs/studio/explorer/sandbox#embedding-sandbox
 </script>
