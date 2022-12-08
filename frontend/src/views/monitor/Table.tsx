@@ -61,7 +61,6 @@ const DashboardTable = () => {
     );
   }
 
-
   data?.feedstatuses.forEach((row: FeedStatusType) =>
     tableBody.push(
       <TableRow

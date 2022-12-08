@@ -8,7 +8,7 @@ Data manager is a platform that allows ingesting flat files into a datalake. It 
 Take the Hosted Zone Id and update ``HOSTED_ZONE_ID`` in your .env file.
 3. From ``sysops/terraform`` run command ``make init`` then build the lambda with ``make build_lambda`` then plan the creation of infra  ``make plan`` and finally ``make apply`` to build the infra. This will also output an ACM ARN to your ``.env`` file.
 4. From project root build and push ECR images by running ``bash scripts/push_to_ecr.sh``
-5. Update kubeconfig by running ``aws eks --region us-west-2 update-kubeconfig --name data-manager-eks --profile personal`` change your AWS profile name as needed.
+5. Update kubeconfig by running ``bash scripts/update_kubeconfig.sh``
 6. From project root deploy helm chart by running ``bash scripts/deploy_helm.sh``
 
 
