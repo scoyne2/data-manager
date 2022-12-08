@@ -19,3 +19,9 @@ module "eks" {
 module "lambda" {
   source = "./lambda"
 }
+
+output "aws_acm_certificate_arn" {
+  description = "ARN of ACM Certificate"
+  value = module.eks.aws_acm_certificate_arn
+  sensitive = false
+}

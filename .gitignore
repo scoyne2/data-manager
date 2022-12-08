@@ -119,3 +119,5 @@ app
 # Helm
 Chart.lock
 charts
+
+.env-e

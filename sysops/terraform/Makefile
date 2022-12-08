@@ -8,7 +8,7 @@ plan:
 	terraform plan
 
 apply:
-	terraform apply --auto-approve
+	cd ../../scripts && bash tf_apply_output.sh
 
 destroy:
 	terraform destroy --auto-approve
