@@ -6,7 +6,7 @@ domainName: ""
 
 hostedZoneId: ""
 
-awsRegion: "us-west-2"
+awsRegion: ""
 
 certificateARN: ""
 
@@ -25,7 +25,7 @@ api:
     targetPort: 8080
   replicaCount: 1
   env:
-    postgres_user: admin
+    postgres_user: ""
     postgres_password: ""
     postgres_port: "5432"
     postgres_host: data-manager-postgresql
@@ -117,9 +117,9 @@ pgadmin4:
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
       ingressclass.kubernetes.io/is-default-class: "true"
-      external-dns.alpha.kubernetes.io/hostname: "pgadmin4.datamanagertool.com"
+      external-dns.alpha.kubernetes.io/hostname: "pgadmin4.{{ tpl .Values.domainName . }}"
     hosts:
-      - host: "pgadmin4.datamanagertool.com"
+      - host: "pgadmin4.{{ tpl .Values.domainName . }}"
         paths:
           - path: /
             pathType: Prefix
@@ -133,7 +133,8 @@ pgadmin4:
        Name: "Data Manager Postgres Server"
        Group: "Servers"
        Port: 5432
-       Username: "admin"
+       Username: ""
        Host: "data-manager-postgresql"
        SSLMode: "disable"
        MaintenanceDB: "postgres"
+

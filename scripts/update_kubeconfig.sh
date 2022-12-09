@@ -4,4 +4,4 @@ set -a
 source .env
 set +a
 
-aws eks --region us-west-2 update-kubeconfig --name data-manager-eks --profile $AWS_PROFILE
+aws eks --region $AWS_REGION update-kubeconfig --name data-manager-eks --profile $AWS_PROFILE
