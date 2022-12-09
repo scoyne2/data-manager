@@ -1,5 +1,5 @@
 # Data Manager
-Data manager is a platform that allows ingesting flat files into a datalake. It requires use of AWS and uses the following technology: terraform, helm, go, nextjs, react, typescript.
+Data manager is a platform that allows ingestion of flat files into a raw layer of a datalake. It requires use of AWS and uses the following technology: `terraform`, `helm`, `go`, `nextjs`, `react`, `typescript`.
 <img width="1728" alt="Data Manager Demo" src="docs/images/demo.png">
 
 ## Getting Started
