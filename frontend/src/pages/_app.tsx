@@ -44,7 +44,7 @@ type ExtendedAppProps = AppProps & {
 const clientSideEmotionCache = createEmotionCache();
 
 const DOMAIN_NAME = process.env.NEXT_PUBLIC_DOMAIN_NAME;
-const uri = "http://api." + DOMAIN_NAME + "/graphql"
+const uri = "https://api." + DOMAIN_NAME + "/graphql"
 
 const client = new ApolloClient({
   link: new HttpLink({

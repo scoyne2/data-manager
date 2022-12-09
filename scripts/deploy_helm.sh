@@ -12,4 +12,5 @@ cd sysops/helm/data-manager && helm upgrade --install data-manager .  --set doma
     --set api.env.postgres_password=$POSTGRES_PASSWORD --set api.env.postgres_user=$POSTGRES_USER \
     --set pgadmin4.env.email=$PGADMIN_DEFAULT_EMAIL --set pgadmin4.env.password=$PGADMIN_DEFAULT_PASSWORD \
     --set certificateARN=$ACM_ARN --set awsRegion=$AWS_REGION  \
-    --setpgadmin4.serverDefinitions.servers.dataManagerServer.Username=$POSTGRES_USER
+    --set pgadmin4.serverDefinitions.servers.dataManagerServer.Username=$POSTGRES_USER \
+    --set pgadmin4.ingress.annotations."external-dns\.alpha\.kubernetes\.io\/hostname"=pgadmin4.$DOMAIN_NAME

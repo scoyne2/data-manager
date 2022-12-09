@@ -117,9 +117,9 @@ pgadmin4:
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
       ingressclass.kubernetes.io/is-default-class: "true"
-      external-dns.alpha.kubernetes.io/hostname: "pgadmin4.{{ tpl .Values.domainName . }}"
+      external-dns.alpha.kubernetes.io/hostname: ""
     hosts:
-      - host: "pgadmin4.{{ tpl .Values.domainName . }}"
+      - host: "pgadmin4.datamanagertool.com"
         paths:
           - path: /
             pathType: Prefix
