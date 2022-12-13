@@ -6,9 +6,10 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     ingressclass.kubernetes.io/is-default-class: "true"
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
-    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/healthcheck-path: /health_check
     alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
-    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "60"
+    alb.ingress.kubernetes.io/target-type: ip
     # External DNS
     external-dns.alpha.kubernetes.io/hostname: api.{{ .Values.domainName }}
     # Use SSL

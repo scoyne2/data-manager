@@ -20,7 +20,7 @@ aws-load-balancer-controller:
 api:
   serviceName: api
   service:
-    type: NodePort
+    type: ClusterIP
     port: 8080
     targetPort: 8080
   replicaCount: 1
@@ -43,7 +43,7 @@ api:
 frontend:
   serviceName: frontend
   service:
-    type: NodePort
+    type: ClusterIP
     port: 3000
     targetPort: 3000
   replicaCount: 1
@@ -118,6 +118,7 @@ pgadmin4:
       alb.ingress.kubernetes.io/target-type: ip
       ingressclass.kubernetes.io/is-default-class: "true"
       external-dns.alpha.kubernetes.io/hostname: ""
+      alb.ingress.kubernetes.io/success-codes: 200,201,308,302
     hosts:
       - host: "pgadmin4.datamanagertool.com"
         paths:

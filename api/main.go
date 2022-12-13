@@ -40,7 +40,7 @@ func CorsMiddleware(next http.Handler) http.Handler {
 }
 
 func check(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>Health check</h1>")
+	fmt.Fprintf(w, "<h1>API Health check</h1>")
 }
 
 // StartServer will trigger the server with a Playground
