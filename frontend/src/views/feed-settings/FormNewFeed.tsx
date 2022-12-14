@@ -1,4 +1,6 @@
 // ** MUI Imports
+import Alert from "@mui/material/Alert";
+import AlertColor from "@mui/material/Alert";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
@@ -37,7 +39,11 @@ const ADD_FEED = gql`
 `;
 
 
+
 const FormNewFeed = () => {
+  let message = "";
+  let severity = "" ;
+  const [showAlert, setShowAlert] = useState(true);
   const [formState, setFormState] = useState({
     vendor: '',
     feedName: '',
@@ -45,6 +51,7 @@ const FormNewFeed = () => {
   });
 
   const [addFeed, { data, error }] = useMutation(ADD_FEED, {
+    onError: () => {},
     variables: {
       vendor: formState.vendor,
       feedName: formState.feedName,
@@ -52,18 +59,24 @@ const FormNewFeed = () => {
     }
   });
 
-  let message = "";
   if (error) {
-    console.log(error);
-    message = "An Error Occured!"
+    message = `An Error Occured: ${error}`
+    severity = "error";
   }
 
   if (data) {
-    console.log(error);
-    message = "Feed Added!"
+    message = "Feed Added!";
+    severity = "success";
+  }
+
+  let alertMessage: JSX.Element = <></>;
+  if (showAlert) {
+    alertMessage = <Alert severity={severity} onClose={() => setShowAlert(false)}>{message}</Alert>
   }
 
   return (
+  <>
+    {alertMessage}
     <Card>
       <CardHeader
         title="Add New Feed"
@@ -73,6 +86,7 @@ const FormNewFeed = () => {
         <form onSubmit={(e) => {
         e.preventDefault();
         addFeed();
+        setShowAlert(true);
       }}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
@@ -133,19 +147,18 @@ const FormNewFeed = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={12}>
               <Button type="submit" variant="contained" size="large">
                 Submit
               </Button>
-            </Grid>
-            <Grid item xs={3}>
-             <h3>{message}</h3>
             </Grid>
           </Grid>
         </form>
       </CardContent>
     </Card>
+    </>
   );
+
 };
 
 export default FormNewFeed;
