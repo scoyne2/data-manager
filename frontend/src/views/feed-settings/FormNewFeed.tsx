@@ -15,7 +15,54 @@ import InputLabel from "@mui/material/InputLabel";
 import DownloadBoxOutline from "mdi-material-ui/DownloadBoxOutline";
 import OfficeBuilding from "mdi-material-ui/OfficeBuilding";
 
+// ** React Imports
+import { useState } from "react";
+
+import { useMutation, gql } from "@apollo/client";
+// import { FormEvent } from "react";
+
+const ADD_FEED = gql`
+  mutation AddFeed (
+    $vendor: String!
+    $feedName: String!
+    $feedMethod: String!
+  ) {
+    addFeed(vendor: $vendor, feedName: $feedName, feedMethod: $feedMethod) {
+      id
+      vendor
+      feedName
+      feedMethod
+    }
+  }
+`;
+
+
 const FormNewFeed = () => {
+  const [formState, setFormState] = useState({
+    vendor: '',
+    feedName: '',
+    feedMethod: 'sftp'
+  });
+
+  const [addFeed, { data, error }] = useMutation(ADD_FEED, {
+    variables: {
+      vendor: formState.vendor,
+      feedName: formState.feedName,
+      feedMethod: formState.feedMethod
+    }
+  });
+
+  let message = "";
+  if (error) {
+    console.log(error);
+    message = "An Error Occured!"
+  }
+
+  if (data) {
+    console.log(error);
+    message = "Feed Added!"
+  }
+
   return (
     <Card>
       <CardHeader
@@ -23,12 +70,22 @@ const FormNewFeed = () => {
         titleTypographyProps={{ variant: "h6" }}
       />
       <CardContent>
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form onSubmit={(e) => {
+        e.preventDefault();
+        addFeed();
+      }}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                id="vendor"
                 label="Vendor"
+                onChange={(e) =>
+                  setFormState({
+                    ...formState,
+                    vendor: e.target.value
+                  })
+                }
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -41,7 +98,14 @@ const FormNewFeed = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                id="feedName"
                 label="Feed Name"
+                onChange={(e) =>
+                  setFormState({
+                    ...formState,
+                    feedName: e.target.value
+                  })
+                }
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -54,17 +118,28 @@ const FormNewFeed = () => {
             <Grid item xs={12}>
               <FormControl fullWidth>
                 <InputLabel>Feed Type</InputLabel>
-                <Select label="Feed Type" defaultValue="1">
-                  <MenuItem value="1">SFTP</MenuItem>
-                  <MenuItem value="2">S3</MenuItem>
+                <Select
+                label="Feed Type"
+                defaultValue="sftp"
+                id="feedMethod"
+                onChange={(e) =>
+                  setFormState({
+                    ...formState,
+                    feedMethod: e.target.value
+                  })
+                }>
+                  <MenuItem value="sftp">SFTP</MenuItem>
+                  <MenuItem value="s3">S3</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
-
-            <Grid item xs={12}>
+            <Grid item xs={3}>
               <Button type="submit" variant="contained" size="large">
                 Submit
               </Button>
+            </Grid>
+            <Grid item xs={3}>
+             <h3>{message}</h3>
             </Grid>
           </Grid>
         </form>
