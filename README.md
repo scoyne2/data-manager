@@ -1,6 +1,13 @@
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=540243984)
+
+[![codecov](https://codecov.io/gh/scoyne2/data-manager/branch/main/graph/badge.svg?token=GWRFE77EFG)](https://codecov.io/gh/scoyne2/data-manager)
 # Data Manager
 Data manager is a platform that allows ingestion of flat files into a raw layer of a datalake. It requires use of AWS and uses the following technology: `terraform`, `helm`, `go`, `nextjs`, `react`, `typescript`.
 <img width="1728" alt="Data Manager Demo" src="docs/images/demo.png">
+
+## Codespaces
+If you are running this in codespaces you can skip the below homebrew install. You will still need to complete `aws configure` as well as the `Env Setup` steps.
+
 
 ## Getting Started
 Installation of dependencies and how they should be setup/configured
@@ -15,6 +22,7 @@ Installation of dependencies and how they should be setup/configured
 4. Configure AWS
    * Setup ``~/.aws/config`` and ``~/.aws/credentials`` with the expected profile. You can run ``aws configure`` if you need to set this up.
 
+### Env Setup
 1. Make a copy of ``.env_template``, rename it to ``.env`` and update all necessary fields. In particular DOMAIN_NAME must align with the domain name you own via Route 53, AWS_ACCOUNT must be the account ID youwill be setting up resources in. AWS_PROFILE must be the name of the profile in your local ~/.aws/credentials that you will use to create resources (It will need access to all of the systems that Terraform will build)
 2. To start you must had a domain name with AWS Route 53, and have an active Hosted Zone.
 Take the Hosted Zone Id and update ``HOSTED_ZONE_ID`` in your .env file.

@@ -120,4 +120,9 @@ app
 Chart.lock
 charts
 
+# Env setup
 .env-e
+
+# Codecov
+coverage.txt
+codecov
