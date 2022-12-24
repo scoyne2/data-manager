@@ -6,7 +6,7 @@ Data manager is a platform that allows ingestion of flat files into a raw layer 
 <img width="1728" alt="Data Manager Demo" src="docs/images/demo.png">
 
 ## Codespaces
-If you are running this in codespaces you can skip the below homebrew install. You will still need to complete `aws configure` as well as the `Env Setup` steps.
+If you are running this in codespaces you can skip the below homebrew install. Create [codespace secrets](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-encrypted-secrets-for-your-codespaces) for `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` You will still need to complete the `Env Setup` steps.
 
 
 ## Getting Started
