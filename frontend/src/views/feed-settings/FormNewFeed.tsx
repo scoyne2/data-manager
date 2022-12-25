@@ -1,6 +1,6 @@
 // ** MUI Imports
 import Alert from "@mui/material/Alert";
-import AlertColor from "@mui/material/Alert";
+import { AlertColor } from "@mui/material";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
@@ -42,7 +42,8 @@ const ADD_FEED = gql`
 
 const FormNewFeed = () => {
   let message = "";
-  let severity = "" ;
+  let severity: AlertColor = "success";
+
   const [showAlert, setShowAlert] = useState(true);
   const [formState, setFormState] = useState({
     vendor: '',
