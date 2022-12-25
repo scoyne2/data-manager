@@ -9,9 +9,8 @@
 		"ghcr.io/meaningful-ooo/devcontainer-features/homebrew:2": {},
 		"ghcr.io/devcontainers-contrib/features/terraform-asdf:1": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/saml-to/devcontainer-features/assume-aws-role:1": {}
 	},
-	"postStartCommand": "bash .devcontainer/env.sh"
+	"postCreateCommand": "bash .devcontainer/env.sh"
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
