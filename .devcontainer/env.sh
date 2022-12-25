@@ -1,5 +1,9 @@
 #!/bin/bash
 
+mkdir -p ~/.aws/
+touch ~/.aws/credentials
+touch ~/.aws/config
+
 cat << EOF > ~/.aws/credentials
 [default]
 aws_access_key_id = ${AWS_ACCESS_KEY_ID}
