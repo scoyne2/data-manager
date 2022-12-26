@@ -10,6 +10,7 @@ type Resolver interface {
 	ResolveFeed(p graphql.ResolveParams) (interface{}, error)
 	ResolveFeeds(p graphql.ResolveParams) (interface{}, error)
 	ResolveFeedStatuses(p graphql.ResolveParams) (interface{}, error)
+	ResolveFeedStatuseAggregate(p graphql.ResolveParams) (interface{}, error)
 }
 
 type FeedService struct {
@@ -85,4 +86,14 @@ func (fs FeedService) ResolveFeedStatuses(p graphql.ResolveParams) (interface{},
 		return nil, err
 	}
 	return feedstatuses, nil
+}
+
+func (fs FeedService) ResolveFeedStatuseAggregate(p graphql.ResolveParams) (interface{}, error) {
+	startDate := p.Args["startDate"].(string)
+	endDate := p.Args["endDate"].(string)
+	fsAgg, err := fs.repo.GetFeedStatusesAggregate(startDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	return fsAgg, nil
 }

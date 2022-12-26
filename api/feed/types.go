@@ -26,6 +26,12 @@ type FeedStatusResults struct {
 	FeedMethod	string `json:"feed_method"`
 }
 
+type FeedStatusAggregate struct {
+	Files     	int `json:"files"`
+	Rows   		int `json:"rows"`
+	Errors		int `json:"errors"`
+}
+
 type Repository interface {
 	GetFeeds() ([]Feed, error)
 	GetFeed(id int) (Feed, error)
@@ -34,4 +40,5 @@ type Repository interface {
 	DeleteFeed(id int) (string, error)
 
 	GetFeedStatuses() ([]FeedStatusResults, error)
+	GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error)
 }

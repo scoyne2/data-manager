@@ -117,7 +117,6 @@ func (pr *PostgressRepository) DeleteFeed(id int) (string, error) {
 }
 
 
-
 func (pr *PostgressRepository) GetFeedStatuses() ([]FeedStatusResults, error) {
 	sqlStatement := `
 	SELECT fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status,
@@ -145,4 +144,21 @@ func (pr *PostgressRepository) GetFeedStatuses() ([]FeedStatusResults, error) {
 	}
 
 	return feedStatus, nil
+}
+
+func (pr *PostgressRepository) GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error) {
+	sqlStatement := `
+	SELECT 
+		COUNT(DISTINCT fs.id) AS files,
+		SUM(fs.record_count) AS rows,
+		SUM(fs.error_count) AS errors
+	FROM feed_status fs
+	WHERE process_date BETWEEN $1 AND $2`
+	rows := pr.db.QueryRow(sqlStatement, startDate, endDate)
+	var fsAgg FeedStatusAggregate
+	err := rows.Scan(&fsAgg.Files, &fsAgg.Rows, &fsAgg.Errors)
+	if err != nil {
+		return FeedStatusAggregate{}, err
+	}
+	return fsAgg, nil
 }

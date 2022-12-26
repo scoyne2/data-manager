@@ -67,6 +67,25 @@ var feedStatusType = graphql.NewObject(graphql.ObjectConfig{
 },
 )
 
+var feedStatusAggregateType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "FeedStatusAggregate",
+	Fields: graphql.Fields{
+		"files": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "The number of files processed",
+		},
+		"rows": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "The number of records processed",
+		},
+		"errors": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "The number of records that had errors",
+		},
+	},
+},
+)
+
 // GenerateSchema will create a GraphQL Schema and set the Resolvers found in the FeedService
 // For all the needed fields
 func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
@@ -92,6 +111,19 @@ func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
 			Type: graphql.NewList(feedStatusType),
 			Resolve: fs.ResolveFeedStatuses,
 			Description: "Query all Feed Statuses",
+		},
+		"feedstatuseaggregates": &graphql.Field{
+			Type: feedStatusAggregateType,
+			Resolve: fs.ResolveFeedStatuseAggregate,
+			Args: graphql.FieldConfigArgument{
+				"startDate": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+				"endDate": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+			},
+			Description: "Aggregate of Feed Statuses",
 		},
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}

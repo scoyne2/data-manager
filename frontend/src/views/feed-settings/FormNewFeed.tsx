@@ -52,6 +52,7 @@ const FormNewFeed = () => {
   });
 
   const [addFeed, { data, error }] = useMutation(ADD_FEED, {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onError: () => {},
     variables: {
       vendor: formState.vendor,

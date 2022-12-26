@@ -18,3 +18,7 @@ EOF
 
 # Install next js
 cd frontend && npm install next && yarn install
+
+# Set default port for local testing of Go API
+export POSTGRES_PORT=5432
+export API_HOST=localhost
