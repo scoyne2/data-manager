@@ -92,16 +92,16 @@ func (pr *PostgressRepository) UpdateFeed(feed Feed) (Feed, error) {
 	return feed, nil
 }
 
-func (pr *PostgressRepository) AddFeed(feed Feed) (Feed, error) {
+func (pr *PostgressRepository) AddFeed(feed Feed) (string, error) {
 	sqlStatement := `
 	INSERT INTO feeds (vendor, feed_name, feed_method)
 	VALUES ($1, $2, $3);`
 
 	_, err := pr.db.Exec(sqlStatement, feed.Vendor, feed.FeedName, feed.FeedMethod)
 	if err != nil {
-		return Feed{}, err
+		return "", err
 	}
-	return feed, nil
+	return "Feed Added", nil
 }
 
 func (pr *PostgressRepository) DeleteFeed(id int) (string, error) {
