@@ -16,6 +16,22 @@ cat << EOF > ~/.aws/config
 region = us-west-2
 EOF
 
+# Install helm
+brew install helm
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add runix https://helm.runix.net
+helm repo add eks https://aws.github.io/eks-charts
+
+# Install kubectl
+brew install kubectl
+alias k='kubectl'
+
+# Terraform init
+make init
+
+# Build lambda
+make build_lambda
+
 # Install next js
 cd frontend && npm install next && yarn install
 

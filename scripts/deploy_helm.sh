@@ -4,7 +4,7 @@ set -a
 source .env
 set +a
 
-cd sysops/helm/data-manager && helm upgrade --install data-manager .  --set domainName=$DOMAIN_NAME --set hostedZoneId=$HOSTED_ZONE_ID \
+cd sysops/helm/data-manager && helm dependency build && helm upgrade --install data-manager .  --set domainName=$DOMAIN_NAME --set hostedZoneId=$HOSTED_ZONE_ID \
     --values values.yaml --set api.image.repository=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/data-manager-api \
     --set frontend.image.repository=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/data-manager-frontend \
     --set postgresql.auth.postgresPassword=$POSTGRES_PASSWORD --set postgresql.auth.password=$POSTGRES_PASSWORD \

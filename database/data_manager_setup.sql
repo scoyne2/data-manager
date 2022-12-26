@@ -8,7 +8,7 @@ CREATE TABLE feeds (
 CREATE TABLE feed_status (
     id serial PRIMARY KEY,
     feed_id INTEGER REFERENCES feeds (id),
-    process_date TEXT,
+    process_date TIMESTAMP,
     record_count INTEGER,
     error_count INTEGER,
     feed_status TEXT
@@ -19,7 +19,8 @@ VALUES ('Coyne Enterprises', 'Orders', 'SFTP'),
 ('The Mochi Dog Board', 'Dog Breeds', 'S3');
 
 INSERT INTO feed_status (feed_id, process_date, record_count, error_count, feed_status)
-VALUES (1, '09/27/2018', 1958623, 0, 'success'),
-(1, '09/23/2016', 2389635, 61, 'errors'),
-(2, '10/15/2017', 0, 500, 'failed'),
-(2, '03/24/2018', 13076, 0, 'success');
+VALUES (1, '2021-03-31 22:30:20','YYYY-MM-DD HH:MI:SS', 1958623, 0, 'success'),
+(1, '2017-03-31 14:30:20','YYYY-MM-DD HH:MI:SS', 2389635, 61, 'errors'),
+(2, '2022-03-31 08:30:20','YYYY-MM-DD HH:MI:SS', 0, 500, 'failed'),
+(2, '2022-03-31 11:30:20','YYYY-MM-DD HH:MI:SS', 13076, 0, 'success');
+

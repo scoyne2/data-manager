@@ -153,7 +153,7 @@ func (pr *PostgressRepository) GetFeedStatusesAggregate(startDate string, endDat
 		SUM(fs.record_count) AS rows,
 		SUM(fs.error_count) AS errors
 	FROM feed_status fs
-	WHERE process_date BETWEEN $1 AND $2`
+	WHERE process_date BETWEEN TO_DATE($1,'YYYY-MM-DD') AND TO_DATE($2,'YYYY-MM-DD')`
 	rows := pr.db.QueryRow(sqlStatement, startDate, endDate)
 	var fsAgg FeedStatusAggregate
 	err := rows.Scan(&fsAgg.Files, &fsAgg.Rows, &fsAgg.Errors)
