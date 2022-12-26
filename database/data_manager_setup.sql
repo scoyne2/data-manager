@@ -19,8 +19,8 @@ VALUES ('Coyne Enterprises', 'Orders', 'SFTP'),
 ('The Mochi Dog Board', 'Dog Breeds', 'S3');
 
 INSERT INTO feed_status (feed_id, process_date, record_count, error_count, feed_status)
-VALUES (1, '2021-03-31 22:30:20','YYYY-MM-DD HH:MI:SS', 1958623, 0, 'success'),
-(1, '2017-03-31 14:30:20','YYYY-MM-DD HH:MI:SS', 2389635, 61, 'errors'),
-(2, '2022-03-31 08:30:20','YYYY-MM-DD HH:MI:SS', 0, 500, 'failed'),
-(2, '2022-03-31 11:30:20','YYYY-MM-DD HH:MI:SS', 13076, 0, 'success');
+VALUES (1, '2021-03-31 22:30:20', 1958623, 0, 'success'),
+(1, '2017-03-31 14:30:20', 2389635, 61, 'errors'),
+(2, '2022-03-31 08:30:20', 0, 500, 'failed'),
+(2, '2022-03-31 11:30:20', 13076, 0, 'success');
 
