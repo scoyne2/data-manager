@@ -62,16 +62,16 @@ const StatisticsCard = () => {
             <DotsVertical />
           </IconButton>
         }
-        subheader={
-          <Typography variant="body2">
-            <Box
-              component="span"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              Last 7 days
-            </Box>{" "}
-          </Typography>
-        }
+        // subheader={
+        //   <Typography variant="body2">
+        //     <Box
+        //       component="span"
+        //       sx={{ fontWeight: 600, color: "text.primary" }}
+        //     >
+        //       Last 7 days
+        //     </Box>{" "}
+        //   </Typography>
+        // }
         titleTypographyProps={{
           sx: {
             mb: 2.5,

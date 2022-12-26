@@ -44,7 +44,7 @@ const FormNewFeed = () => {
   let message = "";
   let severity: AlertColor = "success";
 
-  const [showAlert, setShowAlert] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
   const [formState, setFormState] = useState({
     vendor: '',
     feedName: '',

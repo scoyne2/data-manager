@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Setup AWS credentials and config
 mkdir -p ~/.aws/
 touch ~/.aws/credentials
 touch ~/.aws/config
@@ -14,3 +15,6 @@ cat << EOF > ~/.aws/config
 [default]
 region = us-west-2
 EOF
+
+# Install next js
+cd frontend && npm install next && yarn install
