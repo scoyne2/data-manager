@@ -29,16 +29,9 @@ const ADD_FEED = gql`
     $feedName: String!
     $feedMethod: String!
   ) {
-    addFeed(vendor: $vendor, feedName: $feedName, feedMethod: $feedMethod) {
-      id
-      vendor
-      feedName
-      feedMethod
-    }
+    addFeed(vendor: $vendor, feedName: $feedName, feedMethod: $feedMethod)
   }
 `;
-
-
 
 const FormNewFeed = () => {
   let message = "";

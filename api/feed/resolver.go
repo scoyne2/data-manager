@@ -61,13 +61,11 @@ func (fs FeedService) UpdateFeed(p graphql.ResolveParams) (interface{}, error) {
 
 
 func (fs FeedService) AddFeed(p graphql.ResolveParams) (interface{}, error) {
-	id := p.Args["id"].(int)
 	vendor := p.Args["vendor"].(string)
 	feedName := p.Args["feedName"].(string)
 	feedMethod := p.Args["feedMethod"].(string)
 
 	var feed Feed
-	feed.ID = id
 	feed.Vendor = vendor
 	feed.FeedName = feedName
 	feed.FeedMethod = feedMethod

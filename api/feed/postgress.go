@@ -14,7 +14,6 @@ type PostgressRepository struct {
 	sync.Mutex
 }
 
-
 var POSTGRES_HOST string = os.Getenv("POSTGRES_HOST")
 var POSTGRES_PORT string = os.Getenv("POSTGRES_PORT")
 var POSTGRES_USER string = os.Getenv("POSTGRES_USER")
@@ -150,10 +149,10 @@ func (pr *PostgressRepository) GetFeedStatusesAggregate(startDate string, endDat
 	sqlStatement := `
 	SELECT 
 		COUNT(DISTINCT fs.id) AS files,
-		SUM(fs.record_count) AS rows,
-		SUM(fs.error_count) AS errors
+		SUM(COALESCE(fs.record_count, 0)) AS rows,
+		SUM(COALESCE(fs.error_count, 0)) AS errors
 	FROM feed_status fs
-	WHERE process_date BETWEEN TO_DATE($1,'YYYY-MM-DD') AND TO_DATE($2,'YYYY-MM-DD')`
+	WHERE process_date::DATE BETWEEN TO_DATE($1,'YYYY-MM-DD') AND TO_DATE($2,'YYYY-MM-DD')`
 	rows := pr.db.QueryRow(sqlStatement, startDate, endDate)
 	var fsAgg FeedStatusAggregate
 	err := rows.Scan(&fsAgg.Files, &fsAgg.Rows, &fsAgg.Errors)

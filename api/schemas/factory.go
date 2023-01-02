@@ -16,11 +16,11 @@ var feedType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "The name of the vendor",
 		},
-		"feed_name": &graphql.Field{
+		"feedName": &graphql.Field{
 			Type:        graphql.String,
 			Description: "The name of the feed",
 		},
-		"feed_method": &graphql.Field{
+		"feedMethod": &graphql.Field{
 			Type:        graphql.String,
 			Description: "The method by which the feed is received",
 		},

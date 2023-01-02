@@ -1,11 +1,5 @@
 // ** Types Imports
 import { ThemeColor } from "src/@core/layouts/types";
-import { ReactElement } from "react";
-
-// ** Icons Imports
-import TrendingUp from "mdi-material-ui/TrendingUp";
-import Alert from "mdi-material-ui/Alert";
-import AccountOutline from "mdi-material-ui/AccountOutline";
 
 export interface FeedStatusesType {
   feedstatuses: FeedStatusType[];
@@ -42,38 +36,15 @@ const column_names: string[] = [
   "Errors",
   "Status",
 ];
+
 export function getColumns(): string[] {
   return column_names;
 }
 
-export interface StatsType {
-  stats: string;
-  title: string;
-  color: ThemeColor;
-  icon: ReactElement;
-}
-
-const stats: StatsType[] = [
-  {
-    stats: "4.21M",
-    title: "Rows",
-    color: "primary",
-    icon: <TrendingUp sx={{ fontSize: "1.75rem" }} />,
-  },
-  {
-    stats: "215",
-    title: "Files",
-    color: "success",
-    icon: <AccountOutline sx={{ fontSize: "1.75rem" }} />,
-  },
-  {
-    stats: "72",
-    color: "warning",
-    title: "Errors",
-    icon: <Alert sx={{ fontSize: "1.75rem" }} />,
-  },
-];
-
-export function getStats(): StatsType[] {
-  return stats;
+export interface StatusesAggregateType {
+  feedstatuseaggregates:{ 
+    files: number;
+    rows: number;
+    errors: number;
+  }
 }
