@@ -33,7 +33,12 @@ const GET_FEED_STATUSES = gql`
   }
 `;
 
-// const rows = getFeedStatus();
+
+function openFeedDetails(feed_id: number, location: string) {
+  // TODO have this redirect to logs or quality checks
+  alert(feed_id + location);
+}
+
 const headerValues = getColumns();
 
 const header: JSX.Element[] = [];
@@ -94,6 +99,8 @@ const DashboardTable = () => {
             }}
           />
         </TableCell>
+        <TableCell onClick={() => openFeedDetails(row.id, "logs")}>Link</TableCell>
+        <TableCell onClick={() => openFeedDetails(row.id, "quality-checks")}>Link</TableCell>
       </TableRow>
     )
   );

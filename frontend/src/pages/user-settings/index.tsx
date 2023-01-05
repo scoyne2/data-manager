@@ -16,9 +16,9 @@ import LockOpenOutline from "mdi-material-ui/LockOpenOutline";
 import InformationOutline from "mdi-material-ui/InformationOutline";
 
 // ** Demo Tabs Imports
-import TabInfo from "src/views/account-settings/TabInfo";
-import TabAccount from "src/views/account-settings/TabAccount";
-import TabSecurity from "src/views/account-settings/TabSecurity";
+import TabInfo from "src/views/feed-details/TabLogs";
+import TabAccount from "src/views/feed-details/TabAccount";
+import TabSecurity from "src/views/feed-details/TabSecurity";
 
 // ** Third Party Styles Imports
 import "react-datepicker/dist/react-datepicker.css";

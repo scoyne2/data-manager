@@ -19,9 +19,9 @@ const navigation = (): VerticalNavItemsType => {
       path: "/feed-settings",
     },
     {
-      title: "Logs",
+      title: "Feed Details",
       icon: AlertCircleOutline,
-      path: "/logs",
+      path: "/feed-details",
     },
   ];
 };

@@ -35,6 +35,8 @@ const column_names: string[] = [
   "Rows",
   "Errors",
   "Status",
+  "Logs",
+  "Quality Checks"
 ];
 
 export function getColumns(): string[] {
@@ -47,4 +49,35 @@ export interface StatusesAggregateType {
     rows: number;
     errors: number;
   }
+}
+
+export interface FeedQualityChecksType {
+  feedqualitycheck: FeedQualityCheckType[];
+}
+
+export interface FeedQualityCheckType {
+  id: number;
+  feed_name: string;
+  vendor: string;
+  quality_check_results: QualityCheckResultsType[];
+}
+
+export interface QualityCheckResultsType {
+  id: number;
+  status: string;
+  quality_check_name: string;
+  quality_check_description: string;
+}
+
+export interface FeedLogsType {
+  feedlogs: FeedLogType[];
+}
+
+export interface FeedLogType {
+  id: number;
+  status: string;
+  feed_name: string;
+  vendor: string;
+  process_date: string;
+  content: string;
 }

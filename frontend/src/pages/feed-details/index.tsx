@@ -11,14 +11,13 @@ import { styled } from "@mui/material/styles";
 import MuiTab, { TabProps } from "@mui/material/Tab";
 
 // ** Icons Imports
-import AccountOutline from "mdi-material-ui/AccountOutline";
-import LockOpenOutline from "mdi-material-ui/LockOpenOutline";
-import InformationOutline from "mdi-material-ui/InformationOutline";
+import MagnifyPlus from "mdi-material-ui/MagnifyPlus";
+import CogOutline from "mdi-material-ui/CogOutline";
 
 // ** Demo Tabs Imports
-import TabInfo from "src/views/account-settings/TabInfo";
-import TabAccount from "src/views/account-settings/TabAccount";
-import TabSecurity from "src/views/account-settings/TabSecurity";
+import TabLogs from "src/views/feed-details/TabLogs";
+import TabQualityChecks from "src/views/feed-details/TabQualityChecks";
+
 
 // ** Third Party Styles Imports
 import "react-datepicker/dist/react-datepicker.css";
@@ -43,7 +42,7 @@ const TabName = styled("span")(({ theme }) => ({
 
 const AccountSettings = () => {
   // ** State
-  const [value, setValue] = useState<string>("account");
+  const [value, setValue] = useState<string>("quality-checks");
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -58,42 +57,30 @@ const AccountSettings = () => {
           sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
         >
           <Tab
-            value="account"
+            value="quality-checks"
             label={
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <AccountOutline />
-                <TabName>Account</TabName>
+                <MagnifyPlus />
+                <TabName>Quality Checks</TabName>
               </Box>
             }
           />
           <Tab
-            value="security"
+            value="logs"
             label={
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <LockOpenOutline />
-                <TabName>Security</TabName>
-              </Box>
-            }
-          />
-          <Tab
-            value="info"
-            label={
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <InformationOutline />
-                <TabName>Info</TabName>
+                <CogOutline />
+                <TabName>Logs</TabName>
               </Box>
             }
           />
         </TabList>
 
-        <TabPanel sx={{ p: 0 }} value="account">
-          <TabAccount />
+        <TabPanel sx={{ p: 0 }} value="quality-checks">
+          <TabQualityChecks />
         </TabPanel>
-        <TabPanel sx={{ p: 0 }} value="security">
-          <TabSecurity />
-        </TabPanel>
-        <TabPanel sx={{ p: 0 }} value="info">
-          <TabInfo />
+        <TabPanel sx={{ p: 0 }} value="logs">
+          <TabLogs />
         </TabPanel>
       </TabContext>
     </Card>
