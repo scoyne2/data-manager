@@ -42,3 +42,7 @@ resource "aws_emrserverless_application" "data_manager_emr_serverless" {
     memory = "100 GB"
   }
 }
+
+output "aws_emrserverless_application_id" {
+  value = aws_emrserverless_application.data_manager_emr_serverless.id
+}

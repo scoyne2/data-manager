@@ -18,6 +18,7 @@ module "eks" {
 
 module "lambda" {
   source = "./lambda"
+  aws_emrserverless_application_id = module.emr.aws_emrserverless_application_id
 }
 
 module "emr" {

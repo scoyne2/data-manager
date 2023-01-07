@@ -14,10 +14,6 @@ deploy:
 	@echo '${GREEN}Deploying Helm Chart${RESET}'
 	@bash scripts/deploy_helm.sh
 
-build_lambda:
-	@echo '${GREEN}Building Lambda${RESET}'
-	cd sysops/terraform/lambda && GOARCH=amd64 GOOS=linux  go build -v -ldflags '-s -w' -a -tags netgo -installsuffix netgo -o ../build/bin/app .
-
 init:
 	@echo '${GREEN}Terraform init${RESET}'
 	cd sysops/terraform && terraform init
