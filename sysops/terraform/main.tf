@@ -20,6 +20,10 @@ module "lambda" {
   source = "./lambda"
 }
 
+module "emr" {
+  source = "./emr"
+}
+
 output "aws_acm_certificate_arn" {
   description = "ARN of ACM Certificate"
   value = module.eks.aws_acm_certificate_arn
