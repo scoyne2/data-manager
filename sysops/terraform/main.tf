@@ -16,9 +16,14 @@ module "eks" {
   source = "./eks"
 }
 
+module "lambda_layer" {
+  source = "./lambda_layer"
+}
+
 module "lambda" {
   source = "./lambda"
   aws_emrserverless_application_id = module.emr.aws_emrserverless_application_id
+  layer_arn = module.lambda_layer.layer_arn
 }
 
 module "emr" {

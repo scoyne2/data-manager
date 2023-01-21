@@ -1,4 +1,5 @@
 variable "aws_emrserverless_application_id" {}
+variable "layer_arn" {}
 
 locals {
   envs = { for tuple in regexall("(.*)=(.*)", file("../../.env")) : tuple[0] => sensitive(tuple[1]) }
@@ -38,14 +39,17 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
   function_name    = local.app_id
   role             = aws_iam_role.iam_for_lambda.arn
   filename         = "${path.module}/main.zip"
-  runtime          = "python3.8"
-  handler          = "main.lambda_handler"
+  runtime          = "python3.9"
+  handler          = "lambda_function.lambda_handler"
+  timeout          = 60
+  layers           = [var.layer_arn]
   environment {
     variables = {
       APPLICATION_ID     = var.aws_emrserverless_application_id
-      S3_BUCKET_NAME     = aws_s3_bucket.data_manager_trigger_s3.bucket
+      OUTPUT_BUCKET      = aws_s3_bucket.data_manager_processed_s3.bucket
+      LOG_BUCKET         = aws_s3_bucket.data_manager_resources_s3.bucket
       SPARK_SUBMIT_ARGS  = "--conf spark.executor.cores=1 --conf spark.executor.memory=4g --conf spark.driver.cores=1 --conf spark.driver.memory=4g --conf spark.executor.instances=1"
-      SCRIPT_LOCATION    = "${aws_s3_bucket.data_manager_trigger_s3.bucket}/scripts/spark.py"
+      SCRIPT_LOCATION    = "${aws_s3_bucket.data_manager_resources_s3.bucket}/scripts/spark.py"
     }
   }
 }
@@ -82,14 +86,32 @@ resource "aws_s3_bucket" "data_manager_trigger_s3" {
   bucket = local.envs["TRIGGER_BUCKET_NAME"]
 }
 
+resource "aws_s3_bucket" "data_manager_processed_s3" {
+  bucket = local.envs["PROCESSED_BUCKET_NAME"]
+}
+
+resource "aws_s3_bucket" "data_manager_resources_s3" {
+  bucket = local.envs["RESOURCES_BUCKET_NAME"]
+}
+
 resource "aws_s3_bucket_object" "spark_script" {
-  bucket = aws_s3_bucket.data_manager_trigger_s3.id
+  bucket = aws_s3_bucket.data_manager_resources_s3.id
   key = "scripts/spark.py"
   source = "${path.module}/spark.py"
 }
 
 resource "aws_s3_bucket_acl" "data_manager_trigger_acl" {
   bucket = aws_s3_bucket.data_manager_trigger_s3.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_acl" "data_manager_processed_acl" {
+  bucket = aws_s3_bucket.data_manager_processed_s3.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_acl" "data_manager_resources_acl" {
+  bucket = aws_s3_bucket.data_manager_resources_s3.id
   acl    = "private"
 }
 
