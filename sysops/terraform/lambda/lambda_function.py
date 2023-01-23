@@ -33,7 +33,7 @@ def lambda_handler(event, context):
         executionRoleArn=JOB_ROLE_ARN,
         jobDriver={
             "sparkSubmit": {
-                "entryPoint": SCRIPT_LOCATION,
+                "entryPoint": f's3://{SCRIPT_LOCATION}',
                 "entryPointArguments": spark_args,
                 "sparkSubmitParameters": SPARK_SUBMIT_ARGS,
             }
@@ -46,3 +46,4 @@ def lambda_handler(event, context):
             }
         },
     )
+    return {"statusCode": 200, "body": f"Processing file: {input_file}"}
