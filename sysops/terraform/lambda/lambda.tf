@@ -1,5 +1,7 @@
 variable "aws_emrserverless_application_id" {}
 variable "layer_arn" {}
+variable "aws_emrserverless_policy_arn" {}
+variable "aws_emrserverless_role_arn" {}
 
 locals {
   envs = { for tuple in regexall("(.*)=(.*)", file("../../.env")) : tuple[0] => sensitive(tuple[1]) }
@@ -50,6 +52,7 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
       LOG_BUCKET         = aws_s3_bucket.data_manager_resources_s3.bucket
       SPARK_SUBMIT_ARGS  = "--conf spark.executor.cores=1 --conf spark.executor.memory=4g --conf spark.driver.cores=1 --conf spark.driver.memory=4g --conf spark.executor.instances=1"
       SCRIPT_LOCATION    = "${aws_s3_bucket.data_manager_resources_s3.bucket}/scripts/spark.py"
+      JOB_ROLE_ARN       = var.aws_emrserverless_role_arn
     }
   }
 }
@@ -61,14 +64,6 @@ resource "aws_iam_role" "iam_for_lambda" {
 {
   "Version": "2012-10-17",
   "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    },
     {
       "Action": "sts:AssumeRole",
       "Principal": {
@@ -137,5 +132,10 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 
 resource "aws_iam_role_policy_attachment" "basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  role       = aws_iam_role.iam_for_lambda.name
+}
+
+resource "aws_iam_role_policy_attachment" "emr_serverless" {
+  policy_arn = var.aws_emrserverless_policy_arn
   role       = aws_iam_role.iam_for_lambda.name
 }

@@ -24,6 +24,8 @@ module "lambda" {
   source = "./lambda"
   aws_emrserverless_application_id = module.emr.aws_emrserverless_application_id
   layer_arn = module.lambda_layer.layer_arn
+  aws_emrserverless_role_arn = module.emr.aws_emrserverless_role_arn
+  aws_emrserverless_policy_arn = module.emr.aws_emrserverless_policy_arn
 }
 
 module "emr" {

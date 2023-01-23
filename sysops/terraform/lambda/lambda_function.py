@@ -5,7 +5,7 @@ import urllib.parse
 
 client = boto3.client('emr-serverless')
 
-EMR_SERVERLESS_APPLICATION_ID = os.environ['EMR_SERVERLESS_APPLICATION_ID']
+EMR_SERVERLESS_APPLICATION_ID = os.environ['APPLICATION_ID']
 JOB_ROLE_ARN = os.environ['JOB_ROLE_ARN']
 SPARK_SUBMIT_ARGS = os.environ['SPARK_SUBMIT_ARGS']
 SCRIPT_LOCATION = os.environ['SCRIPT_LOCATION']
