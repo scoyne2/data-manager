@@ -51,7 +51,7 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
       OUTPUT_BUCKET      = aws_s3_bucket.data_manager_processed_s3.bucket
       LOG_BUCKET         = aws_s3_bucket.data_manager_resources_s3.bucket
       SPARK_SUBMIT_ARGS  = "--conf spark.executor.cores=1 --conf spark.executor.memory=4g --conf spark.driver.cores=1 --conf spark.driver.memory=4g --conf spark.executor.instances=1"
-      SCRIPT_LOCATION    = "${aws_s3_bucket.data_manager_resources_s3.bucket}/scripts/spark.py"
+      SCRIPT_LOCATION    = "${aws_s3_bucket.data_manager_resources_s3.bucket}/scripts/file_ingest.py"
       JOB_ROLE_ARN       = var.aws_emrserverless_role_arn
     }
   }
@@ -91,8 +91,8 @@ resource "aws_s3_bucket" "data_manager_resources_s3" {
 
 resource "aws_s3_bucket_object" "spark_script" {
   bucket = aws_s3_bucket.data_manager_resources_s3.id
-  key = "scripts/spark.py"
-  source = "${path.module}/spark.py"
+  key = "scripts/file_ingest.py"
+  source = "${path.module}/../../../pyspark/file_ingest.py"
 }
 
 resource "aws_s3_bucket_acl" "data_manager_trigger_acl" {
