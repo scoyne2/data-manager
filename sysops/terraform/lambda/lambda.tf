@@ -50,7 +50,6 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
       APPLICATION_ID     = var.aws_emrserverless_application_id
       OUTPUT_BUCKET      = aws_s3_bucket.data_manager_processed_s3.bucket
       LOG_BUCKET         = aws_s3_bucket.data_manager_resources_s3.bucket
-      SPARK_SUBMIT_ARGS  = "--conf spark.executor.cores=1 --conf spark.executor.memory=4g --conf spark.driver.cores=1 --conf spark.driver.memory=4g --conf spark.executor.instances=1"
       SCRIPT_LOCATION    = "${aws_s3_bucket.data_manager_resources_s3.bucket}/scripts/file_ingest.py"
       JOB_ROLE_ARN       = var.aws_emrserverless_role_arn
     }
