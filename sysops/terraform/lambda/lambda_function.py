@@ -7,10 +7,9 @@ client = boto3.client('emr-serverless')
 
 EMR_SERVERLESS_APPLICATION_ID = os.environ['APPLICATION_ID']
 JOB_ROLE_ARN = os.environ['JOB_ROLE_ARN']
-SPARK_SUBMIT_ARGS = os.environ['SPARK_SUBMIT_ARGS']
 SCRIPT_LOCATION = os.environ['SCRIPT_LOCATION']
 OUTPUT_BUCKET = os.environ['OUTPUT_BUCKET']
-LOG_BUCKET = os.environ['LOG_BUCKET']
+RESOURCE_BUCKET = os.environ['RESOURCE_BUCKET']
 
 def lambda_handler(event, context):  
     input_bucket = event['Records'][0]['s3']['bucket']['name']
@@ -27,6 +26,20 @@ def lambda_handler(event, context):
     input_file = f"s3://{input_bucket}/{key}"
     output_path = f"s3://{OUTPUT_BUCKET}/{vendor}/{feed}/"
     spark_args = ["--input_file", input_file, "--file_extension", file_extension, "--output_path", output_path]
+    
+    python_zip_path = f"s3://{RESOURCE_BUCKET}/python/pyspark_ge.tar.gz#environment"
+    spark_submit_args = (
+       f"--conf spark.archives={python_zip_path}"
+        "--conf spark.emr-serverless.driverEnv.PYSPARK_DRIVER_PYTHON=./environment/bin/python "
+        "--conf spark.emr-serverless.driverEnv.PYSPARK_PYTHON=./environment/bin/python "
+        "--conf spark.emr-serverless.executorEnv.PYSPARK_PYTHON=./environment/bin/python " 
+        "--conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory "
+        "--conf spark.executor.cores=1 "
+        "--conf spark.executor.memory=4g "
+        "--conf spark.driver.cores=1 "
+        "--conf spark.driver.memory=4g "
+        "--conf spark.executor.instances=1 "
+    )
 
     client.start_job_run(
         applicationId=EMR_SERVERLESS_APPLICATION_ID,
@@ -35,13 +48,13 @@ def lambda_handler(event, context):
             "sparkSubmit": {
                 "entryPoint": f's3://{SCRIPT_LOCATION}',
                 "entryPointArguments": spark_args,
-                "sparkSubmitParameters": SPARK_SUBMIT_ARGS,
+                "sparkSubmitParameters": spark_submit_args,
             }
         },
         configurationOverrides={
             "monitoringConfiguration": {
                 "s3MonitoringConfiguration": {
-                    "logUri": f"s3://{LOG_BUCKET}/logs/{vendor}/{file_id}"
+                    "logUri": f"s3://{RESOURCE_BUCKET}/logs/{vendor}/{file_id}"
                 }
             }
         },
