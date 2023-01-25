@@ -25,7 +25,7 @@ def lambda_handler(event, context):
     
     input_file = f"s3://{input_bucket}/{key}"
     output_path = f"s3://{OUTPUT_BUCKET}/{vendor}/{feed}/"
-    spark_args = ["--input_file", input_file, "--file_extension", file_extension, "--output_path", output_path]
+    spark_args = ["--input_file", input_file, "--file_extension", file_extension, "--output_path", output_path, "--resources_bucket", RESOURCE_BUCKET]
     
     python_zip_path = f"s3://{RESOURCE_BUCKET}/python/pyspark_ge.tar.gz#environment"
     spark_submit_args = (
