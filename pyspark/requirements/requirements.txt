@@ -1,2 +1,3 @@
 great-expectations==0.15.44
 boto3==1.26.57
+pyyaml==6.0

@@ -1,6 +1,5 @@
 import boto3
 import os
-import json
 import urllib.parse
 
 client = boto3.client('emr-serverless')
@@ -11,7 +10,7 @@ SCRIPT_LOCATION = os.environ['SCRIPT_LOCATION']
 OUTPUT_BUCKET = os.environ['OUTPUT_BUCKET']
 RESOURCE_BUCKET = os.environ['RESOURCE_BUCKET']
 
-def lambda_handler(event, context):  
+def lambda_handler(event, context):
     input_bucket = event['Records'][0]['s3']['bucket']['name']
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     key_parts = key.split('/')
@@ -22,17 +21,17 @@ def lambda_handler(event, context):
     file_parts = file_id.split(".")
     file_name = file_parts[0]
     file_extension = file_parts[1]
-    
+
     input_file = f"s3://{input_bucket}/{key}"
     output_path = f"s3://{OUTPUT_BUCKET}/{vendor}/{feed}/"
     spark_args = ["--input_file", input_file, "--file_extension", file_extension, "--output_path", output_path, "--resources_bucket", RESOURCE_BUCKET]
-    
-    python_zip_path = f"s3://{RESOURCE_BUCKET}/python/pyspark_ge.tar.gz#environment"
+
+    python_zip_path = f"s3://{RESOURCE_BUCKET}/pyspark_requirements/pyspark_requirements.tar.gz#environment"
     spark_submit_args = (
-       f"--conf spark.archives={python_zip_path}"
+       f"--conf spark.archives={python_zip_path} "
         "--conf spark.emr-serverless.driverEnv.PYSPARK_DRIVER_PYTHON=./environment/bin/python "
         "--conf spark.emr-serverless.driverEnv.PYSPARK_PYTHON=./environment/bin/python "
-        "--conf spark.emr-serverless.executorEnv.PYSPARK_PYTHON=./environment/bin/python " 
+        "--conf spark.emr-serverless.executorEnv.PYSPARK_PYTHON=./environment/bin/python "
         "--conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory "
         "--conf spark.executor.cores=1 "
         "--conf spark.executor.memory=4g "

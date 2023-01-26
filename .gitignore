@@ -128,3 +128,6 @@ charts
 coverage.txt
 codecov
 builds
+
+# Spark
+pyspark/requirements/out/*

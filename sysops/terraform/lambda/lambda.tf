@@ -31,8 +31,8 @@ resource "random_id" "unique_suffix" {
   byte_length = 2
 }
 
-data "archive_file" "python_lambda_package" {  
-  type = "zip"  
+data "archive_file" "python_lambda_package" {
+  type = "zip"
   source_file  = "${path.module}/lambda_function.py"
   output_path  = "${path.module}/main.zip"
 }
@@ -45,6 +45,7 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
   handler          = "lambda_function.lambda_handler"
   timeout          = 60
   layers           = [var.layer_arn]
+  source_code_hash = filebase64sha256("${path.module}/main.zip")
   environment {
     variables = {
       APPLICATION_ID     = var.aws_emrserverless_application_id
@@ -92,6 +93,28 @@ resource "aws_s3_bucket_object" "spark_script" {
   bucket = aws_s3_bucket.data_manager_resources_s3.id
   key = "scripts/file_ingest.py"
   source = "${path.module}/../../../pyspark/file_ingest.py"
+  etag = filemd5("${path.module}/../../../pyspark/file_ingest.py")
+}
+
+resource "aws_s3_bucket_object" "great_expectations" {
+  bucket = aws_s3_bucket.data_manager_resources_s3.id
+  key = "great_expectations/great_expectations.yml"
+  source = "${path.module}/../../../great_expectations/great_expectations.yml"
+  etag = filemd5("${path.module}/../../../great_expectations/great_expectations.yml")
+}
+
+resource "aws_s3_bucket_object" "python_files" {
+  bucket = aws_s3_bucket.data_manager_resources_s3.id
+  key = "pyspark_requirements/pyspark_requirements.tar.gz"
+  source = "${path.module}/../../../pyspark/requirements/out/pyspark_requirements.tar.gz"
+  etag = filemd5("${path.module}/../../../pyspark/requirements/out/pyspark_requirements.tar.gz")
+}
+
+resource "aws_s3_bucket_object" "test_file" {
+  bucket = aws_s3_bucket.data_manager_trigger_s3.id
+  key = "inbound/coyne_enterprises/hello/hello.csv"
+  source = "${path.module}/../../../tests/lambda_manual_test/hello.csv"
+  etag = filemd5("${path.module}/../../../tests/lambda_manual_test/hello.csv")
 }
 
 resource "aws_s3_bucket_acl" "data_manager_trigger_acl" {

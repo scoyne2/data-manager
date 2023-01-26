@@ -19,10 +19,14 @@ init:
 	cd sysops/terraform && terraform init
 
 plan:
+	 @echo '${GREEN}Building EMR Python Deps${RESET}'
+	cd pyspark/requirements && DOCKER_BUILDKIT=1 docker build --file Dockerfile --output out .
 	@echo '${GREEN}Planning Terraform${RESET}'
 	cd sysops/terraform && terraform plan
 
 apply:
+	@echo '${GREEN}Building EMR Python Deps${RESET}'
+	cd pyspark/requirements && DOCKER_BUILDKIT=1 docker build --file Dockerfile --output out .
 	@echo '${GREEN}Applying Terraform${RESET}'
 	cd scripts && bash tf_apply_output.sh
 
