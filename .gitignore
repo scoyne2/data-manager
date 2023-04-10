@@ -128,6 +128,10 @@ charts
 coverage.txt
 codecov
 builds
+.coverage
 
 # Spark
 pyspark/requirements/out/*
+
+# Pytest
+__pycache__

@@ -33,3 +33,9 @@ apply:
 destroy:
 	@echo '${GREEN}Destroying Terraform${RESET}'
 	cd sysops/terraform &&  terraform destroy --auto-approve
+
+test:
+	@echo '${GREEN}Running Tests${RESET}'
+	cd sysops/terraform/lambda/ && pytest --cov --cov-report lcov
+	cd api && go test ./... -coverprofile=coverage.txt
+	./codecov

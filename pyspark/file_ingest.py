@@ -6,7 +6,9 @@ import boto3
 import yaml
 
 from pyspark.sql.session import SparkSvvcccbggklvfdjiubtkgrgkldnlukccfdfhtbcktfdbk
+
 ession
+
 
 def create_spark_session(input_file):
     spark = (
@@ -17,18 +19,20 @@ def create_spark_session(input_file):
     )
     return spark
 
+
 def inspect_file(spark, input_file):
     # Check if header has '|' or ',' if so set delimiter
     header = spark.read.text(input_file).first()[0]
-    quote = ''
-    delimiter = ''
+    quote = ""
+    delimiter = ""
     if header.count('"') >= 2:
         quote = '"'
-    if header.count('|') >= 1:
-        delimiter = '|'
-    elif header.count(',') >= 1:
-        delimiter = ','
+    if header.count("|") >= 1:
+        delimiter = "|"
+    elif header.count(",") >= 1:
+        delimiter = ","
     return delimiter, quote
+
 
 def process_file(spark, delimiter, quote, input_file, output_path):
     # read the input file, header is required
@@ -37,9 +41,9 @@ def process_file(spark, delimiter, quote, input_file, output_path):
     logging.info(f"Reading file {input_file} with {input_count} rows")
 
     # write to parquet, allow overwrite. partitioned by /FILENAME/dt=YYYY-MM-DD/
-    today = datetime.today().strftime('%Y-%m-%d')
+    today = datetime.today().strftime("%Y-%m-%d")
     output_path = f"{output_path}/dt={today}/"
-    df.write.parquet(path=output_path, mode='overwrite')
+    df.write.parquet(path=output_path, mode="overwrite")
 
     # Log output file path
     logging.info(f"Wrote data to {output_path}")
@@ -50,13 +54,14 @@ def process_file(spark, delimiter, quote, input_file, output_path):
 
 
 def perform_quality_checks(output_path, resources_bucket):
-   session = boto3.Session()
-   s3_client = session.client("s3")
-   response = s3_client.get_object(
-     Bucket=resources_bucket,
-     Key="great_expectations/great_expectations.yml",
-   )
-   config_file = yaml.safe_load(response["Body"])
+    session = boto3.Session()
+    s3_client = session.client("s3")
+    response = s3_client.get_object(
+        Bucket=resources_bucket,
+        Key="great_expectations/great_expectations.yml",
+    )
+    config_file = yaml.safe_load(response["Body"])
+
 
 #    df = spark.read.parquet(output_path)
 
@@ -145,9 +150,9 @@ def perform_quality_checks(output_path, resources_bucket):
 #    context_gx.build_data_docs()
 
 
-
 def notify_downstream():
     pass
+
 
 if __name__ == "__main__":
     # Read args

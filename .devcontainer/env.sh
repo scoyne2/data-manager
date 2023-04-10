@@ -38,3 +38,17 @@ cd frontend && npm install next && yarn install
 # Set default port for local testing of Go API
 export POSTGRES_PORT=5432
 export API_HOST=localhost
+
+# Install lambda testing requirements
+pip install boto3==1.26.109
+pip install pytest-cov==4.0.0
+export APPLICATION_ID="999999999999"
+export JOB_ROLE_ARN="arn:aws:iam::999999999999:role/fake"
+export SCRIPT_LOCATION="test_script_location"
+export OUTPUT_BUCKET="test_outputbucket"
+export RESOURCE_BUCKET="test_resource_bucket"
+
+# Add codecov
+curl -Os https://uploader.codecov.io/latest/linux/codecov
+chmod +x codecov
+export CODECOV_TOKEN=${CODECOV_TOKEN}
