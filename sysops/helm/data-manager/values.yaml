@@ -10,6 +10,8 @@ awsRegion: ""
 
 certificateARN: ""
 
+wafARN: ""
+
 # https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
 aws-load-balancer-controller:
   clusterName: data-manager-eks

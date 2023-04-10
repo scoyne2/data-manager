@@ -109,3 +109,53 @@ output "aws_acm_certificate_arn" {
   description = "ARN of ACM Certificate"
   value = aws_acm_certificate.cert.arn
 }
+
+resource "aws_wafv2_ip_set" "ip_allow_list" {
+  name               = "datamanager_ip_allow_list"
+  description        = "Data Manager IP Allow List"
+  scope              = "REGIONAL"
+  ip_address_version = "IPV4"
+  addresses          = [local.envs["ALLOWED_IP_ADDRESS"]]
+}
+
+resource "aws_wafv2_web_acl" "wafacl" {
+  name = "datamanager_waf"
+
+  scope = "REGIONAL"
+
+  default_action {
+    block {}
+  }
+
+  rule {
+    name     = "ip-allowlist"
+    priority = 1
+
+    action {
+      allow {}
+    }
+
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.ip_allow_list.arn
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AllowlistedIP"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "Blocked"
+    sampled_requests_enabled   = true
+  }
+}
+
+output "aws_wafv2_web_acl_arn" {
+  description = "ARN of waf"
+  value = aws_wafv2_web_acl.wafacl.arn
+}

@@ -37,5 +37,6 @@ The front end uses HTTPS. In your browser navigate to https://app.YOURDOMAIN.com
 The api end uses HTTPS. In your browser navigate to https://api.YOURDOMAIN/sandbox
 
 ## Database Admin
+! Currently not locked down by WAF
 The db admin end uses HTTP. In your browser navigate to http://pgadmin.YOURDOMAIN.com
 Use the credentials you set in your ``.env`` file.

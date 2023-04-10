@@ -37,3 +37,9 @@ output "aws_acm_certificate_arn" {
   value = module.eks.aws_acm_certificate_arn
   sensitive = false
 }
+
+output "aws_wafv2_web_acl_arn" {
+  description = "ARN of waf"
+  value = module.eks.aws_wafv2_web_acl_arn
+  sensitive = false
+}
