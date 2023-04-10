@@ -5,9 +5,7 @@ import logging
 import boto3
 import yaml
 
-from pyspark.sql.session import SparkSvvcccbggklvfdjiubtkgrgkldnlukccfdfhtbcktfdbk
-
-ession
+from pyspark.sql.session import SparkSession
 
 
 def create_spark_session(input_file):

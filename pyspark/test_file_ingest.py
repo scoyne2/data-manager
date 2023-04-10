@@ -3,14 +3,20 @@ from unittest.mock import patch
 
 from pyspark.sql.session import SparkSession
 
-from my_script import create_spark_session, inspect_file, process_file, perform_quality_checks
+from file_ingest import (
+    create_spark_session,
+    inspect_file,
+    process_file,
+    perform_quality_checks,
+)
 
 
 class TestMyScript(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        cls.spark = SparkSession.builder.appName("test").enableHiveSupport().getOrCreate()
+        cls.spark = (
+            SparkSession.builder.appName("test").enableHiveSupport().getOrCreate()
+        )
 
     def test_create_spark_session(self):
         spark = create_spark_session("test")
@@ -35,12 +41,28 @@ class TestMyScript(unittest.TestCase):
     def test_process_file(self):
         with patch("my_script.logging.info") as mock_logging_info:
             # Test reading and writing to parquet
-            process_file(self.spark, ",", "", "tests/fixtures/test_file2.csv", "tests/fixtures/output/")
-            mock_logging_info.assert_called_with("Wrote data to tests/fixtures/output/dt=")
+            process_file(
+                self.spark,
+                ",",
+                "",
+                "tests/fixtures/test_file2.csv",
+                "tests/fixtures/output/",
+            )
+            mock_logging_info.assert_called_with(
+                "Wrote data to tests/fixtures/output/dt="
+            )
 
             # Test file with quoted values
-            process_file(self.spark, ",", '"', "tests/fixtures/test_file3.csv", "tests/fixtures/output/")
-            mock_logging_info.assert_called_with("Wrote data to tests/fixtures/output/dt=")
+            process_file(
+                self.spark,
+                ",",
+                '"',
+                "tests/fixtures/test_file3.csv",
+                "tests/fixtures/output/",
+            )
+            mock_logging_info.assert_called_with(
+                "Wrote data to tests/fixtures/output/dt="
+            )
 
     @patch("my_script.boto3.Session")
     def test_perform_quality_checks(self, mock_boto_session):
