@@ -17,7 +17,7 @@ import InformationOutline from "mdi-material-ui/InformationOutline";
 
 // ** Demo Tabs Imports
 import TabInfo from "src/views/feed-details/TabLogs";
-import TabAccount from "src/views/feed-details/TabAccount";
+// import TabAccount from "src/views/feed-details/TabAccount";
 import TabSecurity from "src/views/feed-details/TabSecurity";
 
 // ** Third Party Styles Imports
@@ -86,9 +86,9 @@ const AccountSettings = () => {
           />
         </TabList>
 
-        <TabPanel sx={{ p: 0 }} value="account">
+        {/* <TabPanel sx={{ p: 0 }} value="account">
           <TabAccount />
-        </TabPanel>
+        </TabPanel> */}
         <TabPanel sx={{ p: 0 }} value="security">
           <TabSecurity />
         </TabPanel>

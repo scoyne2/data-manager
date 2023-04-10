@@ -115,7 +115,7 @@ terraform.tfstate.backup
 terraform.tfstate
 app.zip
 app
-sysops/terraform/lambda/main.zip
+
 
 # Helm
 Chart.lock
