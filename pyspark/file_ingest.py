@@ -31,10 +31,9 @@ def inspect_file(spark, header):
     return delimiter, quote
 
 
-def process_file(spark, delimiter, quote, input_file, output_path):
+def process_file(spark, input_df, output_path):
     # read the input file, header is required
-    df = spark.read.csv(input_file, sep=delimiter, quote=quote, header=True)
-    input_count = df.count()
+    input_count = input_df.count()
     logging.info(f"Reading file {input_file} with {input_count} rows")
 
     # write to parquet, allow overwrite. partitioned by /FILENAME/dt=YYYY-MM-DD/
@@ -175,7 +174,8 @@ if __name__ == "__main__":
     delimiter, quote = inspect_file(spark, header)
 
     # Convert file to parquet
-    process_file(spark, delimiter, quote, input_file, output_path)
+    input_df = spark.read.csv(input_file, sep=delimiter, quote=quote, header=True)
+    process_file(spark, input_df, output_path)
 
     # Run Quality Checks and log results
     perform_quality_checks(output_path, resources_bucket)
