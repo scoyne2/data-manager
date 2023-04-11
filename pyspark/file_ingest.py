@@ -18,9 +18,8 @@ def create_spark_session(input_file):
     return spark
 
 
-def inspect_file(spark, input_file):
+def inspect_file(spark, header):
     # Check if header has '|' or ',' if so set delimiter
-    header = spark.read.text(input_file).first()[0]
     quote = ""
     delimiter = ""
     if header.count('"') >= 2:
@@ -172,7 +171,8 @@ if __name__ == "__main__":
     spark = create_spark_session(input_file)
 
     # Gather data about file format
-    delimiter, quote = inspect_file(spark, input_file)
+    header = spark.read.text(input_file).first()[0]
+    delimiter, quote = inspect_file(spark, header)
 
     # Convert file to parquet
     process_file(spark, delimiter, quote, input_file, output_path)
