@@ -1,12 +1,11 @@
 import argparse
 from datetime import datetime
 import logging
-
+import requests
 import boto3
 import yaml
 
 from pyspark.sql.session import SparkSession
-
 
 def create_spark_session(input_file):
     spark = (
@@ -18,7 +17,7 @@ def create_spark_session(input_file):
     return spark
 
 
-def inspect_file(spark, header):
+def inspect_file(header):
     # Check if header has '|' or ',' if so set delimiter
     quote = ""
     delimiter = ""
@@ -31,7 +30,7 @@ def inspect_file(spark, header):
     return delimiter, quote
 
 
-def process_file(spark, input_df, output_path):
+def process_file(spark, input_df, output_path) -> int:
     # read the input file, header is required
     input_count = input_df.count()
     logging.info(f"Reading file {input_file} with {input_count} rows")
@@ -39,7 +38,7 @@ def process_file(spark, input_df, output_path):
     # write to parquet, allow overwrite. partitioned by /FILENAME/dt=YYYY-MM-DD/
     today = datetime.today().strftime("%Y-%m-%d")
     output_path = f"{output_path}/dt={today}/"
-    df.write.parquet(path=output_path, mode="overwrite")
+    input_df.write.parquet(path=output_path, mode="overwrite")
 
     # Log output file path
     logging.info(f"Wrote data to {output_path}")
@@ -47,9 +46,10 @@ def process_file(spark, input_df, output_path):
     # QA counts
     output_count = spark.read.parquet(output_path).count()
     logging.info(f"Read {input_count} rows, wrote {output_count} rows.")
+    return output_count
 
 
-def perform_quality_checks(output_path, resources_bucket):
+def perform_quality_checks(output_path, resources_bucket) -> int:
     session = boto3.Session()
     s3_client = session.client("s3")
     response = s3_client.get_object(
@@ -57,7 +57,31 @@ def perform_quality_checks(output_path, resources_bucket):
         Key="great_expectations/great_expectations.yml",
     )
     config_file = yaml.safe_load(response["Body"])
+    error_count = 0
+    return error_count
 
+def update_feed_status(graphql_url: str, vendor: str, feed_name: str, file_name: str, feed_method: str, record_count: int, error_count: int, status: str) -> int:
+    process_date = datetime.today().strftime("%Y-%m-%d")
+    query = """
+        mutation UpdateFeedStatus
+            $vendor: String!
+            $feedName: String!
+            $fileName: String!
+            $feedMethod: String!
+            $recordCount: String!
+            $processDate: String!
+            $errorCount: String!
+            $status: String!
+            ){
+                updateFeedStatus(vendor: $vendor, feedName: $feedName, fileName: $fileName, feedMethod: $feedMethod,
+                recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
+            }
+    """
+    r = requests.post(graphql_url, json={'query': query, 'vendor': vendor,
+                                  'feedName': feed_name, 'fileName': file_name, 'feedMethod': feed_method,
+                                  'recordCount': record_count, 'processDate': process_date,
+                                  'errorCount': error_count, 'status': status})
+    return r.status_code
 
 #    df = spark.read.parquet(output_path)
 
@@ -153,6 +177,11 @@ def notify_downstream():
 if __name__ == "__main__":
     # Read args
     parser = argparse.ArgumentParser(description="Spark Job Arguments")
+    parser.add_argument("--vendor", required=True, help="Vendor Name")
+    parser.add_argument("--feed_name", required=True, help="Feed Name")
+    parser.add_argument("--file_name", required=True, help="File Name")
+    parser.add_argument("--feed_method", required=True, help="Feed Method")
+    parser.add_argument("--graphql_url", required=True, help="GraphQL URL")
     parser.add_argument("--input_file", required=True, help="Input S3 Path")
     parser.add_argument("--output_path", required=True, help="Output S3 Path")
     parser.add_argument("--file_extension", required=True, help="File Extension")
@@ -160,6 +189,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Parse args
+    vendor = args.vendor
+    feed_name = args.feed_name
+    file_name = args.file_name
+    feed_method = args.feed_method
+    graphql_url = args.graphql_url
     input_file = args.input_file
     output_path = args.output_path
     file_extension = args.file_extension
@@ -171,14 +205,34 @@ if __name__ == "__main__":
 
     # Gather data about file format
     header = spark.read.text(input_file).first()[0]
-    delimiter, quote = inspect_file(spark, header)
+    delimiter, quote = inspect_file(header)
+
+    # Read file
+    input_df = spark.read.csv(input_file, sep=delimiter, quote=quote, header=True)
+
+    # Update Feed Status
+    record_count = input_df.count()
+    error_count = 0
+    resp = update_feed_status(graphql_url, vendor, feed_name, feed_method, file_name, record_count, error_count, "Processing")
 
     # Convert file to parquet
-    input_df = spark.read.csv(input_file, sep=delimiter, quote=quote, header=True)
-    process_file(spark, input_df, output_path)
+    processed_count = process_file(spark, input_df, output_path)
+    error_count = record_count - processed_count
+    resp = update_feed_status(graphql_url, vendor, feed_name, feed_method, file_name, record_count, error_count, "Quality Checks")
 
     # Run Quality Checks and log results
-    perform_quality_checks(output_path, resources_bucket)
+    error_count_from_qa = perform_quality_checks(output_path, resources_bucket)
+    error_count = error_count_from_qa
+
+    # Determine status
+    # TODO allow user to configure threshold peer feed on what is considered a failure
+    if record_count == error_count:
+        status = "Failed"
+    elif error_count_from_qa > 0:
+        status = "Errors"
+    else:
+        status = "Success"
 
     # Make call to data-manager API to move on to next steps (update postgres table, trigger glue crawlers, etc)
-    notify_downstream()
+    notify_downstream(vendor, feed_name, input_file)
+    resp = update_feed_status(graphql_url, vendor, feed_name, file_name ,feed_method, record_count, error_count_from_qa, status)

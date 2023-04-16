@@ -59,6 +59,28 @@ func (fs FeedService) UpdateFeed(p graphql.ResolveParams) (interface{}, error) {
 }
 
 
+func (fs FeedService) UpdateFeedStatus(p graphql.ResolveParams) (interface{}, error) {
+	processDate := p.Args["processDate"].(string)
+	recordCount := p.Args["recordCount"].(int)
+	errorCount := p.Args["errorCount"].(int)
+	status := p.Args["status"].(string)
+	fileName := p.Args["fileName"].(string)
+	vendor := p.Args["vendor"].(string)
+	feedName := p.Args["feedName"].(string)
+
+
+	var feedStatusUpdate FeedStatusUpdate
+	feedStatusUpdate.ProcessDate = processDate
+	feedStatusUpdate.RecordCount = recordCount
+	feedStatusUpdate.ErrorCount = errorCount
+	feedStatusUpdate.Status = status
+	feedStatusUpdate.FileName = fileName
+	feedStatusUpdate.Vendor = vendor
+	feedStatusUpdate.FeedName = feedName
+
+	return fs.repo.UpdateFeedStatus(feedStatusUpdate)
+}
+
 
 func (fs FeedService) AddFeed(p graphql.ResolveParams) (interface{}, error) {
 	vendor := p.Args["vendor"].(string)

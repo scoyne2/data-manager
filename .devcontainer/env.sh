@@ -35,8 +35,7 @@ make build_lambda
 # Install next js
 cd frontend && npm install next && yarn install
 
-# Set default port for local testing of Go API
-export POSTGRES_PORT=5432
+# Set default for local testing of Go API
 export API_HOST=localhost
 
 # Install lambda testing requirements
@@ -44,6 +43,7 @@ pip install boto3==1.26.109
 pip install pytest-cov==4.0.0
 pip install pyspark==3.3.2
 pip install PyYAML==6.0
+pip install requests==2.26.0 
 export APPLICATION_ID="999999999999"
 export JOB_ROLE_ARN="arn:aws:iam::999999999999:role/fake"
 export SCRIPT_LOCATION="test_script_location"

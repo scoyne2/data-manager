@@ -13,6 +13,18 @@ type FeedStatus struct {
 	RecordCount int    `json:"record_count"`
 	ErrorCount	int    `json:"error_count"`
 	Status	    string `json:"feed_status"`
+	FileName   	string `json:"file_name"`
+	FeedID      int    `json:"feed_id"`
+}
+
+type FeedStatusUpdate struct {
+	ProcessDate string `json:"process_date"`
+	RecordCount int    `json:"record_count"`
+	ErrorCount	int    `json:"error_count"`
+	Status	    string `json:"feed_status"`
+	FileName   	string `json:"file_name"`
+	Vendor     	string `json:"vendor"`
+	FeedName   	string `json:"feed_name"`
 }
 
 type FeedStatusResults struct {
@@ -24,6 +36,7 @@ type FeedStatusResults struct {
 	Vendor     	string `json:"vendor"`
 	FeedName   	string `json:"feed_name"`
 	FeedMethod	string `json:"feed_method"`
+	FileName   	string `json:"file_name"`
 }
 
 type FeedStatusAggregate struct {
@@ -40,5 +53,6 @@ type Repository interface {
 	DeleteFeed(id int) (string, error)
 
 	GetFeedStatuses() ([]FeedStatusResults, error)
+	UpdateFeedStatus(feedStatusUpdate FeedStatusUpdate) (string, error)
 	GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error)
 }

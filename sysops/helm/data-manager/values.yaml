@@ -96,12 +96,13 @@ postgresql:
               process_date TEXT,
               record_count INTEGER,
               error_count INTEGER,
-              feed_status TEXT);
-          INSERT INTO feed_status (feed_id, process_date, record_count, error_count, feed_status)
-          VALUES (1, '2021-03-31 22:30:20', 1958623, 0, 'success'),
-                 (1, '2017-03-31 14:30:20', 2389635, 61, 'errors'),
-                 (2, '2022-03-31 08:30:20', 0, 500, 'failed'),
-                 (2, '2022-03-31 11:30:20', 13076, 0, 'success');
+              feed_status TEXT,
+              file_name TEXT);
+          INSERT INTO feed_status (feed_id, process_date, record_count, error_count, feed_status, file_name)
+          VALUES (1, '2021-03-31 22:30:20', 1958623, 0, 'Success', 'fake_file.txt'),
+                 (1, '2017-03-31 14:30:20', 2389635, 61, 'Errors', 'fake_file2.txt'),
+                 (2, '2022-03-31 08:30:20', 0, 500, 'Failed', 'fake_file3.txt'),
+                 (2, '2022-03-31 11:30:20', 13076, 0, 'Success', 'fake_file4.csv');
 
 # https://github.com/rowanruseler/helm-charts/blob/master/charts/pgadmin4/values.yaml
 pgadmin4:

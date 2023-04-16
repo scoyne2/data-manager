@@ -76,7 +76,7 @@ var sandboxHtmlString = fmt.Sprintf(`<!DOCTYPE html>
    target: "#sandbox",
    // Pass through your server href if you are embedding on an endpoint.
    // Otherwise, you can pass whatever endpoint you want Sandbox to start up with here.
-   initialEndpoint: "https://%s/graphql",
+   initialEndpoint: "http://%s:8080/graphql",
  });
  // advanced options: https://www.apollographql.com/docs/studio/explorer/sandbox#embedding-sandbox
 </script>

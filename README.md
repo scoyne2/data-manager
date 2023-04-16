@@ -44,3 +44,7 @@ Use the credentials you set in your ``.env`` file.
 
 ## Testing
 * To run tests and upload coverage run `make test`
+
+## Additional Documentation
+### GraphQL API
+### Ingestion Process
