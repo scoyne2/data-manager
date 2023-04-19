@@ -6,6 +6,7 @@ import boto3
 import yaml
 
 from pyspark.sql.session import SparkSession
+from pyspark.sql.functions import lit
 
 def create_spark_session(input_file):
     spark = (
@@ -30,15 +31,22 @@ def inspect_file(header):
     return delimiter, quote
 
 
-def process_file(spark, input_df, output_path) -> int:
+def process_file(spark, input_df, output_path, base_database_name, vendor, feed) -> int:
     # read the input file, header is required
     input_count = input_df.count()
     logging.info(f"Reading file {input_file} with {input_count} rows")
 
     # write to parquet, allow overwrite. partitioned by /FILENAME/dt=YYYY-MM-DD/
     today = datetime.today().strftime("%Y-%m-%d")
-    output_path = f"{output_path}/dt={today}/"
-    input_df.write.parquet(path=output_path, mode="overwrite")
+    output_df = input_df.withColumn("dt", lit(today))
+
+    database_name = f"data_manager_output_{vendor}"
+    glue_table_name = f"{database_name}.{feed}"
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")  # noqa: F821
+    input_df.write.partitionBy("dt").format("parquet").mode("overwrite").saveAsTable(
+        glue_table_name, path=output_path
+    )
+    logging.info(f"Dataframe was written to output path : {output_path}")
 
     # Log output file path
     logging.info(f"Wrote data to {output_path}")
