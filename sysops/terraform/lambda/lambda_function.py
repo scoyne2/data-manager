@@ -47,7 +47,7 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
                 recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
             }
     """
-    url = f"api.{DOMAIN_NAME}"
+    url = f"https://api.{DOMAIN_NAME}"
     r = requests.post(url, json={'query': query, 'vendor': vendor,
                                   'feedName': feed_name, 'fileName': file_name, 'feedMethod': feed_method,
                                   'recordCount': record_count, 'processDate': process_date,
