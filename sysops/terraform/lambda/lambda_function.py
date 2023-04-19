@@ -47,7 +47,7 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
                 recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
             }
     """
-    url = GRAPHQL_URL
+    url = f"api.{DOMAIN_NAME}"
     r = requests.post(url, json={'query': query, 'vendor': vendor,
                                   'feedName': feed_name, 'fileName': file_name, 'feedMethod': feed_method,
                                   'recordCount': record_count, 'processDate': process_date,
@@ -83,7 +83,7 @@ def lambda_handler(event, context):
         "--feed_method",
         feed_method,
         "--graphql_url",
-        GRAPHQL_URL,
+        f"api.{DOMAIN_NAME}",
         "--input_file",
         input_file,
         "--file_extension",
