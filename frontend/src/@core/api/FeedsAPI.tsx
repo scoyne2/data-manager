@@ -23,9 +23,9 @@ export interface StatusObj {
 }
 
 export const statusObj: StatusObj = {
-  failed: { color: "error" },
-  errors: { color: "warning" },
-  success: { color: "success" },
+  Failed: { color: "error" },
+  Errors: { color: "warning" },
+  Success: { color: "success" },
 };
 
 const column_names: string[] = [

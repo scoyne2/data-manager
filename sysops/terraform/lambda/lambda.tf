@@ -117,21 +117,6 @@ resource "aws_s3_bucket_object" "test_file" {
   etag = filemd5("${path.module}/../../../tests/lambda_manual_test/hello.csv")
 }
 
-resource "aws_s3_bucket_acl" "data_manager_trigger_acl" {
-  bucket = aws_s3_bucket.data_manager_trigger_s3.id
-  acl    = "private"
-}
-
-resource "aws_s3_bucket_acl" "data_manager_processed_acl" {
-  bucket = aws_s3_bucket.data_manager_processed_s3.id
-  acl    = "private"
-}
-
-resource "aws_s3_bucket_acl" "data_manager_resources_acl" {
-  bucket = aws_s3_bucket.data_manager_resources_s3.id
-  acl    = "private"
-}
-
 resource "aws_lambda_permission" "allow_bucket" {
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
