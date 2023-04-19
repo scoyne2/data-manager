@@ -31,22 +31,21 @@ def inspect_file(header):
     return delimiter, quote
 
 
-def process_file(spark, input_df, output_path, base_database_name, vendor, feed) -> int:
+def process_file(spark, input_df, output_path, vendor, feed_name) -> int:
     # read the input file, header is required
     input_count = input_df.count()
     logging.info(f"Reading file {input_file} with {input_count} rows")
 
-    # write to parquet, allow overwrite. partitioned by /FILENAME/dt=YYYY-MM-DD/
+    # write to parquet, allow overwrite. partitioned by /dt=YYYY-MM-DD/
     today = datetime.today().strftime("%Y-%m-%d")
     output_df = input_df.withColumn("dt", lit(today))
 
     database_name = f"data_manager_output_{vendor}"
-    glue_table_name = f"{database_name}.{feed}"
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")  # noqa: F821
-    input_df.write.partitionBy("dt").format("parquet").mode("overwrite").saveAsTable(
+    glue_table_name = f"{database_name}.{feed_name}"
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
+    output_df.write.partitionBy("dt").format("parquet").mode("overwrite").saveAsTable(
         glue_table_name, path=output_path
     )
-    logging.info(f"Dataframe was written to output path : {output_path}")
 
     # Log output file path
     logging.info(f"Wrote data to {output_path}")
@@ -177,11 +176,6 @@ def update_feed_status(graphql_url: str, vendor: str, feed_name: str, file_name:
 #    validation_result_identifier = results.list_validation_result_identifiers()[0]
 #    context_gx.build_data_docs()
 
-
-def notify_downstream():
-    pass
-
-
 if __name__ == "__main__":
     # Read args
     parser = argparse.ArgumentParser(description="Spark Job Arguments")
@@ -224,7 +218,7 @@ if __name__ == "__main__":
     resp = update_feed_status(graphql_url, vendor, feed_name, feed_method, file_name, record_count, error_count, "Processing")
 
     # Convert file to parquet
-    processed_count = process_file(spark, input_df, output_path)
+    processed_count = process_file(spark, input_df, output_path, vendor, feed_name)
     error_count = record_count - processed_count
     resp = update_feed_status(graphql_url, vendor, feed_name, feed_method, file_name, record_count, error_count, "Quality Checks")
 
@@ -241,6 +235,5 @@ if __name__ == "__main__":
     else:
         status = "Success"
 
-    # Make call to data-manager API to move on to next steps (update postgres table, trigger glue crawlers, etc)
-    notify_downstream(vendor, feed_name, input_file)
+    # Update Final Feed Status
     resp = update_feed_status(graphql_url, vendor, feed_name, file_name ,feed_method, record_count, error_count_from_qa, status)
