@@ -2,7 +2,7 @@ import boto3
 import os
 import requests
 import urllib.parse
-from datatime import datetime
+from datetime import datetime
 
 client = boto3.client("emr-serverless")
 
@@ -11,7 +11,7 @@ JOB_ROLE_ARN = os.environ["JOB_ROLE_ARN"]
 SCRIPT_LOCATION = os.environ["SCRIPT_LOCATION"]
 OUTPUT_BUCKET = os.environ["OUTPUT_BUCKET"]
 RESOURCE_BUCKET = os.environ["RESOURCE_BUCKET"]
-GRAPHQL_URL = os.environ["GRAPHQL_URL"]
+DOMAIN_NAME = os.environ["DOMAIN_NAME"]
 
 def add_feed(vendor: str, feed_name: str, feed_method: str) -> int:
     query = """
@@ -22,7 +22,7 @@ def add_feed(vendor: str, feed_name: str, feed_method: str) -> int:
                 addFeed(vendor: $vendor, feedName: $feedName, feedMethod: $feedMethod)
             }
     """
-    url = GRAPHQL_URL
+    url = f"api.{DOMAIN_NAME}"
     r = requests.post(url, json={'query': query, 'vendor': vendor,
                                   'feedName': feed_name, 'feedMethod': feed_method})
     return r.status_code

@@ -53,6 +53,7 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
       RESOURCE_BUCKET    = aws_s3_bucket.data_manager_resources_s3.bucket
       SCRIPT_LOCATION    = "${aws_s3_bucket.data_manager_resources_s3.bucket}/scripts/file_ingest.py"
       JOB_ROLE_ARN       = var.aws_emrserverless_role_arn
+      DOMAIN_NAME        = local.envs["DOMAIN_NAME"]
     }
   }
 }
