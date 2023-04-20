@@ -155,7 +155,7 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 		sqlStatement := `
 		INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id)
 		VALUES ($1, $2, $3, $4, $5, $6);`
-		_, err := pr.db.Exec(sqlStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, f.FeedID)
+		_, err := pr.db.Exec(sqlStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, fd.ID)
 		if err != nil {
 			return "", err
 		}
