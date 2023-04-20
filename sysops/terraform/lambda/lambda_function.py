@@ -83,6 +83,7 @@ def lambda_handler(event, context):
     # Make Call to GraphQL API to add feed
     add_feed(vendor.title(), feed.title(), feed_method)
     response_status_code, response_body = file_received(vendor.title(), feed.title(), file_name, feed_method)
+    return {"statusCode": response_status_code, "body": f" resp: {response_body}"}
 
     python_zip_path = f"s3://{RESOURCE_BUCKET}/pyspark_requirements/pyspark_requirements.tar.gz#environment"
     spark_submit_args = (
