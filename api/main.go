@@ -55,7 +55,7 @@ func StartServer(schema *graphql.Schema) {
 	http.HandleFunc("/health_check", check)
 	http.Handle("/graphql", CorsMiddleware(h))
 
-	// Access via http://$API_HOST/sandbox
+	// Access via https://$API_HOST/sandbox
 	http.Handle("/sandbox", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write(sandboxHTML)
 	}))

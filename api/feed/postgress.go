@@ -141,7 +141,7 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 
 	// check if feed status exists
 	sqlStatementFdS := `
-	SELECT fd.id, fd.process_date, fd.record_count, fd.error_count, fd.feed_status, fd.file_name, fd.feed_id
+	SELECT fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status, fs.file_name, f.id
 	FROM feeds f
 	LEFT JOIN feed_status fs
 	ON fs.feed_id = f.id
@@ -150,7 +150,7 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 	var f FeedStatus
 	feedStatusError := feedStatusRows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.FileName, &f.FeedID)
 
-	if feedStatusError == sql.ErrNoRows || f.ID == nil {
+	if feedStatusError == sql.ErrNoRows {
 		// if feed status does not exist insert record
 		sqlStatement := `
 		INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id)
@@ -170,7 +170,7 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 		if err != nil {
 			return "nil", err
 		}
-		return "Feed status updated", nil
+		return fmt.Sprintf("Feed status updated for id: %n", f.ID), nil
 	}
 }
 
