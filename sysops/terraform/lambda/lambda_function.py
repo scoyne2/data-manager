@@ -29,35 +29,21 @@ def add_feed(vendor: str, feed_name: str, feed_method: str):
     return r.status_code, r.json()
 
 def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str):
-    record_count = 0
     process_date = datetime.today().strftime("%Y-%m-%d")
-    error_count =0
-    status = "Received"
     query = """
-        mutation UpdateFeedStatus(
-          $recordCount: Int!
-          $errorCount: Int!
-          $status: String!
-          $fileName: String!
-          $vendor: String!
-          $feedName: String!
-          $processDate: String!
-        ) {
+        mutation UpdateFeedStatus {
           updateFeedStatus(
-            recordCount: $recordCount
-            errorCount: $errorCount
-            status: $status
-            fileName: $fileName
-            vendor: $vendor
-            feedName: $feedName
-            processDate: $processDate
+            recordCount: 0
+            errorCount: 0
+            status: "Received"
+            fileName: {file_name}
+            vendor: {vendor}
+            feedName: {feed_name}
+            processDate: {process_date}
           )
         }
-    """
-    r = requests.post(GRAPHQL_URL, json={'query': query, 'vendor': vendor,
-                                  'feedName': feed_name, 'fileName': file_name,
-                                  'recordCount': record_count, 'processDate': process_date,
-                                  'errorCount': error_count, 'status': status})
+    """.format(file_name=file_name, vendor=vendor, feed_name=feed_name, process_date=process_date)
+    r = requests.post(GRAPHQL_URL, json={'query': query})
     return r.status_code, r.json()
 
 def lambda_handler(event, context):
