@@ -72,9 +72,9 @@ def update_feed_status(graphql_url: str, vendor: str, feed_name: str, file_name:
     query = (
         'mutation UpdateFeedStatus {'
         '  updateFeedStatus('
-        '    recordCount: 0'
-        '    errorCount: 0'
-        '    status: "Received"'
+       f'    recordCount: {record_count}'
+       f'    errorCount: {error_count}'
+       f'    status: "{status}"'
        f'    fileName: "{file_name}"'
        f'    vendor: "{vendor}"'
        f'    feedName: "{feed_name}"'

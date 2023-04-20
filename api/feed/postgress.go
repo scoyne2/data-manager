@@ -105,8 +105,7 @@ func (pr *PostgressRepository) AddFeed(feed Feed) (string, error) {
 	WHERE
 	NOT EXISTS (
 	SELECT * FROM feeds WHERE vendor = $1 AND feed_name =  $2 AND feed_method = $3
-	);
-	;`
+	);`
 
 	_, err := pr.db.Exec(sqlStatement, feed.Vendor, feed.FeedName, feed.FeedMethod)
 	if err != nil {
