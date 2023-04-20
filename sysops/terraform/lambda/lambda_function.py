@@ -43,8 +43,7 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
             $errorCount: String!
             $status: String!
             ){
-                updateFeedStatus(vendor: $vendor, feedName: $feedName, fileName: $fileName, status:status
-                recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
+                updateFeedStatus(vendor: $vendor, feedName: $feedName, fileName: $fileName, $status: status, recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
             }
     """
     r = requests.post(GRAPHQL_URL, json={'query': query, 'vendor': vendor,
