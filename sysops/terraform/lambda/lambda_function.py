@@ -38,18 +38,17 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
             $vendor: String!
             $feedName: String!
             $fileName: String!
-            $feedMethod: String!
             $recordCount: String!
             $processDate: String!
             $errorCount: String!
             $status: String!
             ){
-                updateFeedStatus(vendor: $vendor, feedName: $feedName, fileName: $fileName, feedMethod: $feedMethod,
+                updateFeedStatus(vendor: $vendor, feedName: $feedName, fileName: $fileName,
                 recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
             }
     """
     r = requests.post(GRAPHQL_URL, json={'query': query, 'vendor': vendor,
-                                  'feedName': feed_name, 'fileName': file_name, 'feedMethod': feed_method,
+                                  'feedName': feed_name, 'fileName': file_name,
                                   'recordCount': record_count, 'processDate': process_date,
                                   'errorCount': error_count, 'status': status})
     return r.status_code, r.json()
