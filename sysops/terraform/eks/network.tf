@@ -159,3 +159,9 @@ output "aws_wafv2_web_acl_arn" {
   description = "ARN of waf"
   value = aws_wafv2_web_acl.wafacl.arn
 }
+
+output "vpc_id" {
+  description = "VPC ID"
+  value = aws_vpc.data-manager-eks-vpc.cidr_block
+}
+

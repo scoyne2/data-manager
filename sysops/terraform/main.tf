@@ -30,6 +30,9 @@ module "lambda" {
 
 module "emr" {
   source = "./emr"
+  security_group_ids = module.eks.security_group_ids
+  vpc_id = module.eks.vpc_id
+  vpc_cidr_block = module.eks.vpc_cidr_block
 }
 
 output "aws_acm_certificate_arn" {

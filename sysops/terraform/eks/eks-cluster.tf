@@ -111,3 +111,15 @@ resource "aws_iam_role_policy_attachment" "aws_node_LB" {
   policy_arn = aws_iam_policy.load_balancer_controller_iam_policy.arn
   depends_on = [aws_iam_role.aws_node, aws_iam_policy.load_balancer_controller_iam_policy]
 }
+
+output "security_group_ids" {
+  description = "EKS Security Group IDs"
+  value = [aws_security_group.data_manager_eks_cluster_sg.id]
+  sensitive = false
+}
+
+output "vpc_cidr_block" {
+  description = "EKS PC CIDR Block"
+  value = [aws_security_group.data_manager_eks_cluster_sg.id]
+  sensitive = false
+}

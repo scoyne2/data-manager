@@ -1,3 +1,8 @@
+variable "security_group_ids" {}
+variable "vpc_id" {}
+variable "vpc_cidr_block" {}
+
+
 locals {
   envs = { for tuple in regexall("(.*)=(.*)", file("../../.env")) : tuple[0] => sensitive(tuple[1]) }
 }
@@ -8,10 +13,21 @@ provider "aws" {
   profile                  = local.envs["AWS_PROFILE"]
 }
 
+resource "aws_subnet" "emr_serverless_subnet" {
+  count = 2
+  vpc_id     = var.vpc_id
+  cidr_block = cidrsubnet(var.vpc_cidr_block, 8, count.index)
+}
+
 resource "aws_emrserverless_application" "data_manager_emr_serverless" {
   name          = "data_manager_emr_serverless"
   release_label = "emr-6.6.0"
   type          = "spark"
+
+  network_configuration {
+    security_group_ids = var.security_group_ids
+    subnet_ids = aws_subnet.emr_serverless_subnet.*.id
+  }
 
   initial_capacity {
     initial_capacity_type = "Driver"
