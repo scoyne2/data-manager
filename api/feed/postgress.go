@@ -151,7 +151,7 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 	var f FeedStatus
 	feedStatusError := feedStatusRows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.FileName, &f.FeedID)
 
-	if feedStatusError == sql.ErrNoRows {
+	if feedStatusError == sql.ErrNoRows || f.ID == nil {
 		// if feed status does not exist insert record
 		sqlStatement := `
 		INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id)

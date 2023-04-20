@@ -69,26 +69,21 @@ def perform_quality_checks(output_path, resources_bucket) -> int:
 
 def update_feed_status(graphql_url: str, vendor: str, feed_name: str, file_name: str, feed_method: str, record_count: int, error_count: int, status: str) -> int:
     process_date = datetime.today().strftime("%Y-%m-%d")
-    query = """
-        mutation UpdateFeedStatus
-            $vendor: String!
-            $feedName: String!
-            $fileName: String!
-            $feedMethod: String!
-            $recordCount: String!
-            $processDate: String!
-            $errorCount: String!
-            $status: String!
-            ){
-                updateFeedStatus(vendor: $vendor, feedName: $feedName, fileName: $fileName, feedMethod: $feedMethod,
-                recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
-            }
-    """
-    r = requests.post(graphql_url, json={'query': query, 'vendor': vendor,
-                                  'feedName': feed_name, 'fileName': file_name, 'feedMethod': feed_method,
-                                  'recordCount': record_count, 'processDate': process_date,
-                                  'errorCount': error_count, 'status': status})
-    return r.status_code
+    query = (
+        'mutation UpdateFeedStatus {'
+        '  updateFeedStatus('
+        '    recordCount: 0'
+        '    errorCount: 0'
+        '    status: "Received"'
+       f'    fileName: "{file_name}"'
+       f'    vendor: "{vendor}"'
+       f'    feedName: "{feed_name}"'
+       f'    processDate: "{process_date}"'
+       f'  )'
+        '}'
+     )
+    r = requests.post(GRAPHQL_URL, json={'query': query})
+    return r.status_code, r.json()
 
 #    df = spark.read.parquet(output_path)
 
@@ -220,7 +215,7 @@ if __name__ == "__main__":
     # Convert file to parquet
     processed_count = process_file(spark, input_df, output_path, vendor, feed_name)
     error_count = record_count - processed_count
-    resp = update_feed_status(graphql_url, vendor, feed_name, feed_method, file_name, record_count, error_count, "Quality Checks")
+    resp = update_feed_status(graphql_url, vendor, feed_name, feed_method, file_name, record_count, error_count, "Validating")
 
     # Run Quality Checks and log results
     error_count_from_qa = perform_quality_checks(output_path, resources_bucket)

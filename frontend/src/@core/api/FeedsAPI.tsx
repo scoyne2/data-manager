@@ -26,6 +26,9 @@ export const statusObj: StatusObj = {
   Failed: { color: "error" },
   Errors: { color: "warning" },
   Success: { color: "success" },
+  Received: { color: "info" },
+  Processing: { color: "info" },
+  Validating: { color: "info" },
 };
 
 const column_names: string[] = [
