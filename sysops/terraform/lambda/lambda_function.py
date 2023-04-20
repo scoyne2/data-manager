@@ -35,16 +35,24 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
     status = "Received"
     query = """
         mutation UpdateFeedStatus(
-            $vendor: String!
-            $feedName: String!
-            $fileName: String!
-            $recordCount: String!
-            $processDate: String!
-            $errorCount: String!
-            $status: String!
-            ){
-                updateFeedStatus(vendor: $vendor, feedName: $feedName, fileName: $fileName, $status: status, recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
-            }
+          $recordCount: Int!
+          $errorCount: Int!
+          $status: String!
+          $fileName: String!
+          $vendor: String!
+          $feedName: String!
+          $processDate: String!
+        ) {
+          updateFeedStatus(
+            recordCount: $recordCount
+            errorCount: $errorCount
+            status: $status
+            fileName: $fileName
+            vendor: $vendor
+            feedName: $feedName
+            processDate: $processDate
+          )
+        }
     """
     r = requests.post(GRAPHQL_URL, json={'query': query, 'vendor': vendor,
                                   'feedName': feed_name, 'fileName': file_name,
