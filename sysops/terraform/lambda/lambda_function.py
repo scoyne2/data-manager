@@ -17,9 +17,9 @@ GRAPHQL_URL = f"https://api.{DOMAIN_NAME}/graphql"
 
 def add_feed(vendor: str, feed_name: str, feed_method: str):
     query = (
-        "mutation AddFeed {"
-        f"  addFeed(vendor: {vendor}, feedName: {feed_name}, feedMethod: {feed_method})"
-        "}"
+        'mutation AddFeed {'
+        f'  addFeed(vendor: "{vendor}", feedName: "{feed_name}", feedMethod: "{feed_method}")'
+        '}'
     )
     r = requests.post(GRAPHQL_URL, json={'query': query})
     return r.status_code, r.json()
@@ -32,10 +32,10 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
         '    recordCount: 0'
         '    errorCount: 0'
         '    status: "Received"'
-       f'    fileName: {file_name}'
-       f'    vendor: {vendor}'
-       f'    feedName: {feed_name}'
-       f'    processDate: {process_date}'
+       f'    fileName: "{file_name}"'
+       f'    vendor: "{vendor}"'
+       f'    feedName: "{feed_name}"'
+       f'    processDate: "{process_date}"'
        f'  )'
         '}'
      )
