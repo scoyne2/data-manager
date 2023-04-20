@@ -68,21 +68,23 @@ def perform_quality_checks(output_path, resources_bucket) -> int:
     return error_count
 
 def update_feed_status(graphql_url: str, vendor: str, feed_name: str, file_name: str, feed_method: str, record_count: int, error_count: int, status: str) -> int:
-    process_date = datetime.today().strftime("%Y-%m-%d")
+    process_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+    vendor_clean = vendor.replace("_", " ").title()
+    feed_name_clean = feed_name.replace("_", " ").title()
     query = (
         'mutation UpdateFeedStatus {'
         '  updateFeedStatus('
-       f'    recordCount: {record_count}'
-       f'    errorCount: {error_count}'
-       f'    status: "{status}"'
+        '    recordCount: 0'
+        '    errorCount: 0'
+        '    status: "Received"'
        f'    fileName: "{file_name}"'
-       f'    vendor: "{vendor}"'
-       f'    feedName: "{feed_name}"'
+       f'    vendor: "{vendor_clean}"'
+       f'    feedName: "{feed_name_clean}"'
        f'    processDate: "{process_date}"'
        f'  )'
         '}'
      )
-    r = requests.post(GRAPHQL_URL, json={'query': query})
+    r = requests.post(graphql_url, json={'query': query})
     return r.status_code, r.json()
 
 #    df = spark.read.parquet(output_path)

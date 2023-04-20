@@ -16,16 +16,20 @@ DOMAIN_NAME = os.environ["DOMAIN_NAME"]
 GRAPHQL_URL = f"https://api.{DOMAIN_NAME}/graphql"
 
 def add_feed(vendor: str, feed_name: str, feed_method: str):
+    vendor_clean = vendor.replace("_", " ").title()
+    feed_name_clean = feed_name.replace("_", " ").title()
     query = (
         'mutation AddFeed {'
-        f'  addFeed(vendor: "{vendor}", feedName: "{feed_name}", feedMethod: "{feed_method}")'
+        f'  addFeed(vendor: "{vendor_clean}", feedName: "{feed_name_clean}", feedMethod: "{feed_method}")'
         '}'
     )
     r = requests.post(GRAPHQL_URL, json={'query': query})
     return r.status_code, r.json()
 
 def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str):
-    process_date = datetime.today().strftime("%Y-%m-%d")
+    process_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+    vendor_clean = vendor.replace("_", " ").title()
+    feed_name_clean = feed_name.replace("_", " ").title()
     query = (
         'mutation UpdateFeedStatus {'
         '  updateFeedStatus('
@@ -33,8 +37,8 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
         '    errorCount: 0'
         '    status: "Received"'
        f'    fileName: "{file_name}"'
-       f'    vendor: "{vendor}"'
-       f'    feedName: "{feed_name}"'
+       f'    vendor: "{vendor_clean}"'
+       f'    feedName: "{feed_name_clean}"'
        f'    processDate: "{process_date}"'
        f'  )'
         '}'
@@ -83,7 +87,6 @@ def lambda_handler(event, context):
     # Make Call to GraphQL API to add feed
     add_feed(vendor.title(), feed.title(), feed_method)
     response_status_code, response_body = file_received(vendor.title(), feed.title(), file_name, feed_method)
-    return {"statusCode": response_status_code, "body": f" resp: {response_body}"}
 
     python_zip_path = f"s3://{RESOURCE_BUCKET}/pyspark_requirements/pyspark_requirements.tar.gz#environment"
     spark_submit_args = (
