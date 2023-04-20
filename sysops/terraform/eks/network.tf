@@ -162,6 +162,10 @@ output "aws_wafv2_web_acl_arn" {
 
 output "vpc_id" {
   description = "VPC ID"
-  value = aws_vpc.data-manager-eks-vpc.cidr_block
+  value = aws_vpc.data-manager-eks-vpc.id
 }
 
+output "vpc_cidr_block" {
+  description = "EKS VPC CIDR Block"
+  value = aws_vpc.data-manager-eks-vpc.cidr_block
+}

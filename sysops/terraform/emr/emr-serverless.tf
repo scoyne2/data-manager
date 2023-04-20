@@ -14,9 +14,8 @@ provider "aws" {
 }
 
 resource "aws_subnet" "emr_serverless_subnet" {
-  count = 2
   vpc_id     = var.vpc_id
-  cidr_block = cidrsubnet(var.vpc_cidr_block, 8, count.index)
+  cidr_block = cidrsubnet(var.vpc_cidr_block, 4, 2)
 }
 
 resource "aws_emrserverless_application" "data_manager_emr_serverless" {

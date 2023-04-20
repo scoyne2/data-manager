@@ -117,9 +117,3 @@ output "security_group_ids" {
   value = [aws_security_group.data_manager_eks_cluster_sg.id]
   sensitive = false
 }
-
-output "vpc_cidr_block" {
-  description = "EKS PC CIDR Block"
-  value = [aws_security_group.data_manager_eks_cluster_sg.id]
-  sensitive = false
-}
