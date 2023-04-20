@@ -17,7 +17,7 @@ GRAPHQL_URL = f"https://api.{DOMAIN_NAME}/graphql"
 
 def add_feed(vendor: str, feed_name: str, feed_method: str):
     query = """
-        mutation AddFeed
+        mutation AddFeed(
             $vendor: String!
             $feedName: String!
             $feedMethod: String!){
@@ -34,7 +34,7 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
     error_count =0
     status = "Received"
     query = """
-        mutation UpdateFeedStatus
+        mutation UpdateFeedStatus(
             $vendor: String!
             $feedName: String!
             $fileName: String!
