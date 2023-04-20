@@ -16,33 +16,29 @@ DOMAIN_NAME = os.environ["DOMAIN_NAME"]
 GRAPHQL_URL = f"https://api.{DOMAIN_NAME}/graphql"
 
 def add_feed(vendor: str, feed_name: str, feed_method: str):
-    query = """
-        mutation AddFeed(
-            $vendor: String!
-            $feedName: String!
-            $feedMethod: String!){
-                addFeed(vendor: $vendor, feedName: $feedName, feedMethod: $feedMethod)
-            }
-    """
-    r = requests.post(GRAPHQL_URL, json={'query': query, 'vendor': vendor,
-                                  'feedName': feed_name, 'feedMethod': feed_method})
+    query = (
+        "mutation AddFeed {"
+        f"  addFeed(vendor: {vendor}, feedName: {feed_name}, feedMethod: {feed_method})"
+        "}"
+    )
+    r = requests.post(GRAPHQL_URL, json={'query': query})
     return r.status_code, r.json()
 
 def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str):
     process_date = datetime.today().strftime("%Y-%m-%d")
-    query = """
-        mutation UpdateFeedStatus {
-          updateFeedStatus(
-            recordCount: 0
-            errorCount: 0
-            status: "Received"
-            fileName: {file_name}
-            vendor: {vendor}
-            feedName: {feed_name}
-            processDate: {process_date}
-          )
-        }
-    """.format(file_name=file_name, vendor=vendor, feed_name=feed_name, process_date=process_date)
+    query = (
+        'mutation UpdateFeedStatus {'
+        '  updateFeedStatus('
+        '    recordCount: 0'
+        '    errorCount: 0'
+        '    status: "Received"'
+       f'    fileName: {file_name}'
+       f'    vendor: {vendor}'
+       f'    feedName: {feed_name}'
+       f'    processDate: {process_date}'
+       f'  )'
+        '}'
+     )
     r = requests.post(GRAPHQL_URL, json={'query': query})
     return r.status_code, r.json()
 
