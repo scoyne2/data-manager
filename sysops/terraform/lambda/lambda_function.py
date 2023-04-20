@@ -13,7 +13,9 @@ OUTPUT_BUCKET = os.environ["OUTPUT_BUCKET"]
 RESOURCE_BUCKET = os.environ["RESOURCE_BUCKET"]
 DOMAIN_NAME = os.environ["DOMAIN_NAME"]
 
-def add_feed(vendor: str, feed_name: str, feed_method: str) -> int:
+GRAPHQL_URL = f"https://api.{DOMAIN_NAME}/graphql"
+
+def add_feed(vendor: str, feed_name: str, feed_method: str):
     query = """
         mutation AddFeed
             $vendor: String!
@@ -22,12 +24,11 @@ def add_feed(vendor: str, feed_name: str, feed_method: str) -> int:
                 addFeed(vendor: $vendor, feedName: $feedName, feedMethod: $feedMethod)
             }
     """
-    url = f"api.{DOMAIN_NAME}"
-    r = requests.post(url, json={'query': query, 'vendor': vendor,
+    r = requests.post(GRAPHQL_URL, json={'query': query, 'vendor': vendor,
                                   'feedName': feed_name, 'feedMethod': feed_method})
-    return r.status_code
+    return r.status_code, r.json()
 
-def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str) -> int:
+def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str):
     record_count = 0
     process_date = datetime.today().strftime("%Y-%m-%d")
     error_count =0
@@ -47,14 +48,11 @@ def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str)
                 recordCount: $recordCount, processDate: $processDate, errorCount: $errorCount)
             }
     """
-    url = f"https://api.{DOMAIN_NAME}/graphql"
-    r = requests.post(url, json={'query': query, 'vendor': vendor,
+    r = requests.post(GRAPHQL_URL, json={'query': query, 'vendor': vendor,
                                   'feedName': feed_name, 'fileName': file_name, 'feedMethod': feed_method,
                                   'recordCount': record_count, 'processDate': process_date,
                                   'errorCount': error_count, 'status': status})
-    return r.status_code
-
-    pass
+    return r.status_code, r.json()
 
 def lambda_handler(event, context):
     input_bucket = event["Records"][0]["s3"]["bucket"]["name"]
@@ -83,7 +81,7 @@ def lambda_handler(event, context):
         "--feed_method",
         feed_method,
         "--graphql_url",
-        f"api.{DOMAIN_NAME}",
+        GRAPHQL_URL,
         "--input_file",
         input_file,
         "--file_extension",
@@ -96,7 +94,8 @@ def lambda_handler(event, context):
 
     # Make Call to GraphQL API to add feed
     add_feed(vendor.title(), feed.title(), feed_method)
-    file_received(vendor.title(), feed.title(), file_name, feed_method)
+    response_status_code, response_body = file_received(vendor.title(), feed.title(), file_name, feed_method)
+    return {"statusCode": response_status_code, "body": f" resp: {response_body}"}
 
     python_zip_path = f"s3://{RESOURCE_BUCKET}/pyspark_requirements/pyspark_requirements.tar.gz#environment"
     spark_submit_args = (
