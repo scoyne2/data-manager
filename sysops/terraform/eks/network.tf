@@ -25,7 +25,7 @@ resource "aws_subnet" "data-manager-public-subnet" {
   count                   = 2
   map_public_ip_on_launch = true
   availability_zone       = data.aws_availability_zones.available.names[count.index]
-  cidr_block              = cidrsubnet(aws_vpc.data-manager-vpc.cidr_block, 8, count.index)
+  cidr_block              = "10.0.1.0/24"
   vpc_id                  = aws_vpc.data-manager-vpc.id
 
   tags = {
@@ -38,7 +38,7 @@ resource "aws_subnet" "data-manager-public-subnet" {
 resource "aws_subnet" "data-manager-private-subnet" {
   count             = 2
   availability_zone = data.aws_availability_zones.available.names[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.data-manager-vpc.cidr_block, 8, count.index)
+  cidr_block        = "10.0.2.0/24"
   vpc_id            = aws_vpc.data-manager-vpc.id
 
   tags = {
