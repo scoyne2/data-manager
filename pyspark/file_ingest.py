@@ -74,8 +74,8 @@ def update_feed_status(graphql_url: str, vendor: str, feed_name: str, file_name:
     query = (
         'mutation UpdateFeedStatus {'
         '  updateFeedStatus('
-       f'  recordCount: "{record_count}"'
-       f'  errorCount: "{error_count}"'
+       f'  recordCount: {record_count}'
+       f'  errorCount: {error_count}'
        f'  status: "{status}"'
        f'  fileName: "{file_name}"'
        f'  vendor: "{vendor_clean}"'
@@ -213,13 +213,13 @@ if __name__ == "__main__":
     record_count = input_df.count()
     error_count = 0
     response_code, response_body = update_feed_status(graphql_url, vendor, feed_name, feed_method, file_name, record_count, error_count, "Processing")
-    logging.info(f"Udate feed status response code {response_code}, body: {response_body}")
+    logging.warn(f"Udate feed status response code {response_code}, body: {response_body}")
 
     # Convert file to parquet
     processed_count = process_file(spark, input_df, output_path, vendor, feed_name)
     error_count = record_count - processed_count
     response_code, response_body = update_feed_status(graphql_url, vendor, feed_name, feed_method, file_name, record_count, error_count, "Validating")
-    logging.info(f"Convert status response code {response_code}, body: {response_body}")
+    logging.warn(f"Convert status response code {response_code}, body: {response_body}")
 
     # Run Quality Checks and log results
     error_count_from_qa = perform_quality_checks(output_path, resources_bucket)
@@ -236,4 +236,4 @@ if __name__ == "__main__":
 
     # Update Final Feed Status
     response_code, response_body = update_feed_status(graphql_url, vendor, feed_name, file_name ,feed_method, record_count, error_count_from_qa, status)
-    logging.info(f"Final status response code {response_code}, body: {response_body}")
+    logging.warn(f"Final status response code {response_code}, body: {response_body}")
