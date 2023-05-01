@@ -25,7 +25,7 @@ resource "aws_subnet" "data-manager-public-subnet" {
   count                   = 2
   map_public_ip_on_launch = true
   availability_zone       = data.aws_availability_zones.available.names[count.index]
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "10.0.${20+count.index}.0/24"
   vpc_id                  = aws_vpc.data-manager-vpc.id
 
   tags = {
@@ -38,9 +38,8 @@ resource "aws_subnet" "data-manager-public-subnet" {
 resource "aws_subnet" "data-manager-private-subnet" {
   count             = 2
   availability_zone = data.aws_availability_zones.available.names[count.index]
-  cidr_block        = "10.0.2.0/24"
+  cidr_block        = "10.0.${10+count.index}.0/24"
   vpc_id            = aws_vpc.data-manager-vpc.id
-
   tags = {
     "Name"          = "data-manager-private-subnet"
   }
@@ -49,14 +48,16 @@ resource "aws_subnet" "data-manager-private-subnet" {
 resource "aws_eip" "data-manager-eip" {
   vpc                       = true
   associate_with_private_ip = "10.0.0.213"
+  tags = {
+    "Name"                  = "data-manager-eip"
+  }
   depends_on                = [aws_internet_gateway.data-manager-gw]
 }
 
 resource "aws_internet_gateway" "data-manager-gw" {
   vpc_id = aws_vpc.data-manager-vpc.id
-
   tags = {
-    "Name" = "Data Manager Internet Gateway"
+    "Name" = "data-manager-internet-gateway"
   }
   depends_on = [aws_vpc.data-manager-vpc]
 }
@@ -64,15 +65,38 @@ resource "aws_internet_gateway" "data-manager-gw" {
 resource "aws_nat_gateway" "data-manager-nat-gw" {
   allocation_id = aws_eip.data-manager-eip.id
   subnet_id     = aws_subnet.data-manager-public-subnet[0].id
+  tags = {
+    "Name" = "data-manager-nat-gw"
+  }
   depends_on    = [aws_internet_gateway.data-manager-gw]
+}
+
+resource "aws_route_table" "data-manager-nat-rt" {
+  vpc_id = aws_vpc.data-manager-vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_internet_gateway.data-manager-gw.id
+  }
+  tags = {
+    "Name" = "data-manager-nat-rt"
+  }
+  depends_on = [aws_internet_gateway.data-manager-gw]
+}
+
+resource "aws_route_table_association" "data-manager-nat-rta" {
+  count          = 2
+  subnet_id      = aws_subnet.data-manager-private-subnet[count.index].id
+  route_table_id = aws_route_table.data-manager-nat-rt.id
 }
 
 resource "aws_route_table" "data-manager-public-rt" {
   vpc_id = aws_vpc.data-manager-vpc.id
-
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.data-manager-gw.id
+  }
+  tags = {
+    "Name" = "data-manager-public-rt"
   }
   depends_on = [aws_internet_gateway.data-manager-gw]
 }
@@ -85,10 +109,8 @@ resource "aws_route_table_association" "data-manager-public-rta" {
 
 resource "aws_route_table" "data-manager-private-rt" {
   vpc_id = aws_vpc.data-manager-vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.data-manager-gw.id
+  tags = {
+    "Name" = "data-manager-private-rt"
   }
   depends_on = [aws_internet_gateway.data-manager-gw]
 }
@@ -97,6 +119,16 @@ resource "aws_route_table_association" "data-manager-private-rta" {
   count          = 2
   subnet_id      = aws_subnet.data-manager-private-subnet[count.index].id
   route_table_id = aws_route_table.data-manager-private-rt.id
+}
+
+resource "aws_vpc_endpoint" "data-manager-vpce" {
+  vpc_id          = aws_vpc.data-manager-vpc.id
+  service_name    = "com.amazonaws.us-west-2.s3"
+  route_table_ids = ["${aws_route_table.data-manager-private-rt.id}"]
+
+  tags = {
+    Name = "data-manager-s3-endpoint"
+  }
 }
 
 # This data source looks up the public DNS zone
