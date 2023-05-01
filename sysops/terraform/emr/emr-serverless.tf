@@ -15,7 +15,7 @@ provider "aws" {
 }
 
 resource "aws_emrserverless_application" "data_manager_emr_serverless" {
-  name          = "Data Manager EMR Serverless"
+  name          = "data-manager-emr-serverless"
   release_label = "emr-6.6.0"
   type          = "spark"
 

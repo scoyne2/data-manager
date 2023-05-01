@@ -71,22 +71,32 @@ resource "aws_nat_gateway" "data-manager-nat-gw" {
   depends_on    = [aws_internet_gateway.data-manager-gw]
 }
 
-resource "aws_route_table" "data-manager-nat-rt" {
+resource "aws_route_table" "data-manager-private-rt" {
   vpc_id = aws_vpc.data-manager-vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_internet_gateway.data-manager-gw.id
+    nat_gateway_id = aws_nat_gateway.data-manager-nat-gw.id
   }
   tags = {
     "Name" = "data-manager-nat-rt"
   }
-  depends_on = [aws_internet_gateway.data-manager-gw]
+  depends_on = [aws_nat_gateway.data-manager-nat-gw]
 }
 
-resource "aws_route_table_association" "data-manager-nat-rta" {
+resource "aws_route_table_association" "data-manager-private-rta" {
   count          = 2
   subnet_id      = aws_subnet.data-manager-private-subnet[count.index].id
-  route_table_id = aws_route_table.data-manager-nat-rt.id
+  route_table_id = aws_route_table.data-manager-private-rt.id
+}
+
+resource "aws_vpc_endpoint" "data-manager-vpce" {
+  vpc_id          = aws_vpc.data-manager-vpc.id
+  service_name    = "com.amazonaws.us-west-2.s3"
+  route_table_ids = ["${aws_route_table.data-manager-private-rt.id}"]
+
+  tags = {
+    Name = "data-manager-s3-endpoint"
+  }
 }
 
 resource "aws_route_table" "data-manager-public-rt" {
@@ -105,30 +115,6 @@ resource "aws_route_table_association" "data-manager-public-rta" {
   count          = 2
   subnet_id      = aws_subnet.data-manager-public-subnet[count.index].id
   route_table_id = aws_route_table.data-manager-public-rt.id
-}
-
-resource "aws_route_table" "data-manager-private-rt" {
-  vpc_id = aws_vpc.data-manager-vpc.id
-  tags = {
-    "Name" = "data-manager-private-rt"
-  }
-  depends_on = [aws_internet_gateway.data-manager-gw]
-}
-
-resource "aws_route_table_association" "data-manager-private-rta" {
-  count          = 2
-  subnet_id      = aws_subnet.data-manager-private-subnet[count.index].id
-  route_table_id = aws_route_table.data-manager-private-rt.id
-}
-
-resource "aws_vpc_endpoint" "data-manager-vpce" {
-  vpc_id          = aws_vpc.data-manager-vpc.id
-  service_name    = "com.amazonaws.us-west-2.s3"
-  route_table_ids = ["${aws_route_table.data-manager-private-rt.id}"]
-
-  tags = {
-    Name = "data-manager-s3-endpoint"
-  }
 }
 
 # This data source looks up the public DNS zone
