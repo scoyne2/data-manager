@@ -41,7 +41,7 @@ resource "aws_iam_role_policy_attachment" "data-manager-eks-nodegroup-iam-Elasti
 resource "aws_security_group" "data-manager-eks-nodegroup" {
   name        = "data-manager-eks-node"
   description = "Security group for all nodes in the cluster"
-  vpc_id      = aws_vpc.data-manager-eks-vpc.id
+  vpc_id      = aws_vpc.data-manager-vpc.id
 
   egress {
     from_port   = 0
@@ -90,7 +90,7 @@ resource "aws_eks_node_group" "data-manager-eks-nodegroup" {
   cluster_name    = aws_eks_cluster.data_manager_eks_cluster.name
   node_group_name = "data-manager-eks"
   node_role_arn   = aws_iam_role.data-manager-eks-nodegroup-iam.arn
-  subnet_ids      = aws_subnet.data-manager-eks-subnet[*].id
+  subnet_ids      = aws_subnet.data-manager-public-subnet[*].id
   instance_types  = [var.node-type]
 
   scaling_config {

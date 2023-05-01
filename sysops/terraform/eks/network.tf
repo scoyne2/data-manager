@@ -12,53 +12,91 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-resource "aws_vpc" "data-manager-eks-vpc" {
+resource "aws_vpc" "data-manager-vpc" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    "Name"                                      = "data-manager-eks-node"
+    "Name"                                      = "data-manager-vpc"
     "kubernetes.io/cluster/${var.cluster-name}" = "shared"
   }
 }
 
-resource "aws_subnet" "data-manager-eks-subnet" {
-  count = 2
+resource "aws_subnet" "data-manager-public-subnet" {
+  count                   = 2
   map_public_ip_on_launch = true
-  availability_zone = data.aws_availability_zones.available.names[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.data-manager-eks-vpc.cidr_block, 8, count.index)
-  vpc_id            = aws_vpc.data-manager-eks-vpc.id
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  cidr_block              = cidrsubnet(aws_vpc.data-manager-vpc.cidr_block, 8, count.index)
+  vpc_id                  = aws_vpc.data-manager-vpc.id
 
   tags = {
-    "Name"                                      = "data-manager-eks-node"
+    "Name"                                      = "data-manager-public-subnet"
     "kubernetes.io/cluster/${var.cluster-name}" = "shared"
-    "kubernetes.io/role/elb" = "1"
+    "kubernetes.io/role/elb"                    = "1"
   }
 }
 
-resource "aws_internet_gateway" "data-manager-eks-gw" {
-  vpc_id = aws_vpc.data-manager-eks-vpc.id
+resource "aws_subnet" "data-manager-private-subnet" {
+  count             = 2
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block        = cidrsubnet(aws_vpc.data-manager-vpc.cidr_block, 8, count.index)
+  vpc_id            = aws_vpc.data-manager-vpc.id
+
+  tags = {
+    "Name"          = "data-manager-private-subnet"
+  }
+}
+
+resource "aws_eip" "data-manager-eip" {
+  vpc                       = true
+  associate_with_private_ip = "10.0.0.213"
+  depends_on                = [aws_internet_gateway.data-manager-gw]
+}
+
+resource "aws_internet_gateway" "data-manager-gw" {
+  vpc_id = aws_vpc.data-manager-vpc.id
 
   tags = {
     "Name" = var.cluster-name
   }
-  depends_on = [aws_vpc.data-manager-eks-vpc]
+  depends_on = [aws_vpc.data-manager-vpc]
 }
 
-resource "aws_route_table" "data-manager-eks-rt" {
-  vpc_id = aws_vpc.data-manager-eks-vpc.id
+resource "aws_nat_gateway" "data-manager-nat-gw" {
+  allocation_id = aws_eip.data-manager-eip.id
+  subnet_id     = aws_subnet.data-manager-public-subnet[0].id
+  depends_on    = [aws_internet_gateway.data-manager-gw]
+}
+
+resource "aws_route_table" "data-manager-public-rt" {
+  vpc_id = aws_vpc.data-manager-vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.data-manager-eks-gw.id
+    gateway_id = aws_internet_gateway.data-manager-gw.id
   }
-  depends_on = [aws_internet_gateway.data-manager-eks-gw]
+  depends_on = [aws_internet_gateway.data-manager-gw]
 }
 
-resource "aws_route_table_association" "data-manager-eks-rta" {
-  count = 2
+resource "aws_route_table_association" "data-manager-public-rta" {
+  count          = 2
+  subnet_id      = aws_subnet.data-manager-public-subnet[count.index].id
+  route_table_id = aws_route_table.data-manager-public-rt.id
+}
 
-  subnet_id      = aws_subnet.data-manager-eks-subnet[count.index].id
-  route_table_id = aws_route_table.data-manager-eks-rt.id
+resource "aws_route_table" "data-manager-private-rt" {
+  vpc_id = aws_vpc.data-manager-vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.data-manager-gw.id
+  }
+  depends_on = [aws_internet_gateway.data-manager-gw]
+}
+
+resource "aws_route_table_association" "data-manager-private-rta" {
+  count          = 2
+  subnet_id      = aws_subnet.data-manager-private-subnet[count.index].id
+  route_table_id = aws_route_table.data-manager-private-rt.id
 }
 
 # This data source looks up the public DNS zone
@@ -162,10 +200,15 @@ output "aws_wafv2_web_acl_arn" {
 
 output "vpc_id" {
   description = "VPC ID"
-  value = aws_vpc.data-manager-eks-vpc.id
+  value = aws_vpc.data-manager-vpc.id
 }
 
 output "vpc_cidr_block" {
   description = "EKS VPC CIDR Block"
-  value = aws_vpc.data-manager-eks-vpc.cidr_block
+  value = aws_vpc.data-manager-vpc.cidr_block
+}
+
+output "private_subnet" {
+  description = "Private Subnet"
+  value = aws_subnet.data-manager-private-subnet
 }

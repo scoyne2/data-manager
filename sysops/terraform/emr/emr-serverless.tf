@@ -1,6 +1,7 @@
 variable "security_group_ids" {}
 variable "vpc_id" {}
 variable "vpc_cidr_block" {}
+variable "private_subnet" {}
 
 
 locals {
@@ -13,19 +14,15 @@ provider "aws" {
   profile                  = local.envs["AWS_PROFILE"]
 }
 
-resource "aws_subnet" "emr_serverless_subnet" {
-  vpc_id     = var.vpc_id
-  cidr_block = cidrsubnet(var.vpc_cidr_block, 4, 2)
-}
-
 resource "aws_emrserverless_application" "data_manager_emr_serverless" {
-  name          = "data_manager_emr_serverless"
+  name          = "Data Manager EMR Serverless"
   release_label = "emr-6.6.0"
   type          = "spark"
+  count         = 2
 
   network_configuration {
     security_group_ids = var.security_group_ids
-    subnet_ids = aws_subnet.emr_serverless_subnet.*.id
+    subnet_ids = var.private_subnet[count.index].id
   }
 
   initial_capacity {

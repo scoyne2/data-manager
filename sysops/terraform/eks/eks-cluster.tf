@@ -31,7 +31,7 @@ resource "aws_iam_role_policy_attachment" "data_manager_eks_cluster_iam_AmazonEK
 resource "aws_security_group" "data_manager_eks_cluster_sg" {
   name        = "data_manager_eks_cluster"
   description = "Cluster communication with worker nodes"
-  vpc_id      = aws_vpc.data-manager-eks-vpc.id
+  vpc_id      = aws_vpc.data-manager-vpc.id
 
   egress {
     from_port   = 0
@@ -52,7 +52,7 @@ resource "aws_eks_cluster" "data_manager_eks_cluster" {
 
   vpc_config {
     security_group_ids = [aws_security_group.data_manager_eks_cluster_sg.id]
-    subnet_ids         = aws_subnet.data-manager-eks-subnet.*.id
+    subnet_ids         = aws_subnet.data-manager-public-subnet.*.id
   }
 
   depends_on = [
