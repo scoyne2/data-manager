@@ -29,8 +29,8 @@ resource "aws_iam_role_policy_attachment" "data_manager_eks_cluster_iam_AmazonEK
 }
 
 resource "aws_security_group" "data_manager_eks_cluster_sg" {
-  name        = "data_manager_eks_cluster"
-  description = "Cluster communication with worker nodes"
+  name        = "data-manager-security-group"
+  description = "Security Group for Data Manager"
   vpc_id      = aws_vpc.data-manager-vpc.id
 
   egress {
