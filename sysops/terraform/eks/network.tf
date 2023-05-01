@@ -56,7 +56,7 @@ resource "aws_internet_gateway" "data-manager-gw" {
   vpc_id = aws_vpc.data-manager-vpc.id
 
   tags = {
-    "Name" = var.cluster-name
+    "Name" = "Data Manager Internet Gateway"
   }
   depends_on = [aws_vpc.data-manager-vpc]
 }
@@ -210,5 +210,5 @@ output "vpc_cidr_block" {
 
 output "private_subnet" {
   description = "Private Subnet"
-  value = aws_subnet.data-manager-private-subnet
+  value = [aws_subnet.data-manager-private-subnet[0], aws_subnet.data-manager-private-subnet[1]]
 }

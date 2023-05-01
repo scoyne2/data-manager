@@ -18,11 +18,10 @@ resource "aws_emrserverless_application" "data_manager_emr_serverless" {
   name          = "Data Manager EMR Serverless"
   release_label = "emr-6.6.0"
   type          = "spark"
-  count         = 2
 
   network_configuration {
     security_group_ids = var.security_group_ids
-    subnet_ids = var.private_subnet[count.index].id
+    subnet_ids = [var.private_subnet[0].id, var.private_subnet[1].id]
   }
 
   initial_capacity {
