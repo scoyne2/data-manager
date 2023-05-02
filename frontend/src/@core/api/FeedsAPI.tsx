@@ -32,13 +32,13 @@ export const statusObj: StatusObj = {
 };
 
 const column_names: string[] = [
+  "Details",
   "Feed",
   "Vendor",
   "Date",
   "Rows",
   "Errors",
   "Status",
-  "Details",
   "Logs",
   "Quality Checks"
 ];

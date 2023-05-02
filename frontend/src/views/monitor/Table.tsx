@@ -79,6 +79,15 @@ function FeedRow(row: FeedStatusType) {
         key={row.id}
         sx={{ "&:last-of-type td, &:last-of-type th": { border: 0 } }}
       >
+        <TableCell>
+          <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <UnfoldMoreHorizontal /> : <UnfoldLessHorizontal />}
+          </IconButton>
+        </TableCell>
         <TableCell sx={{ py: (theme) => `${theme.spacing(0.5)} !important` }}>
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Typography
@@ -105,24 +114,16 @@ function FeedRow(row: FeedStatusType) {
             }}
           />
         </TableCell>
-        <TableCell>
-          <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={() => setOpen(!open)}
-            >
-              {open ? <UnfoldMoreHorizontal /> : <UnfoldLessHorizontal />}
-          </IconButton>
-        </TableCell>
         <TableCell onClick={() => openFeedDetails(row.id, "logs")}>Link</TableCell>
         <TableCell onClick={() => openFeedDetails(row.id, "quality-checks")}>Link</TableCell>
         </TableRow>
         <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
         <Collapse in={open} timeout="auto" unmountOnExit>
-            {/* <Box sx={{ margin: 1 }}>
+            <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
                 Details
-              </Typography> */}
+              </Typography>
               <Table sx={{ minWidth: 800 }} aria-label="details">
                 <TableHead>
                   <TableRow>
@@ -153,8 +154,9 @@ function FeedRow(row: FeedStatusType) {
                     </TableRow>
                 </TableBody>
               </Table>
-            {/* </Box> */}
+            </Box>
           </Collapse>
+        </TableCell>
       </TableRow>
     </React.Fragment>
   );
