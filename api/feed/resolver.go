@@ -114,11 +114,11 @@ func (fs FeedService) ResolveGetFeedStatusDetails(p graphql.ResolveParams) (inte
 	if !ok {
 		return nil, errors.New("feed_status_id has to be an int")
 	}
-	fsAgg, err := fs.repo.GetFeedStatusDetails(feed_status_id)
+	fsDetails, err := fs.repo.GetFeedStatusDetails(feed_status_id)
 	if err != nil {
 		return nil, err
 	}
-	return fsAgg, nil
+	return fsDetails, nil
 }
 
 func (fs FeedService) ResolveFeedStatuseAggregate(p graphql.ResolveParams) (interface{}, error) {
