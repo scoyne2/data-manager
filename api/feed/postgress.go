@@ -104,7 +104,7 @@ func (pr *PostgressRepository) AddFeed(feed Feed) (string, error) {
 	SELECT $1, $2, $3
 	WHERE
 	NOT EXISTS (
-	SELECT * FROM feeds WHERE vendor = $1 AND feed_name =  $2 AND feed_method = $3
+	SELECT * FROM feeds WHERE vendor = $1 AND feed_name = $2 AND feed_method = $3
 	);`
 
 	_, err := pr.db.Exec(sqlStatement, feed.Vendor, feed.FeedName, feed.FeedMethod)
@@ -148,30 +148,27 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
     WHERE f.vendor=$1 AND f.feed_name=$2 AND fs.file_name=$3;`
 	feedStatusRows := pr.db.QueryRow(sqlStatementFdS, fs.Vendor, fs.FeedName, fs.FileName)
 	var f FeedStatus
-	feedStatusError := feedStatusRows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.FileName, &f.FeedID)
-
-	if feedStatusError == sql.ErrNoRows {
-		// if feed status does not exist insert record
-		sqlStatement := `
-		INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id)
-		VALUES ($1, $2, $3, $4, $5, $6);`
-		_, err := pr.db.Exec(sqlStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, fd.ID)
-		if err != nil {
-			return "", err
-		}
-		return "Feed status added", nil
-	} else {
-		// if feed status already exists update record
-		sqlStatement := `
-		UPDATE feed_status
-		SET process_date = $2, record_count = $3, error_count = $4, feed_status = $5, file_name = $6
-		WHERE id = $1;`
-		_, err := pr.db.Exec(sqlStatement, f.ID, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName)
-		if err != nil {
-			return "nil", err
-		}
-		return fmt.Sprintf("Feed status updated for id: %n", f.ID), nil
+	feedStatusRows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.FileName, &f.FeedID)
+	
+	sqlUpdateStatement := `
+	UPDATE feed_status
+	SET is_current = False
+	WHERE id = $1;`
+	_, updateErr := pr.db.Exec(sqlUpdateStatement, f.ID)
+	if updateErr != nil {
+		return "", updateErr
 	}
+
+	// insert current record
+	sqlInsertStatement := `
+	INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id, is_current)
+	VALUES ($1, $2, $3, $4, $5, $6, True);`
+	_, insertErr := pr.db.Exec(sqlInsertStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, fd.ID)
+	if insertErr != nil {
+		return "", insertErr
+	}
+
+	return fmt.Sprintf("Feed status updated for id: %n", f.ID), nil
 }
 
 func (pr *PostgressRepository) GetFeedStatuses() ([]FeedStatusResults, error) {
@@ -180,8 +177,39 @@ func (pr *PostgressRepository) GetFeedStatuses() ([]FeedStatusResults, error) {
 	f.vendor, f.feed_name, f.feed_method, fs.file_name
 	FROM feed_status fs
 	INNER JOIN feeds f
-	ON fs.feed_id = f.id`
+	ON fs.feed_id = f.id
+	WHERE fs.is_current = True;`
 	rows, err := pr.db.Query(sqlStatement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var feedStatus []FeedStatusResults
+	for rows.Next() {
+		var f FeedStatusResults
+		err = rows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.Vendor, &f.FeedName, &f.FeedMethod, &f.FileName)
+		if err != nil {
+		return nil, err
+		}
+		feedStatus = append(feedStatus, f)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return feedStatus, nil
+}
+
+func (pr *PostgressRepository) GetFeedStatusDetails(feed_status_id int) ([]FeedStatusResults, error) {
+	sqlStatement := `
+	SELECT fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status,
+	f.vendor, f.feed_name, f.feed_method, fs.file_name
+	FROM feed_status fs
+	INNER JOIN feeds f
+	ON fs.feed_id = f.id
+	WHERE fs.id = $1;`
+	rows, err := pr.db.Query(sqlStatement, feed_status_id)
 	if err != nil {
 		return nil, err
 	}

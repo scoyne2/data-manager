@@ -54,5 +54,6 @@ type Repository interface {
 
 	GetFeedStatuses() ([]FeedStatusResults, error)
 	UpdateFeedStatus(feedStatusUpdate FeedStatusUpdate) (string, error)
+	GetFeedStatusDetails(feed_status_id int) ([]FeedStatus, error)
 	GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error)
 }

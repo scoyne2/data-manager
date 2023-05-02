@@ -1,7 +1,11 @@
+import * as React from 'react';
+
 // ** MUI Imports
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Chip from "@mui/material/Chip";
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
 import Table from "@mui/material/Table";
 import TableRow from "@mui/material/TableRow";
 import TableHead from "@mui/material/TableHead";
@@ -9,6 +13,10 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
+import UnfoldMoreHorizontal from "mdi-material-ui/UnfoldMoreHorizontal";
+import UnfoldLessHorizontal from "mdi-material-ui/UnfoldLessHorizontal";
+
+
 import {
   getColumns,
   FeedStatusType,
@@ -20,6 +28,21 @@ import { useQuery, gql } from "@apollo/client";
 
 const GET_FEED_STATUSES = gql`
   query GetFeedStatuses {
+    feedstatuses {
+      error_count
+      feed_method
+      feed_name
+      id
+      process_date
+      record_count
+      status
+      vendor
+    }
+  }
+`;
+
+const GET_FEED_STATUS_DETAILS = gql`
+  query GetFeedStatusDetails($id: Int!) {
     feedstatuses {
       error_count
       feed_method
@@ -46,28 +69,11 @@ headerValues.forEach((value) => {
   header.push(<TableCell>{value}</TableCell>);
 });
 
-const DashboardTable = () => {
-  const { loading, error, data } = useQuery<FeedStatusesType>(GET_FEED_STATUSES);
-  const tableBody: JSX.Element[] = [];
-  if (error) {
-    console.log(error);
-    tableBody.push(
-      <TableRow>
-        <TableCell>Error: {error.message}</TableCell>
-      </TableRow>
-    );
-  }
+function FeedRow(row: FeedStatusType) {
+  const [open, setOpen] = React.useState(false);
 
-  if (loading) {
-    tableBody.push(
-      <TableRow>
-        <TableCell>Loading...</TableCell>
-      </TableRow>
-    );
-  }
-
-  data?.feedstatuses.forEach((row: FeedStatusType) =>
-    tableBody.push(
+  return (
+    <React.Fragment>
       <TableRow
         hover
         key={row.id}
@@ -101,7 +107,82 @@ const DashboardTable = () => {
         </TableCell>
         <TableCell onClick={() => openFeedDetails(row.id, "logs")}>Link</TableCell>
         <TableCell onClick={() => openFeedDetails(row.id, "quality-checks")}>Link</TableCell>
+        <TableCell>
+        <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <UnfoldMoreHorizontal /> : <UnfoldLessHorizontal />}
+          </IconButton>
+        <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Typography variant="h6" gutterBottom component="div">
+                History
+              </Typography>
+              <Table size="small" aria-label="purchases">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Process Date</TableCell>
+                    <TableCell>Records</TableCell>
+                    <TableCell>Errors</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                    <TableRow>
+                       {/* TODO populate TableCell from GET_FEED_STATUS_DETAILS */} 
+                      <TableCell> Test 1</TableCell>
+                      <TableCell> Test 2</TableCell>
+                      <TableCell> Test 3</TableCell>
+                      <TableCell> 
+                        <Chip
+                          label="Test 4"
+                          color="success"
+                          sx={{
+                            height: 24,
+                            fontSize: "0.75rem",
+                            textTransform: "capitalize",
+                            "& .MuiChip-label": { fontWeight: 500 },
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
       </TableRow>
+    </React.Fragment>
+  );
+}
+
+
+const DashboardTable = () => {
+
+  const { loading, error, data } = useQuery<FeedStatusesType>(GET_FEED_STATUSES);
+  const tableBody: JSX.Element[] = [];
+  if (error) {
+    console.log(error);
+    tableBody.push(
+      <TableRow>
+        <TableCell>Error: {error.message}</TableCell>
+      </TableRow>
+    );
+  }
+
+  if (loading) {
+    tableBody.push(
+      <TableRow>
+        <TableCell>Loading...</TableCell>
+      </TableRow>
+    );
+  }
+
+  data?.feedstatuses.forEach((row: FeedStatusType) =>
+    tableBody.push(
+      FeedRow(row)
     )
   );
 

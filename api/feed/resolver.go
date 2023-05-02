@@ -10,6 +10,7 @@ type Resolver interface {
 	ResolveFeed(p graphql.ResolveParams) (interface{}, error)
 	ResolveFeeds(p graphql.ResolveParams) (interface{}, error)
 	ResolveFeedStatuses(p graphql.ResolveParams) (interface{}, error)
+	ResolveGetFeedStatusDetails(p graphql.ResolveParams) (interface{}, error)
 	ResolveFeedStatuseAggregate(p graphql.ResolveParams) (interface{}, error)
 }
 
@@ -106,6 +107,18 @@ func (fs FeedService) ResolveFeedStatuses(p graphql.ResolveParams) (interface{},
 		return nil, err
 	}
 	return feedstatuses, nil
+}
+
+func (fs FeedService) ResolveGetFeedStatusDetails(p graphql.ResolveParams) (interface{}, error) {
+	feed_status_id, ok := p.Args["feed_status_id"].(int)
+	if !ok {
+		return nil, errors.New("feed_status_id has to be an int")
+	}
+	fsAgg, err := fs.repo.GetFeedStatusDetails(feed_status_id)
+	if err != nil {
+		return nil, err
+	}
+	return fsAgg, nil
 }
 
 func (fs FeedService) ResolveFeedStatuseAggregate(p graphql.ResolveParams) (interface{}, error) {
