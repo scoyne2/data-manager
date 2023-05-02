@@ -105,22 +105,25 @@ function FeedRow(row: FeedStatusType) {
             }}
           />
         </TableCell>
+        <TableCell>
+          <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <UnfoldMoreHorizontal /> : <UnfoldLessHorizontal />}
+          </IconButton>
+        </TableCell>
         <TableCell onClick={() => openFeedDetails(row.id, "logs")}>Link</TableCell>
         <TableCell onClick={() => openFeedDetails(row.id, "quality-checks")}>Link</TableCell>
-        <TableCell>
-        <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <UnfoldMoreHorizontal /> : <UnfoldLessHorizontal />}
-          </IconButton>
+        </TableRow>
+        <TableRow>
         <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
+            {/* <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-              <Table size="small" aria-label="purchases">
+                Details
+              </Typography> */}
+              <Table sx={{ minWidth: 800 }} aria-label="details">
                 <TableHead>
                   <TableRow>
                     <TableCell>Process Date</TableCell>
@@ -150,9 +153,8 @@ function FeedRow(row: FeedStatusType) {
                     </TableRow>
                 </TableBody>
               </Table>
-            </Box>
+            {/* </Box> */}
           </Collapse>
-        </TableCell>
       </TableRow>
     </React.Fragment>
   );

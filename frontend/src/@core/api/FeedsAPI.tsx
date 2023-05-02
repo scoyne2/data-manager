@@ -38,9 +38,9 @@ const column_names: string[] = [
   "Rows",
   "Errors",
   "Status",
+  "Details",
   "Logs",
-  "Quality Checks",
-  "Details"
+  "Quality Checks"
 ];
 
 export function getColumns(): string[] {
