@@ -26,7 +26,7 @@ def add_feed(vendor: str, feed_name: str, feed_method: str):
     r = requests.post(GRAPHQL_URL, json={'query': query})
     return r.status_code, r.json()
 
-def file_received(vendor: str, feed_name: str, file_name: str, feed_method: str):
+def file_received(vendor: str, feed_name: str, file_name: str):
     process_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     vendor_clean = vendor.replace("_", " ").title()
     feed_name_clean = feed_name.replace("_", " ").title()
@@ -69,7 +69,7 @@ def lambda_handler(event, context):
         "--feed_name",
         feed,
         "--file_name",
-        file_name,
+        file_id,
         "--feed_method",
         feed_method,
         "--graphql_url",
@@ -86,7 +86,7 @@ def lambda_handler(event, context):
 
     # Make Call to GraphQL API to add feed
     add_feed(vendor.title(), feed.title(), feed_method)
-    response_status_code, response_body = file_received(vendor.title(), feed.title(), file_name, feed_method)
+    response_status_code, response_body = file_received(vendor.title(), feed.title(), file_id)
 
     python_zip_path = f"s3://{RESOURCE_BUCKET}/pyspark_requirements/pyspark_requirements.tar.gz#environment"
     spark_submit_args = (
@@ -120,4 +120,4 @@ def lambda_handler(event, context):
             }
         },
     )
-    return {"statusCode": 200, "body": f"Processing file: {input_file}"}
+    return {"statusCode": 200, "body": f"Processing file: {file_id}"}
