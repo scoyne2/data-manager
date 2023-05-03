@@ -142,7 +142,7 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 
 	// check if feed status exists
 	sqlStatementFdS := `
-	SELECT fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status, fs.file_name, f.id
+	SELECT fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status, fs.file_name, f.id AS feed_id
 	FROM feeds f
 	LEFT JOIN feed_status fs
 	ON fs.feed_id = f.id
@@ -163,9 +163,9 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 	if f.FileName == fs.FileName {
 		sqlUpdateStatement := `
 		UPDATE feed_status
-		SET process_date = $1, record_count = $2, error_count = $3, feed_status = $4, is_current = True
-		WHERE feed_id = $6 AND file_name = $5;`
-		_, updateErr := pr.db.Exec(sqlUpdateStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, f.FeedID)
+		SET process_date = $3, record_count = $4, error_count = $5, feed_status = $6, is_current = True
+		WHERE feed_id = $1 AND file_name = $2;`
+		_, updateErr := pr.db.Exec(sqlUpdateStatement, f.FeedID, fs.FileName, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status)
 		if updateErr != nil {
 			return "", updateErr
 		}
@@ -239,6 +239,7 @@ func (d feedStatusResultsDetailedDTO) ToFeedStatusResultsDetailed() (*FeedStatus
 	if err := d.PreviousFeeds.Unmarshal(&result.PreviousFeeds); err != nil {
 		return nil, fmt.Errorf("could not unmarshal previous_feeds, %v: %w", d.PreviousFeeds, err)
 	}
+	
 	return result, nil
 }
 
@@ -254,13 +255,12 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 		FROM feed_status fs
 		INNER JOIN feeds f
 		ON fs.feed_id = f.id
-		WHERE fs.is_current = False
 		GROUP BY 1,2,3
 	)
 		
 	SELECT 
 	    fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status,
-		f.vendor, f.feed_name, f.feed_method, fs.file_name, p.previous_feeds as previous_feeds
+		f.vendor, f.feed_name, f.feed_method, fs.file_name, COALESCE(p.previous_feeds, '[{}]'::json) AS previous_feeds
 	FROM feed_status fs
 	INNER JOIN feeds f
 	ON fs.feed_id = f.id

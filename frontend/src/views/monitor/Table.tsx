@@ -61,7 +61,6 @@ headerValues.forEach((value) => {
 
 function DetailRows(previous_feeds: FeedStatusType[]){
   const detailRow: JSX.Element[] = [];
-  console.log(previous_feeds)
   previous_feeds.forEach((prow: FeedStatusType) => 
     detailRow.push(
         <TableRow key={prow.id}>
@@ -131,7 +130,6 @@ function FeedRow(row: FeedStatusDetailedType, open: boolean | undefined, setOpen
           />
         </TableCell>
         </TableRow>
-
         {/* Feed Details */}
         <TableRow style={{ background: "#F8F8F8"}}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0, background: "#F8F8F8"}} colSpan={4}>
