@@ -67,6 +67,49 @@ var feedStatusType = graphql.NewObject(graphql.ObjectConfig{
 },
 )
 
+var feedStatusDetailsType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "FeedStatusDetails",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type:        graphql.ID,
+			Description: "The ID that is used to identify unique feed status",
+		},
+		"process_date": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The date the feed was processed",
+		},
+		"record_count": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "The number of records successfully processed",
+		},
+		"error_count": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "The number of records that had errors",
+		},
+		"status": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The status of the feed",
+		},
+		"vendor": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The name of the vendor",
+		},
+		"feed_name": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The name of the feed",
+		},
+		"feed_method": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The method by which the feed is received",
+		},
+		"previous_feeds":&graphql.Field{
+			Type:        graphql.NewList(feedStatusType),
+			Description: "List of previous feed events",
+		},
+	},
+},
+)
+
 var feedStatusAggregateType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "FeedStatusAggregate",
 	Fields: graphql.Fields{
@@ -111,6 +154,11 @@ func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
 			Type: graphql.NewList(feedStatusType),
 			Resolve: fs.ResolveFeedStatuses,
 			Description: "Query all Feed Statuses",
+		},
+		"feedstatusesdetailed": &graphql.Field{
+			Type: graphql.NewList(feedStatusDetailsType),
+			Resolve: fs.ResolveFeedStatuses,
+			Description: "Query all Feed Statuses With Details",
 		},
 		"feedstatuseaggregates": &graphql.Field{
 			Type: feedStatusAggregateType,

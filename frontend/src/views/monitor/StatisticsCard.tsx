@@ -117,6 +117,7 @@ const StatisticsCard = () => {
     <Card>
       <CardHeader
         title="Data Manager"
+        subheader="Last 7 Days"
         action={
           <IconButton
             size="small"
@@ -124,7 +125,7 @@ const StatisticsCard = () => {
             className="card-more-options"
             sx={{ color: "text.secondary" }}
           >
-          <DotsVertical />
+          {/* <DotsVertical /> */}
           </IconButton>
         }
         titleTypographyProps={{

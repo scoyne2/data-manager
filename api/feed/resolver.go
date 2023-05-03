@@ -110,11 +110,7 @@ func (fs FeedService) ResolveFeedStatuses(p graphql.ResolveParams) (interface{},
 }
 
 func (fs FeedService) ResolveGetFeedStatusDetails(p graphql.ResolveParams) (interface{}, error) {
-	feed_status_id, ok := p.Args["feed_status_id"].(int)
-	if !ok {
-		return nil, errors.New("feed_status_id has to be an int")
-	}
-	fsDetails, err := fs.repo.GetFeedStatusDetails(feed_status_id)
+	fsDetails, err := fs.repo.GetFeedStatusDetails()
 	if err != nil {
 		return nil, err
 	}

@@ -39,6 +39,11 @@ type FeedStatusResults struct {
 	FileName   	string `json:"file_name"`
 }
 
+type FeedStatusResultsDetailed struct {
+	FeedStatusResults
+	PreviousFeeds []FeedStatusResults `json:"previous_feeds"`
+}
+
 type FeedStatusAggregate struct {
 	Files     	int `json:"files"`
 	Rows   		int `json:"rows"`
@@ -54,6 +59,6 @@ type Repository interface {
 
 	GetFeedStatuses() ([]FeedStatusResults, error)
 	UpdateFeedStatus(feedStatusUpdate FeedStatusUpdate) (string, error)
-	GetFeedStatusDetails(feed_status_id int) ([]FeedStatusResults, error)
+	GetFeedStatusDetails() ([]FeedStatusResultsDetailed, error)
 	GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error)
 }

@@ -13,16 +13,16 @@ const navigation = (): VerticalNavItemsType => {
       icon: HomeOutline,
       path: "/",
     },
-    {
-      title: "Feed Settings",
-      icon: CogOutline,
-      path: "/feed-settings",
-    },
-    {
-      title: "Feed Details",
-      icon: AlertCircleOutline,
-      path: "/feed-details",
-    },
+    // {
+    //   title: "Feed Settings",
+    //   icon: CogOutline,
+    //   path: "/feed-settings",
+    // },
+    // {
+    //   title: "Feed Details",
+    //   icon: AlertCircleOutline,
+    //   path: "/feed-details",
+    // },
   ];
 };
 
