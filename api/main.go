@@ -31,7 +31,9 @@ func main() {
 func CorsMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		frontEnd := fmt.Sprintf("https://%s", FRONT_END_URL)
+		localHost := "https://localhost.com:3000"
 		w.Header().Set("Access-Control-Allow-Origin", frontEnd)
+		w.Header().Set("Access-Control-Allow-Origin", localHost)
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")

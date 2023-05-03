@@ -69,9 +69,61 @@ headerValues.forEach((value) => {
   header.push(<TableCell>{value}</TableCell>);
 });
 
+function FeedDetailRow(feed_id: number){
+  const { loading, error, data } = useQuery<FeedStatusesType>(GET_FEED_STATUS_DETAILS, { variables: {id: feed_id}});
+  const tableDetailBody: JSX.Element[] = [];
+
+  if (error) {
+    console.log(error);
+    tableDetailBody.push(
+      <TableRow>
+        <TableCell>Error: {error.message}</TableCell>
+      </TableRow>
+    );
+  }
+
+  if (loading) {
+    tableDetailBody.push(
+      <TableRow>
+        <TableCell>Loading...</TableCell>
+      </TableRow>
+    );
+  }
+
+  if (!loading && !error) {
+  data?.feedstatuses.forEach((row: FeedStatusType) =>
+    tableDetailBody.push(
+      <TableRow>
+        <TableCell></TableCell>
+        <TableCell>{row.feed_name}</TableCell>
+        <TableCell>{row.vendor}</TableCell>
+        <TableCell>{row.process_date}</TableCell>
+        <TableCell>{row.record_count}</TableCell>
+        <TableCell>{row.error_count}</TableCell>
+        <TableCell>
+          <Chip
+            label={row.status}
+            // color={statusObj[row.status].color}
+            sx={{
+              height: 24,
+              fontSize: "0.75rem",
+              textTransform: "capitalize",
+              "& .MuiChip-label": { fontWeight: 500 },
+            }}
+          />
+        </TableCell>
+        <TableCell onClick={() => openFeedDetails(row.id, "logs")}>Link</TableCell>
+        <TableCell onClick={() => openFeedDetails(row.id, "quality-checks")}>Link</TableCell>
+      </TableRow>
+      ));
+    }
+
+  return tableDetailBody
+}
+
 function FeedRow(row: FeedStatusType) {
   const [open, setOpen] = React.useState(false);
-
+  // const detailHeader = header.shift();
   return (
     <React.Fragment>
       <TableRow
@@ -117,6 +169,8 @@ function FeedRow(row: FeedStatusType) {
         <TableCell onClick={() => openFeedDetails(row.id, "logs")}>Link</TableCell>
         <TableCell onClick={() => openFeedDetails(row.id, "quality-checks")}>Link</TableCell>
         </TableRow>
+
+        {/* Feed Details */}
         <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
         <Collapse in={open} timeout="auto" unmountOnExit>
@@ -127,31 +181,11 @@ function FeedRow(row: FeedStatusType) {
               <Table sx={{ minWidth: 800 }} aria-label="details">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Process Date</TableCell>
-                    <TableCell>Records</TableCell>
-                    <TableCell>Errors</TableCell>
-                    <TableCell>Status</TableCell>
+                    {/* {{ detailHeader }} */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                    <TableRow>
-                       {/* TODO populate TableCell from GET_FEED_STATUS_DETAILS */} 
-                      <TableCell> Test 1</TableCell>
-                      <TableCell> Test 2</TableCell>
-                      <TableCell> Test 3</TableCell>
-                      <TableCell> 
-                        <Chip
-                          label="Test 4"
-                          color="success"
-                          sx={{
-                            height: 24,
-                            fontSize: "0.75rem",
-                            textTransform: "capitalize",
-                            "& .MuiChip-label": { fontWeight: 500 },
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
+                 {/* { FeedDetailRow(row.id) } */}
                 </TableBody>
               </Table>
             </Box>
@@ -164,9 +198,9 @@ function FeedRow(row: FeedStatusType) {
 
 
 const DashboardTable = () => {
-
   const { loading, error, data } = useQuery<FeedStatusesType>(GET_FEED_STATUSES);
   const tableBody: JSX.Element[] = [];
+
   if (error) {
     console.log(error);
     tableBody.push(
@@ -184,11 +218,13 @@ const DashboardTable = () => {
     );
   }
 
-  data?.feedstatuses.forEach((row: FeedStatusType) =>
-    tableBody.push(
-      FeedRow(row)
-    )
-  );
+  if (!loading && !error) {
+    data?.feedstatuses.forEach((row: FeedStatusType) =>
+      tableBody.push(
+        FeedRow(row)
+      )
+    );
+  }
 
   return (
     <Card>

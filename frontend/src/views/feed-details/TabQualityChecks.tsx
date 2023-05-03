@@ -80,19 +80,19 @@ const TabQualityChecks = () => {
     const quality_check_quality_check_results: QualityCheckResultsType[] = [
       {
         id: 1,
-        status: "success",
+        status: "Success",
         quality_check_name: "Null Check",
         quality_check_description: "All Records Passed"
       },
       {
         id: 2,
-        status: "failed",
+        status: "Failed",
         quality_check_name: "Unique Check",
         quality_check_description: "Column: ID. 27 Duplicates found"
       },
       {
         id: 3,
-        status: "success",
+        status: "Success",
         quality_check_name: "Range Check",
         quality_check_description: "All Records Passed"
       }

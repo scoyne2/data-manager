@@ -1,7 +1,6 @@
 
 // ** MUI Imports
 import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
 import Table from "@mui/material/Table";
 import TableRow from "@mui/material/TableRow";
 import TableHead from "@mui/material/TableHead";
