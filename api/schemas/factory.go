@@ -102,7 +102,7 @@ var feedStatusDetailsType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "The method by which the feed is received",
 		},
-		"previous_feeds":&graphql.Field{
+		"previous_feeds": &graphql.Field{
 			Type:        graphql.NewList(feedStatusType),
 			Description: "List of previous feed events",
 		},
@@ -157,7 +157,7 @@ func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
 		},
 		"feedstatusesdetailed": &graphql.Field{
 			Type: graphql.NewList(feedStatusDetailsType),
-			Resolve: fs.ResolveFeedStatuses,
+			Resolve: fs.ResolveGetFeedStatusDetails,
 			Description: "Query all Feed Statuses With Details",
 		},
 		"feedstatuseaggregates": &graphql.Field{

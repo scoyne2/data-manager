@@ -1,8 +1,8 @@
 // ** Types Imports
 import { ThemeColor } from "src/@core/layouts/types";
 
-export interface FeedStatusesType {
-  feedstatuses: FeedStatusType[];
+export interface FeedStatusesDetailsType {
+  feedstatusesdetailed: FeedStatusDetailedType[];
 }
 
 export interface FeedStatusType {
@@ -14,6 +14,20 @@ export interface FeedStatusType {
   error_count: number;
   status: string;
   feed_method: string;
+  file_name: string;
+}
+
+export interface FeedStatusDetailedType {
+  id: number;
+  record_count: number;
+  feed_name: string;
+  process_date: string;
+  vendor: string;
+  error_count: number;
+  status: string;
+  feed_method: string;
+  file_name: string;
+  previous_feeds: FeedStatusType[];
 }
 
 export interface StatusObj {

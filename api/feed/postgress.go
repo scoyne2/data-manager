@@ -146,30 +146,40 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 	FROM feeds f
 	LEFT JOIN feed_status fs
 	ON fs.feed_id = f.id
-    WHERE f.vendor=$1 AND f.feed_name=$2 AND fs.file_name=$3;`
+    WHERE f.vendor=$1 AND f.feed_name=$2;`
 	feedStatusRows := pr.db.QueryRow(sqlStatementFdS, fs.Vendor, fs.FeedName, fs.FileName)
 	var f FeedStatus
 	feedStatusRows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.FileName, &f.FeedID)
 	
-	sqlUpdateStatement := `
+	sqlUpdateAllStatement := `
 	UPDATE feed_status
 	SET is_current = False
-	WHERE id = $1;`
-	_, updateErr := pr.db.Exec(sqlUpdateStatement, f.ID)
-	if updateErr != nil {
-		return "", updateErr
+	WHERE feed_id = $1 AND file_name != $2;`
+	_, updateAllErr := pr.db.Exec(sqlUpdateAllStatement, f.FeedID, f.FileName)
+	if updateAllErr != nil {
+		return "", updateAllErr
 	}
 
-	// insert current record
-	sqlInsertStatement := `
-	INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id, is_current)
-	VALUES ($1, $2, $3, $4, $5, $6, True);`
-	_, insertErr := pr.db.Exec(sqlInsertStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, fd.ID)
-	if insertErr != nil {
-		return "", insertErr
-	}
+	if f.FileName == fs.FileName {
+		sqlUpdateStatement := `
+		UPDATE feed_status
+		SET process_date = $1, record_count = $2, error_count = $3, feed_status = $4, is_current = True
+		WHERE feed_id = $6 AND file_name = $5;`
+		_, updateErr := pr.db.Exec(sqlUpdateStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, f.FeedID)
+		if updateErr != nil {
+			return "", updateErr
+		}
+	} else {
+		sqlInsertStatement := `
+		INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id, is_current)
+		VALUES ($1, $2, $3, $4, $5, $6, True);`
+		_, insertErr := pr.db.Exec(sqlInsertStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, fd.ID)
+		if insertErr != nil {
+			return "", insertErr
+		}
+	}	
 
-	return fmt.Sprintf("Feed status updated for id: %n", f.ID), nil
+	return fmt.Sprintf("Feed status updated for id: %b", f.ID), nil
 }
 
 func (pr *PostgressRepository) GetFeedStatuses() ([]FeedStatusResults, error) {
@@ -215,8 +225,7 @@ type feedStatusResultsDetailedDTO struct {
 	PreviousFeeds types.JSONText `db:"previous_feeds"`
 }
 
-func (d feedStatusResultsDetailedDTO) ToFeedStatusResultsDetailed() (FeedStatusResultsDetailed, error) {
-	var feedStatus FeedStatusResultsDetailed
+func (d feedStatusResultsDetailedDTO) ToFeedStatusResultsDetailed() (*FeedStatusResultsDetailed, error) {
 	result := new(FeedStatusResultsDetailed)
 	result.ID = d.ID
 	result.ProcessDate = d.ProcessDate
@@ -228,25 +237,30 @@ func (d feedStatusResultsDetailedDTO) ToFeedStatusResultsDetailed() (FeedStatusR
 	result.FeedMethod = d.FeedMethod
 	result.FileName = d.FileName
 	if err := d.PreviousFeeds.Unmarshal(&result.PreviousFeeds); err != nil {
-		return feedStatus, err
+		return nil, fmt.Errorf("could not unmarshal previous_feeds, %v: %w", d.PreviousFeeds, err)
 	}
-	return feedStatus, nil
+	return result, nil
 }
 
 func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetailed, error) {
 	sqlStatement := `
 	WITH previous AS (
 		SELECT
-			fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status,
-			f.vendor, f.feed_name, f.feed_method, fs.file_name
+		    f.vendor, f.feed_name, f.feed_method,
+			json_agg(json_build_object('id', fs.id, 'process_date', fs.process_date,
+			  'record_count', fs.record_count, 'error_count', fs.error_count, 'feed_status', fs.feed_status,
+			  'vendor', f.vendor, 'feed_name', f.feed_name, 'feed_method', f.feed_method, 'file_name', fs.file_name)
+			) previous_feeds
 		FROM feed_status fs
 		INNER JOIN feeds f
 		ON fs.feed_id = f.id
 		WHERE fs.is_current = False
+		GROUP BY 1,2,3
 	)
 		
-	SELECT fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status,
-		f.vendor, f.feed_name, f.feed_method, fs.file_name, json_build_array(p.*) as previous_feeds
+	SELECT 
+	    fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status,
+		f.vendor, f.feed_name, f.feed_method, fs.file_name, p.previous_feeds as previous_feeds
 	FROM feed_status fs
 	INNER JOIN feeds f
 	ON fs.feed_id = f.id
@@ -260,27 +274,22 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	}
 	defer rows.Close()
 
-	var dtos []feedStatusResultsDetailedDTO
-
+	var feedStatuses []FeedStatusResultsDetailed
 	for rows.Next() {
-		err = rows.Scan(&dtos)
+		var result feedStatusResultsDetailedDTO
+		err = rows.Scan(&result.ID, &result.ProcessDate, &result.RecordCount, &result.ErrorCount, &result.Status, &result.Vendor, &result.FeedName, &result.FeedMethod, &result.FileName, &result.PreviousFeeds)
 		if err != nil {
 			return nil, err
 		}
+		feedStatus, err := result.ToFeedStatusResultsDetailed()
+		if err != nil {
+			return nil, err
+		}
+		feedStatuses = append(feedStatuses, *feedStatus)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	
-	feedStatuses := make([]FeedStatusResultsDetailed, 0, len(dtos))
-	for _, dto := range dtos {
-		feedStatus, err := dto.ToFeedStatusResultsDetailed()
-		if err != nil {
-			return nil, err
-		}
-		feedStatuses = append(feedStatuses, feedStatus)
-	}
-
 	return feedStatuses, nil
     
 }

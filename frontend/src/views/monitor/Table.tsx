@@ -20,16 +20,16 @@ import UnfoldLessHorizontal from "mdi-material-ui/UnfoldLessHorizontal";
 import {
   getColumns,
   FeedStatusType,
-  FeedStatusesType,
+  FeedStatusDetailedType,
+  FeedStatusesDetailsType,
   statusObj,
 } from "../../@core/api/FeedsAPI";
 
 import { useQuery, gql } from "@apollo/client";
-import { table } from 'console';
 
 const GET_FEED_STATUSES = gql`
   query GetFeedStatuses {
-    feedstatuses {
+    feedstatusesdetailed {
       error_count
       feed_method
       feed_name
@@ -37,33 +37,20 @@ const GET_FEED_STATUSES = gql`
       process_date
       record_count
       status
-      vendor,
-      previous_feeds
+      vendor
+      previous_feeds {
+        error_count
+        feed_method
+        feed_name
+        id
+        process_date
+        record_count
+        status
+        vendor
+      }
     }
   }
 `;
-
-// const GET_FEED_STATUS_DETAILS = gql`
-//   query GetFeedStatusDetails() {
-//     feedstatuses {
-//       error_count
-//       feed_method
-//       feed_name
-//       id
-//       process_date
-//       record_count
-//       status
-//       vendor,
-//       previous_feeds
-//     }
-//   }
-// `;
-
-
-function openFeedDetails(feed_id: number, location: string) {
-  // TODO have this redirect to logs or quality checks
-  alert(feed_id + location);
-}
 
 const headerValues = getColumns();
 
@@ -72,71 +59,35 @@ headerValues.forEach((value) => {
   header.push(<TableCell>{value}</TableCell>);
 });
 
-// function FeedDetailRow(feed_id: number){
-//   const { loading, error, data } = useQuery<FeedStatusesType>(GET_FEED_STATUS_DETAILS, { variables: {id: feed_id}});
-//   const tableDetailBody: JSX.Element[] = [];
+function DetailRows(previous_feeds: FeedStatusType[]){
+  const detailRow: JSX.Element[] = [];
+  console.log(previous_feeds)
+  previous_feeds.forEach((prow: FeedStatusType) => 
+    detailRow.push(
+        <TableRow key={prow.id}>
+          <TableCell >{prow.process_date}</TableCell>
+          <TableCell >{prow.record_count}</TableCell>
+          <TableCell >{prow.error_count}</TableCell>
+          <TableCell >
+            <Chip
+              label={prow.status}
+              color={statusObj[prow.status].color}
+              sx={{
+                height: 24,
+                fontSize: "0.75rem",
+                textTransform: "capitalize",
+                "& .MuiChip-label": { fontWeight: 500 },
+              }}
+            />
+          </TableCell>
+        </TableRow>
+      )
+    )
+    return detailRow
+}
 
-//   if (error) {
-//     console.log(error);
-//     tableDetailBody.push(
-//       <TableRow>
-//         <TableCell>Error: {error.message}</TableCell>
-//       </TableRow>
-//     );
-//   }
-
-//   if (loading) {
-//     tableDetailBody.push(
-//       <TableRow>
-//         <TableCell>Loading...</TableCell>
-//       </TableRow>
-//     );
-//   }
-
-//   if (!loading && !error) {
-//   data?.feedstatuses.forEach((row: FeedStatusType) =>
-//     tableDetailBody.push(
-//       <TableRow>
-//         <TableCell></TableCell>
-//         <TableCell>{row.feed_name}</TableCell>
-//         <TableCell>{row.vendor}</TableCell>
-//         <TableCell>{row.process_date}</TableCell>
-//         <TableCell>{row.record_count}</TableCell>
-//         <TableCell>{row.error_count}</TableCell>
-//         <TableCell>
-//           <Chip
-//             label={row.status}
-//             // color={statusObj[row.status].color}
-//             sx={{
-//               height: 24,
-//               fontSize: "0.75rem",
-//               textTransform: "capitalize",
-//               "& .MuiChip-label": { fontWeight: 500 },
-//             }}
-//           />
-//         </TableCell>
-//         {/* <TableCell onClick={() => openFeedDetails(row.id, "logs")}>Link</TableCell>
-//         <TableCell onClick={() => openFeedDetails(row.id, "quality-checks")}>Link</TableCell> */}
-//       </TableRow>
-//       ));
-//     }
-
-//   return tableDetailBody
-// }
-
-function FeedRow(row: FeedStatusType, expandedData: {id: number; expanded: boolean;}[], setExpandedState: any) {
-  // const detailHeader = header.shift();
-  function updateExpandedState(id: number) {
-    expandedData.forEach(function (rowExpandedData) {
-      if (rowExpandedData.id === id){
-        rowExpandedData.expanded = !rowExpandedData.expanded
-      }
-    });
-    setExpandedState(expandedData);
-  }
-
-  const currentExpanded = expandedData.find((rowExpandedData) => rowExpandedData.id === row.id);
-
+function FeedRow(row: FeedStatusDetailedType, open: boolean | undefined, setOpen: (key: number, value: boolean) => void) {  
+  open = open ?? false;
   return (
     <React.Fragment>
       <TableRow
@@ -148,9 +99,9 @@ function FeedRow(row: FeedStatusType, expandedData: {id: number; expanded: boole
           <IconButton
               aria-label="expand row"
               size="small"
-              onClick={() => updateExpandedState(row.id)}
+              onClick={() => setOpen(row.id, !open)}
             >
-              {currentExpanded?.expanded ? <UnfoldMoreHorizontal /> : <UnfoldLessHorizontal />}
+              <UnfoldMoreHorizontal /> 
           </IconButton>
         </TableCell>
         <TableCell sx={{ py: (theme) => `${theme.spacing(0.5)} !important` }}>
@@ -179,26 +130,24 @@ function FeedRow(row: FeedStatusType, expandedData: {id: number; expanded: boole
             }}
           />
         </TableCell>
-        {/* <TableCell onClick={() => openFeedDetails(row.id, "logs")}>Link</TableCell>
-        <TableCell onClick={() => openFeedDetails(row.id, "quality-checks")}>Link</TableCell> */}
         </TableRow>
 
         {/* Feed Details */}
-        <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-        <Collapse in={currentExpanded?.expanded} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                Details
-              </Typography>
-              <Table sx={{ minWidth: 800 }} aria-label="details">
-                <TableHead>
-                  <TableRow>
-                    {/* {{ detailHeader }} */}
+        <TableRow style={{ background: "#F8F8F8"}}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0, background: "#F8F8F8"}} colSpan={4}>
+        <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box >
+              <Table aria-label="details">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Date</TableCell>
+                  <TableCell>Rows</TableCell>
+                  <TableCell>Errors</TableCell>
+                  <TableCell>Status</TableCell>
                   </TableRow>
-                </TableHead>
+              </TableHead>
                 <TableBody>
-                 {/* { FeedDetailRow(row.id) } */}
+                  { DetailRows(row.previous_feeds) }
                 </TableBody>
               </Table>
             </Box>
@@ -211,8 +160,12 @@ function FeedRow(row: FeedStatusType, expandedData: {id: number; expanded: boole
 
 
 const DashboardTable = () => {
-  const { loading, error, data } = useQuery<FeedStatusesType>(GET_FEED_STATUSES);
+  const { loading, error, data } = useQuery<FeedStatusesDetailsType>(GET_FEED_STATUSES);
   const tableBody: JSX.Element[] = [];
+  const [open, setOpen] = React.useState(new Map<number, boolean>());
+  const updateOpen = (key: number, value: boolean) => {
+    setOpen(map => new Map(map.set(key, value)));
+  }
 
   if (error) {
     console.log(error);
@@ -231,18 +184,9 @@ const DashboardTable = () => {
     );
   }
 
-  const tableData = [{ id: 0, expanded: false}]
-  const [expandedState, setExpandedState] = React.useState(tableData);
-  function createRow(row: FeedStatusType){
-    tableData.push({ id: row.id, expanded: false })
-    tableBody.push(
-      FeedRow(row, expandedState, setExpandedState)
-   )
-  }
-
   if (!loading && !error) {
-    data?.feedstatuses.forEach((row: FeedStatusType) => (
-      createRow(row)
+    data?.feedstatusesdetailed.forEach((row: FeedStatusDetailedType) => (
+      tableBody.push(FeedRow(row, open.get(row.id), updateOpen))
      )
     );
   }
