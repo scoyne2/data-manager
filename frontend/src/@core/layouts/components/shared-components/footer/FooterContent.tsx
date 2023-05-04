@@ -22,7 +22,7 @@ const FooterContent = () => {
         <Box component="span" sx={{ color: "error.main" }}>
           ❤️
         </Box>
-        {` Data Manager `}
+        <a href = "https://github.com/scoyne2/data-manager">Data Manager</a>
       </Typography>
     </Box>
   );
