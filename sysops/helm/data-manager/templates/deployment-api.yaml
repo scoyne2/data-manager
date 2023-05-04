@@ -30,6 +30,8 @@ spec:
               value: api.{{ .Values.domainName }}
             - name: "FRONT_END_URL"
               value: app.{{ .Values.domainName }}
+            - name: "RESOURCES_BUCKET_NAME"
+              value: {{ .Values.resourceBucketName }}
             - name: "POSTGRES_USER"
               value:  {{ .Values.api.env.postgres_user }}
             - name: "POSTGRES_PASSWORD"

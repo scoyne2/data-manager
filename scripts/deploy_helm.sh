@@ -13,4 +13,5 @@ cd sysops/helm/data-manager && helm dependency build && helm upgrade --install d
     --set pgadmin4.env.email=$PGADMIN_DEFAULT_EMAIL --set pgadmin4.env.password=$PGADMIN_DEFAULT_PASSWORD \
     --set certificateARN=$ACM_ARN --set wafARN=$WAF_ARN --set awsRegion=$AWS_REGION  \
     --set pgadmin4.serverDefinitions.servers.dataManagerServer.Username=$POSTGRES_USER \
-    --set pgadmin4.ingress.annotations."external-dns\.alpha\.kubernetes\.io\/hostname"=pgadmin4.$DOMAIN_NAME
+    --set pgadmin4.ingress.annotations."external-dns\.alpha\.kubernetes\.io\/hostname"=pgadmin4.$DOMAIN_NAME \
+    --set resourceBucketName=$RESOURCES_BUCKET_NAME

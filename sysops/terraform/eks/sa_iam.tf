@@ -99,6 +99,20 @@ resource "aws_iam_policy" "load_balancer_controller_iam_policy" {
         {
             "Effect": "Allow",
             "Action": [
+                "athena:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "glue:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
                 "ec2:CreateSecurityGroup"
             ],
             "Resource": "*"
@@ -237,6 +251,22 @@ resource "aws_iam_policy" "load_balancer_controller_iam_policy" {
                 "elasticloadbalancing:ModifyRule"
             ],
             "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts",
+                "s3:AbortMultipartUpload",
+                "s3:CreateBucket",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::*"
+            ]
         }
     ]
 })

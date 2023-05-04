@@ -4,6 +4,8 @@
 
 domainName: ""
 
+resourceBucketName: ""
+
 hostedZoneId: ""
 
 awsRegion: ""

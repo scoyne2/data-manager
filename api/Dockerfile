@@ -10,6 +10,7 @@ RUN go mod download
 COPY *.go ./
 COPY feed ./feed
 COPY schemas ./schemas
+COPY datapreview ./datapreview
 
 RUN go build -o /data-manager-api
 

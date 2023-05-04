@@ -1,19 +1,22 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"strings"
 	"net/http"
 	"os"
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/scoyne2/data-manager-api/feed"
-	"github.com/scoyne2/data-manager-api/data_preview"
+	"github.com/scoyne2/data-manager-api/datapreview"
 	"github.com/scoyne2/data-manager-api/schemas"
 )
 
 var API_HOST string = os.Getenv("API_HOST")
 var FRONT_END_URL string = os.Getenv("FRONT_END_URL")
+var DATA_PREVIEW_BUCKET string = os.Getenv("RESOURCES_BUCKET_NAME")
 
 func main() {
 
@@ -47,20 +50,21 @@ func check(w http.ResponseWriter, r *http.Request) {
 }
 
 func dataPreview(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintf(w, "<h1>Data Preview</h1>")
 	vals := r.URL.Query()
 	vendor, ok := vals["vendor"]
 	var vd string
 	if ok {
 		if len(vendor) >= 1 {
-			vd = vendor[0]
+			vdLower := strings.ToLower(vendor[0])
+			vd = strings.Replace(vdLower, " ", "_", -1)
 		}
 	}
 	feedName, ok := vals["feedname"]
 	var fn string
 	if ok {
 		if len(feedName) >= 1 {
-			fn = feedName[0]
+			fnLower := strings.ToLower(feedName[0])
+			fn = strings.Replace(fnLower, " ", "_", -1)
 		}
 	}
 	fileName, ok := vals["filename"]
@@ -70,7 +74,14 @@ func dataPreview(w http.ResponseWriter, r *http.Request){
 			fln = fileName[0]
 		}
 	}
-	data_preview.DataPreviewAthena(vd, fn, fln)
+
+	results, err := datapreview.DataPreviewAthena(vd, fn, fln, DATA_PREVIEW_BUCKET)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %s", err)
+	} 
+	w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(results)
 }
 
 // StartServer will trigger the server with a Playground
@@ -81,7 +92,7 @@ func StartServer(schema *graphql.Schema) {
 		GraphiQL: false,
 	})
 
-	// http.HandleFunc("/", check)
+	http.HandleFunc("/", check)
 	http.HandleFunc("/health_check", check)
 	http.HandleFunc("/preview", dataPreview)
 	http.Handle("/graphql", CorsMiddleware(h))
