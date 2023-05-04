@@ -85,7 +85,7 @@ def update_feed_status(graphql_url: str, vendor: str, feed_name: str, file_name:
         '}'
      )
     r = requests.post(graphql_url, json={'query': query})
-    return r.status_code, r.json()
+    return r.status_code
 
 #    df = spark.read.parquet(output_path)
 
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     output_path = args.output_path
     file_extension = args.file_extension
     resources_bucket = args.resources_bucket
-    logging.info(f"Processing file: {input_file}")
+    logging.warn(f"Processing file: {input_file}")
 
     # Create spark session
     spark = create_spark_session(input_file)
@@ -212,14 +212,14 @@ if __name__ == "__main__":
     # Update Feed Status
     record_count = input_df.count()
     error_count = 0
-    response_code, response_body = update_feed_status(graphql_url, vendor, feed_name, file_name, record_count, error_count, "Processing")
-    logging.info(f"Udate feed status response code {response_code}, body: {response_body}")
+    response_code = update_feed_status(graphql_url, vendor, feed_name, file_name, record_count, error_count, "Processing")
+    logging.warn(f"Update feed status response code {response_code}")
 
     # Convert file to parquet
     processed_count = process_file(spark, input_df, output_path, vendor, feed_name)
     error_count = record_count - processed_count
-    response_code, response_body = update_feed_status(graphql_url, vendor, feed_name, file_name, record_count, error_count, "Validating")
-    logging.info(f"Convert status response code {response_code}, body: {response_body}")
+    response_code = update_feed_status(graphql_url, vendor, feed_name, file_name, record_count, error_count, "Validating")
+    logging.warn(f"Convert status response code {response_code}")
 
     # Run Quality Checks and log results
     error_count_from_qa = perform_quality_checks(output_path, resources_bucket)
@@ -235,5 +235,5 @@ if __name__ == "__main__":
         status = "Success"
 
     # Update Final Feed Status
-    response_code, response_body = update_feed_status(graphql_url, vendor, feed_name, file_name ,feed_method, record_count, error_count_from_qa, status)
-    logging.info(f"Final status response code {response_code}, body: {response_body}")
+    response_code = update_feed_status(graphql_url, vendor, feed_name, file_name, record_count, error_count_from_qa, status)
+    logging.warn(f"Final status response code {response_code}")

@@ -142,20 +142,36 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 
 	// check if feed status exists
 	sqlStatementFdS := `
-	SELECT fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status, fs.file_name, f.id AS feed_id
+	SELECT 
+		COALESCE(fs.id, 0),
+		COALESCE(fs.process_date, '1970-01-01'),
+		COALESCE(fs.record_count, 0), 
+		COALESCE(fs.error_count, 0),
+		COALESCE(fs.feed_status, 'N/A'),
+		COALESCE(fs.file_name, 'N/A'),
+		f.id AS feed_id
 	FROM feeds f
 	LEFT JOIN feed_status fs
 	ON fs.feed_id = f.id
-    WHERE f.vendor=$1 AND f.feed_name=$2;`
-	feedStatusRows := pr.db.QueryRow(sqlStatementFdS, fs.Vendor, fs.FeedName, fs.FileName)
+    WHERE f.vendor=$1 AND f.feed_name=$2
+	ORDER BY 2 DESC
+	LIMIT 1
+	;`
+	feedStatusRows := pr.db.QueryRow(sqlStatementFdS, fs.Vendor, fs.FeedName)
 	var f FeedStatus
-	feedStatusRows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.FileName, &f.FeedID)
-	
+	feedStatusErrors := feedStatusRows.Scan(&f.ID, &f.ProcessDate, &f.RecordCount, &f.ErrorCount, &f.Status, &f.FileName, &f.FeedID)
+	if feedStatusErrors == sql.ErrNoRows {
+		return "", fmt.Errorf("could not complete update, feed status %s does not exist for vendor %s", fs.FeedName, fs.Vendor)
+	}
+	if feedStatusErrors != nil && feedStatusErrors != sql.ErrNoRows {
+		return "", fmt.Errorf("vendor: %s, feed_name: %s feed status query failed: %s", fs.Vendor, fs.FeedName, feedStatusErrors)
+	}
+
 	sqlUpdateAllStatement := `
 	UPDATE feed_status
 	SET is_current = False
-	WHERE feed_id = $1 AND file_name != $2;`
-	_, updateAllErr := pr.db.Exec(sqlUpdateAllStatement, f.FeedID, f.FileName)
+	WHERE feed_id = $1;`
+	_, updateAllErr := pr.db.Exec(sqlUpdateAllStatement, f.FeedID)
 	if updateAllErr != nil {
 		return "", updateAllErr
 	}
@@ -179,7 +195,7 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 		}
 	}	
 
-	return fmt.Sprintf("Feed status updated for id: %b", f.ID), nil
+	return fmt.Sprintf("Feed status updated for id: %s", f.ID), nil
 }
 
 func (pr *PostgressRepository) GetFeedStatuses() ([]FeedStatusResults, error) {
@@ -247,11 +263,11 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	sqlStatement := `
 	WITH previous AS (
 		SELECT
-		    f.vendor, f.feed_name, f.feed_method,
+		    f.vendor, f.feed_name, f.feed_method, 
 			json_agg(json_build_object('id', fs.id, 'process_date', fs.process_date,
 			  'record_count', fs.record_count, 'error_count', fs.error_count, 'feed_status', fs.feed_status,
 			  'vendor', f.vendor, 'feed_name', f.feed_name, 'feed_method', f.feed_method, 'file_name', fs.file_name)
-			) previous_feeds
+			  ORDER BY fs.process_date DESC) previous_feeds
 		FROM feed_status fs
 		INNER JOIN feeds f
 		ON fs.feed_id = f.id
