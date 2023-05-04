@@ -10,18 +10,8 @@ import (
 
 type mockFeedService struct {}
 
-func (m *mockFeedService) ResolveFeeds(p graphql.ResolveParams) (interface{}, error) {
-	// Mock implementation for ResolveFeeds
-	return nil, nil
-}
-
-func (m *mockFeedService) ResolveFeed(p graphql.ResolveParams) (interface{}, error) {
-	// Mock implementation for ResolveFeed
-	return nil, nil
-}
-
-func (m *mockFeedService) ResolveFeedStatuses(p graphql.ResolveParams) (interface{}, error) {
-	// Mock implementation for ResolveFeedStatuses
+func (m *mockFeedService) AddFeed(p graphql.ResolveParams) (interface{}, error) {
+	// Mock implementation for AddFeed
 	return nil, nil
 }
 

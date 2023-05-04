@@ -5,29 +5,6 @@ import (
 	"github.com/scoyne2/data-manager-api/feed"
 )
 
-var feedType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Feed",
-	Fields: graphql.Fields{
-		"id": &graphql.Field{
-			Type:        graphql.ID,
-			Description: "The ID that is used to identify unique feeds",
-		},
-		"vendor": &graphql.Field{
-			Type:        graphql.String,
-			Description: "The name of the vendor",
-		},
-		"feedName": &graphql.Field{
-			Type:        graphql.String,
-			Description: "The name of the feed",
-		},
-		"feedMethod": &graphql.Field{
-			Type:        graphql.String,
-			Description: "The method by which the feed is received",
-		},
-	},
-},
-)
-
 var feedStatusType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "FeedStatus",
 	Fields: graphql.Fields{
@@ -135,26 +112,6 @@ func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
 
 	// RootQuery
 	fields := graphql.Fields{
-		"feeds": &graphql.Field{
-			Type: graphql.NewList(feedType),
-			Resolve: fs.ResolveFeeds,
-			Description: "Query all Feeds",
-		},
-		"feed": &graphql.Field{
-			Type: feedType,
-			Resolve: fs.ResolveFeed,
-			Args: graphql.FieldConfigArgument{
-				"id": &graphql.ArgumentConfig{
-					Type: graphql.Int,
-				},
-			},
-			Description: "Query a specific feed",
-		},
-		"feedstatuses": &graphql.Field{
-			Type: graphql.NewList(feedStatusType),
-			Resolve: fs.ResolveFeedStatuses,
-			Description: "Query all Feed Statuses",
-		},
 		"feedstatusesdetailed": &graphql.Field{
 			Type: graphql.NewList(feedStatusDetailsType),
 			Resolve: fs.ResolveGetFeedStatusDetails,

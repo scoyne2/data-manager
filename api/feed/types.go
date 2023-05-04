@@ -59,13 +59,7 @@ type FeedStatusAggregate struct {
 }
 
 type Repository interface {
-	GetFeeds() ([]Feed, error)
-	GetFeed(id int) (Feed, error)
-	UpdateFeed(feed Feed) (Feed, error)
 	AddFeed(feed Feed) (string, error)
-	DeleteFeed(id int) (string, error)
-
-	GetFeedStatuses() ([]FeedStatusResults, error)
 	UpdateFeedStatus(feedStatusUpdate FeedStatusUpdate) (string, error)
 	GetFeedStatusDetails() ([]FeedStatusResultsDetailed, error)
 	GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error)

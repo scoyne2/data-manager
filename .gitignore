@@ -132,6 +132,8 @@ builds
 
 # Spark
 pyspark/requirements/out/*
+pyspark/metastore_db/*
+pyspark/path/*
 
 # Pytest
 __pycache__

@@ -1,50 +1,54 @@
-import boto3
 import os
-import requests
 import urllib.parse
 from datetime import datetime
 
+import boto3
+import requests
+
 client = boto3.client("emr-serverless")
 
-EMR_SERVERLESS_APPLICATION_ID = os.environ["APPLICATION_ID"]
-JOB_ROLE_ARN = os.environ["JOB_ROLE_ARN"]
-SCRIPT_LOCATION = os.environ["SCRIPT_LOCATION"]
-OUTPUT_BUCKET = os.environ["OUTPUT_BUCKET"]
-RESOURCE_BUCKET = os.environ["RESOURCE_BUCKET"]
-DOMAIN_NAME = os.environ["DOMAIN_NAME"]
+EMR_SERVERLESS_APPLICATION_ID = os.environ.get("APPLICATION_ID", "999999999999")
+JOB_ROLE_ARN = os.environ.get("JOB_ROLE_ARN", "arn:aws:iam::999999999999:role/fake")
+SCRIPT_LOCATION = os.environ.get("SCRIPT_LOCATION", "test_script_location")
+OUTPUT_BUCKET = os.environ.get("OUTPUT_BUCKET", "test_outputbucket")
+RESOURCE_BUCKET = os.environ.get("RESOURCE_BUCKET", "test_resource_bucket")
+DOMAIN_NAME = os.environ.get("DOMAIN_NAME", "localhost")
 
 GRAPHQL_URL = f"https://api.{DOMAIN_NAME}/graphql"
+
 
 def add_feed(vendor: str, feed_name: str, feed_method: str):
     vendor_clean = vendor.replace("_", " ").title()
     feed_name_clean = feed_name.replace("_", " ").title()
     query = (
-        'mutation AddFeed {'
+        "mutation AddFeed {"
         f'  addFeed(vendor: "{vendor_clean}", feedName: "{feed_name_clean}", feedMethod: "{feed_method}")'
-        '}'
+        "}"
     )
-    r = requests.post(GRAPHQL_URL, json={'query': query})
+    r = requests.post(GRAPHQL_URL, json={"query": query})
     return r.status_code, r.json()
+
 
 def file_received(vendor: str, feed_name: str, file_name: str):
     process_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     vendor_clean = vendor.replace("_", " ").title()
     feed_name_clean = feed_name.replace("_", " ").title()
     query = (
-        'mutation UpdateFeedStatus {'
-        '  updateFeedStatus('
-        '    recordCount: 0'
-        '    errorCount: 0'
+        "mutation UpdateFeedStatus {"
+        "  updateFeedStatus("
+        "    recordCount: 0"
+        "    errorCount: 0"
         '    status: "Received"'
-       f'    fileName: "{file_name}"'
-       f'    vendor: "{vendor_clean}"'
-       f'    feedName: "{feed_name_clean}"'
-       f'    processDate: "{process_date}"'
-       f'  )'
-        '}'
-     )
-    r = requests.post(GRAPHQL_URL, json={'query': query})
+        f'    fileName: "{file_name}"'
+        f'    vendor: "{vendor_clean}"'
+        f'    feedName: "{feed_name_clean}"'
+        f'    processDate: "{process_date}"'
+        f"  )"
+        "}"
+    )
+    r = requests.post(GRAPHQL_URL, json={"query": query})
     return r.status_code, r.json()
+
 
 def lambda_handler(event, context):
     input_bucket = event["Records"][0]["s3"]["bucket"]["name"]
@@ -86,7 +90,9 @@ def lambda_handler(event, context):
 
     # Make Call to GraphQL API to add feed
     add_feed(vendor.title(), feed.title(), feed_method)
-    response_status_code, response_body = file_received(vendor.title(), feed.title(), file_id)
+    response_status_code, response_body = file_received(
+        vendor.title(), feed.title(), file_id
+    )
 
     python_zip_path = f"s3://{RESOURCE_BUCKET}/pyspark_requirements/pyspark_requirements.tar.gz#environment"
     spark_submit_args = (

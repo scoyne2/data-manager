@@ -13,12 +13,8 @@ func (m *mockFeedService) AddFeed(vendor string, feedName string, feedMethod str
 	return 123, nil
 }
 
-func (m *mockFeedService) UpdateFeed(vendor string, feedName string, feedMethod string) error {
-	return nil
-}
-
-func (m *mockFeedService) DeleteFeed(id int) error {
-	return nil
+func (m *mockFeedService) UpdateFeedStatus(processDate string, recordCount int, errorCount int, status string, fileName string, vendor string, feedName string) (int, error) {
+	return 123, nil
 }
 
 func TestGenerateRootMutation(t *testing.T) {
@@ -36,17 +32,8 @@ func TestGenerateRootMutation(t *testing.T) {
 	assert.Equal(t, graphql.NewNonNull(graphql.String), addFeedField.Args[1].Type)
 	assert.Equal(t, graphql.NewNonNull(graphql.String), addFeedField.Args[2].Type)
 
-	// Test updateFeed field
-	updateFeedField := mutation.Fields()["updateFeed"]
-	assert.NotNil(t, updateFeedField)
-	assert.NotNil(t, updateFeedField.Args)
-	assert.Equal(t, graphql.NewNonNull(graphql.String), updateFeedField.Args[0].Type)
-	assert.Equal(t, graphql.NewNonNull(graphql.String), updateFeedField.Args[1].Type)
-	assert.Equal(t, graphql.NewNonNull(graphql.String), updateFeedField.Args[2].Type)
-
-	// Test deleteFeed field
-	deleteFeedField := mutation.Fields()["deleteFeed"]
-	assert.NotNil(t, deleteFeedField)
-	assert.NotNil(t, deleteFeedField.Args)
-	assert.Equal(t, graphql.NewNonNull(graphql.Int), deleteFeedField.Args[0].Type)
+	// Test updateFeedStatus field
+	updateFeedStatusField := mutation.Fields()["updateFeedStatus"]
+	assert.NotNil(t, updateFeedStatusField)
+	assert.NotNil(t, updateFeedStatusField.Args)
 }

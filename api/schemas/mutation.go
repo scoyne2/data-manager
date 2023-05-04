@@ -17,13 +17,6 @@ var addFeedArgs = graphql.FieldConfigArgument{
 	},
 }
 
-var deleteFeedArgs = graphql.FieldConfigArgument{
-	"id": &graphql.ArgumentConfig{
-		Type: graphql.NewNonNull(graphql.Int),
-	},
-}
-
-
 var updateFeedStatusArgs = graphql.FieldConfigArgument{
 	"processDate": &graphql.ArgumentConfig{
 		Type: graphql.NewNonNull(graphql.String),
@@ -52,8 +45,6 @@ func generateRootMutation(fs *feed.FeedService) *graphql.Object {
 
 	mutationFields := graphql.Fields{
 		"addFeed": generateGraphQLField(graphql.String, fs.AddFeed, "Add a new feed", addFeedArgs),
-		"updateFeed": generateGraphQLField(feedType, fs.UpdateFeed, "Update an existing feed", addFeedArgs),
-		"deleteFeed": generateGraphQLField(graphql.String, fs.DeleteFeed, "Delete existing feed", deleteFeedArgs),
 		"updateFeedStatus": generateGraphQLField(graphql.String, fs.UpdateFeedStatus, "Update an existing feed status", updateFeedStatusArgs),
 	}
 	mutationConfig := graphql.ObjectConfig{Name: "RootMutation", Fields: mutationFields}

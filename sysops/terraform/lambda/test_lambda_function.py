@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
+
 from lambda_function import lambda_handler
 
 
@@ -30,6 +31,16 @@ class TestLambdaHandler(unittest.TestCase):
                     "sparkSubmit": {
                         "entryPoint": "s3://test_script_location",
                         "entryPointArguments": [
+                            "--vendor",
+                            "vendor",
+                            "--feed_name",
+                            "feed",
+                            "--file_name",
+                            "file.txt",
+                            "--feed_method",
+                            "S3",
+                            "--graphql_url",
+                            "https://api.datamanagertool.com/graphql",
                             "--input_file",
                             "s3://input-bucket/inbound/vendor/feed/file.txt",
                             "--file_extension",

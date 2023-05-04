@@ -37,5 +37,6 @@ destroy:
 test:
 	@echo '${GREEN}Running Tests${RESET}'
 	cd sysops/terraform/lambda/ && pytest --cov --cov-report lcov
+	cd pyspark/ && pytest --cov --cov-report lcov
 	cd api && go test ./... -coverprofile=coverage.txt
 	./codecov

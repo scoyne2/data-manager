@@ -1,12 +1,14 @@
 import argparse
-from datetime import datetime
 import logging
-import requests
+from datetime import datetime
+
 import boto3
+import requests
 import yaml
 
-from pyspark.sql.session import SparkSession
 from pyspark.sql.functions import lit
+from pyspark.sql.session import SparkSession
+
 
 def create_spark_session(input_file):
     spark = (
@@ -34,7 +36,6 @@ def inspect_file(header):
 def process_file(spark, input_df, output_path, vendor, feed_name) -> int:
     # read the input file, header is required
     input_count = input_df.count()
-    logging.info(f"Reading file {input_file} with {input_count} rows")
 
     # write to parquet, allow overwrite. partitioned by /dt=YYYY-MM-DD/
     today = datetime.today().strftime("%Y-%m-%d")
@@ -67,25 +68,35 @@ def perform_quality_checks(output_path, resources_bucket) -> int:
     error_count = 0
     return error_count
 
-def update_feed_status(graphql_url: str, vendor: str, feed_name: str, file_name: str, record_count: int, error_count: int, status: str):
+
+def update_feed_status(
+    graphql_url: str,
+    vendor: str,
+    feed_name: str,
+    file_name: str,
+    record_count: int,
+    error_count: int,
+    status: str,
+):
     process_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     vendor_clean = vendor.replace("_", " ").title()
     feed_name_clean = feed_name.replace("_", " ").title()
     query = (
-        'mutation UpdateFeedStatus {'
-        '  updateFeedStatus('
-       f'  recordCount: {record_count}'
-       f'  errorCount: {error_count}'
-       f'  status: "{status}"'
-       f'  fileName: "{file_name}"'
-       f'  vendor: "{vendor_clean}"'
-       f'  feedName: "{feed_name_clean}"'
-       f'  processDate: "{process_date}"'
-       f'  )'
-        '}'
-     )
-    r = requests.post(graphql_url, json={'query': query})
+        "mutation UpdateFeedStatus {"
+        "  updateFeedStatus("
+        f"  recordCount: {record_count}"
+        f"  errorCount: {error_count}"
+        f'  status: "{status}"'
+        f'  fileName: "{file_name}"'
+        f'  vendor: "{vendor_clean}"'
+        f'  feedName: "{feed_name_clean}"'
+        f'  processDate: "{process_date}"'
+        f"  )"
+        "}"
+    )
+    r = requests.post(graphql_url, json={"query": query})
     return r.status_code
+
 
 #    df = spark.read.parquet(output_path)
 
@@ -212,13 +223,29 @@ if __name__ == "__main__":
     # Update Feed Status
     record_count = input_df.count()
     error_count = 0
-    response_code = update_feed_status(graphql_url, vendor, feed_name, file_name, record_count, error_count, "Processing")
+    response_code = update_feed_status(
+        graphql_url,
+        vendor,
+        feed_name,
+        file_name,
+        record_count,
+        error_count,
+        "Processing",
+    )
     logging.warn(f"Update feed status response code {response_code}")
 
     # Convert file to parquet
     processed_count = process_file(spark, input_df, output_path, vendor, feed_name)
     error_count = record_count - processed_count
-    response_code = update_feed_status(graphql_url, vendor, feed_name, file_name, record_count, error_count, "Validating")
+    response_code = update_feed_status(
+        graphql_url,
+        vendor,
+        feed_name,
+        file_name,
+        record_count,
+        error_count,
+        "Validating",
+    )
     logging.warn(f"Convert status response code {response_code}")
 
     # Run Quality Checks and log results
@@ -235,5 +262,13 @@ if __name__ == "__main__":
         status = "Success"
 
     # Update Final Feed Status
-    response_code = update_feed_status(graphql_url, vendor, feed_name, file_name, record_count, error_count_from_qa, status)
+    response_code = update_feed_status(
+        graphql_url,
+        vendor,
+        feed_name,
+        file_name,
+        record_count,
+        error_count_from_qa,
+        status,
+    )
     logging.warn(f"Final status response code {response_code}")
