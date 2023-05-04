@@ -40,6 +40,10 @@ var feedStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "The method by which the feed is received",
 		},
+		"file_name": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The file received",
+		},
 	},
 },
 )

@@ -42,6 +42,7 @@ const GET_FEED_STATUSES = gql`
         error_count
         feed_method
         feed_name
+        file_name
         id
         process_date
         record_count
@@ -64,6 +65,7 @@ function DetailRows(previous_feeds: FeedStatusType[]){
   previous_feeds.forEach((prow: FeedStatusType) => 
     detailRow.push(
         <TableRow key={prow.id}>
+          <TableCell >{prow.file_name}</TableCell>
           <TableCell >{prow.process_date}</TableCell>
           <TableCell >{prow.record_count}</TableCell>
           <TableCell >{prow.error_count}</TableCell>
@@ -138,6 +140,7 @@ function FeedRow(row: FeedStatusDetailedType, open: boolean | undefined, setOpen
               <Table aria-label="details">
               <TableHead>
                 <TableRow>
+                  <TableCell>File Name</TableCell>
                   <TableCell>Date</TableCell>
                   <TableCell>Rows</TableCell>
                   <TableCell>Errors</TableCell>
