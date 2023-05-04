@@ -33,13 +33,13 @@ def inspect_file(header):
     return delimiter, quote
 
 
-def process_file(spark, input_df, output_path, vendor, feed_name) -> int:
+def process_file(spark, input_df, output_path, vendor, feed_name, file_name) -> int:
     # read the input file, header is required
     input_count = input_df.count()
 
     # write to parquet, allow overwrite. partitioned by /dt=YYYY-MM-DD/
     today = datetime.today().strftime("%Y-%m-%d")
-    output_df = input_df.withColumn("dt", lit(today))
+    output_df = input_df.withColumn("dt", lit(today)).withColumn("file_name", lit(file_name))
 
     database_name = f"data_manager_output_{vendor}"
     glue_table_name = f"{database_name}.{feed_name}"
@@ -235,7 +235,7 @@ if __name__ == "__main__":
     logging.warn(f"Update feed status response code {response_code}")
 
     # Convert file to parquet
-    processed_count = process_file(spark, input_df, output_path, vendor, feed_name)
+    processed_count = process_file(spark, input_df, output_path, vendor, feed_name, file_name)
     error_count = record_count - processed_count
     response_code = update_feed_status(
         graphql_url,

@@ -41,7 +41,7 @@ class TestMyScript(unittest.TestCase):
             [("John", 25, "Male"), ("Mary", 30, "Female")], ["Name", "Age", "Gender"]
         )
 
-        process_file(self.spark, input_df, self.output_path, "test", "test")
+        process_file(self.spark, input_df, self.output_path, "test", "test", "test.csv")
         today = datetime.today().strftime("%Y-%m-%d")
         output_file = f"{self.output_path}/dt={today}/"
         self.assertTrue(os.path.isdir(output_file))

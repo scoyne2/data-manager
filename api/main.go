@@ -8,6 +8,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/scoyne2/data-manager-api/feed"
+	"github.com/scoyne2/data-manager-api/data_preview"
 	"github.com/scoyne2/data-manager-api/schemas"
 )
 
@@ -42,7 +43,34 @@ func CorsMiddleware(next http.Handler) http.Handler {
 }
 
 func check(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>API Health check</h1>")
+	fmt.Fprintf(w, "<h1>Health Check</h1>")
+}
+
+func dataPreview(w http.ResponseWriter, r *http.Request){
+	fmt.Fprintf(w, "<h1>Data Preview</h1>")
+	vals := r.URL.Query()
+	vendor, ok := vals["vendor"]
+	var vd string
+	if ok {
+		if len(vendor) >= 1 {
+			vd = vendor[0]
+		}
+	}
+	feedName, ok := vals["feedname"]
+	var fn string
+	if ok {
+		if len(feedName) >= 1 {
+			fn = feedName[0]
+		}
+	}
+	fileName, ok := vals["filename"]
+	var fln string
+	if ok {
+		if len(fileName) >= 1 {
+			fln = fileName[0]
+		}
+	}
+	data_preview.DataPreviewAthena(vd, fn, fln)
 }
 
 // StartServer will trigger the server with a Playground
@@ -53,8 +81,9 @@ func StartServer(schema *graphql.Schema) {
 		GraphiQL: false,
 	})
 
-	http.HandleFunc("/", check)
+	// http.HandleFunc("/", check)
 	http.HandleFunc("/health_check", check)
+	http.HandleFunc("/preview", dataPreview)
 	http.Handle("/graphql", CorsMiddleware(h))
 
 	// Access via https://$API_HOST/sandbox
