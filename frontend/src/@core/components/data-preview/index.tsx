@@ -30,27 +30,32 @@ const style = {
   
 function createHeader(data: string[]) {
     const header: JSX.Element[] = [];
-    data.forEach(element => header.push(<TableCell>{element}</TableCell>));
-    return header;
+    if (data.length > 0) {
+        data.forEach(element => header.push(<TableCell>{element}</TableCell>));
+        return header;
+    }
 }
+
 
 function createBody(data: string[][]) {
     const body: JSX.Element[] = [];
-    data.forEach(rows => {
-        const currentRow: JSX.Element[] = [];
-        rows.forEach(element => {
-            currentRow.push(<TableCell>{element}</TableCell>);
+    if (data.length > 0) {
+        data.forEach(rows => {
+            const currentRow: JSX.Element[] = [];
+            rows.forEach(element => {
+                currentRow.push(<TableCell>{element}</TableCell>);
+            });
+            body.push(<TableRow>{currentRow}</TableRow>);
         });
-        body.push(<TableRow>{currentRow}</TableRow>);
-    });
-    return body;
+        return body;
+    }
 }
 
 const DataPreviewModal = (props: DataPreviewModalProps) => {
     const { vendor, feed_name, file_name } = props;
 
     const [open, setOpen] = React.useState(false);
-    const [tableData, setTableData] = React.useState(new Map<string, any>());
+    const [tableData, setTableData] = React.useState({"Header": [], "Rows": []});
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -85,11 +90,11 @@ const DataPreviewModal = (props: DataPreviewModalProps) => {
                     <Table sx={{ minWidth: 800 }} aria-label="data preview table">
                     <TableHead>
                         <TableRow>
-                        { createHeader(tableData.get("Header")) }
+                        { createHeader(tableData["Header"])}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                    { createBody(tableData.get("Rows")) }
+                    { createBody(tableData["Rows"]) }
                     </TableBody>
                     </Table>
                 </TableContainer>
