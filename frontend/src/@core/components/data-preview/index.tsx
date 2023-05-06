@@ -28,12 +28,29 @@ const style = {
     p: 4,
   };
   
+function createHeader(data: string[]) {
+    const header: JSX.Element[] = [];
+    data.forEach(element => header.push(<TableCell>{element}</TableCell>));
+    return header;
+}
+
+function createBody(data: string[][]) {
+    const body: JSX.Element[] = [];
+    data.forEach(rows => {
+        const currentRow: JSX.Element[] = [];
+        rows.forEach(element => {
+            currentRow.push(<TableCell>{element}</TableCell>);
+        });
+        body.push(<TableRow>{currentRow}</TableRow>);
+    });
+    return body;
+}
 
 const DataPreviewModal = (props: DataPreviewModalProps) => {
     const { vendor, feed_name, file_name } = props;
 
     const [open, setOpen] = React.useState(false);
-    const [tableData, setTableData] = React.useState({});
+    const [tableData, setTableData] = React.useState(new Map<string, any>());
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -43,10 +60,16 @@ const DataPreviewModal = (props: DataPreviewModalProps) => {
     const dataPreviewURL = `https://api.${DOMAIN_NAME}/preview?vendor=${urlVendor}&feedname=${urlFeedName}&filename=${file_name}`;
     React.useEffect(() => {
         fetch(dataPreviewURL)
-          .then(response => response.json())
-          .then(json => setTableData(json))
-          .catch(error => console.error(error));
+            .then(res => res.json())
+            .then(
+                (data) => {
+                    setTableData(data);
+                }
+            )
+           .catch(error => console.error(error));
       });
+      
+
     
     return (
         <>
@@ -61,9 +84,13 @@ const DataPreviewModal = (props: DataPreviewModalProps) => {
                 <TableContainer>
                     <Table sx={{ minWidth: 800 }} aria-label="data preview table">
                     <TableHead>
-                        <TableRow>Hello World</TableRow>
+                        <TableRow>
+                        { createHeader(tableData.get("Header")) }
+                        </TableRow>
                     </TableHead>
-                    {/* <TableBody>{{tableData}}</TableBody> */}
+                    <TableBody>
+                    { createBody(tableData.get("Rows")) }
+                    </TableBody>
                     </Table>
                 </TableContainer>
             </Box>
