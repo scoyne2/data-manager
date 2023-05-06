@@ -14,8 +14,8 @@ import TableCell from "@mui/material/TableCell";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import UnfoldMoreHorizontal from "mdi-material-ui/UnfoldMoreHorizontal";
-import UnfoldLessHorizontal from "mdi-material-ui/UnfoldLessHorizontal";
 
+import DataPreviewModal from 'src/@core/components/data-preview';
 
 import {
   getColumns,
@@ -81,6 +81,9 @@ function DetailRows(previous_feeds: FeedStatusType[]){
               }}
             />
           </TableCell>
+          <TableCell>
+            <DataPreviewModal vendor={prow.vendor} feed_name={prow.feed_name} file_name={prow.file_name} />
+          </TableCell>
         </TableRow>
       )
     )
@@ -145,6 +148,7 @@ function FeedRow(row: FeedStatusDetailedType, open: boolean | undefined, setOpen
                   <TableCell>Rows</TableCell>
                   <TableCell>Errors</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Data Preview</TableCell>
                   </TableRow>
               </TableHead>
                 <TableBody>

@@ -49,7 +49,12 @@ func check(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<h1>Health Check</h1>")
 }
 
+// Example: https://api.datamanagertool.com/preview?vendor=Coyne+Enterprises&feedname=Orders&filename=fake_file.txt
 func dataPreview(w http.ResponseWriter, r *http.Request){
+	frontEnd := fmt.Sprintf("https://%s", FRONT_END_URL)
+	w.Header().Set("Access-Control-Allow-Origin", frontEnd)
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	
 	vals := r.URL.Query()
 	vendor, ok := vals["vendor"]
 	var vd string
