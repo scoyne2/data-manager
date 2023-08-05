@@ -1,5 +1,4 @@
 package feed
-import 	"github.com/scoyne2/data-manager-api/datapreview"
 
 type Feed struct {
 	ID         	int    `json:"id"`
@@ -59,11 +58,9 @@ type FeedStatusAggregate struct {
 	Errors		int `json:"errors"`
 }
 
-
-type RepositoryInterface interface {
+type Repository interface {
 	AddFeed(feed Feed) (string, error)
 	UpdateFeedStatus(feedStatusUpdate FeedStatusUpdate) (string, error)
 	GetFeedStatusDetails() ([]FeedStatusResultsDetailed, error)
 	GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error)
-	GetDataPreview(vendor string, feedName string, fileName string, s3Bucket string) (datapreview.DataPreview, error)
 }

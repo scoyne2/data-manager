@@ -110,20 +110,6 @@ var feedStatusAggregateType = graphql.NewObject(graphql.ObjectConfig{
 },
 )
 
-var dataPreviewType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "DataPreview",
-	Fields: graphql.Fields{
-		"columns": &graphql.Field{
-			Type:        graphql.NewList(graphql.String),
-			Description: "A List of column names from the file",
-		},
-		"values": &graphql.Field{
-			Type:        graphql.NewList(graphql.NewList(graphql.String)),
-			Description: "A List of Lists which contain the values from the file",
-		},
-	},
-},
-)
 // GenerateSchema will create a GraphQL Schema and set the Resolvers found in the FeedService
 // For all the needed fields
 func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
@@ -147,25 +133,6 @@ func GenerateSchema(fs *feed.FeedService) (*graphql.Schema, error) {
 				},
 			},
 			Description: "Aggregate of Feed Statuses",
-		},
-		"datapreview": &graphql.Field{
-			Type: dataPreviewType,
-			Resolve: fs.ResolveDataPreview,
-			Args: graphql.FieldConfigArgument{
-				"vendor": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
-				"feedName": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
-				"fileName": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
-				"s3Bucket": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
-			},
-			Description: "Data Preview of a given file",
 		},
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}

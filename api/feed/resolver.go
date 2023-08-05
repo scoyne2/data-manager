@@ -7,14 +7,13 @@ import (
 type Resolver interface {
 	ResolveGetFeedStatusDetails(p graphql.ResolveParams) (interface{}, error)
 	ResolveFeedStatuseAggregate(p graphql.ResolveParams) (interface{}, error)
-	ResolveDataPreview(p graphql.ResolveParams) (interface{}, error)
 }
 
 type FeedService struct {
-	repo RepositoryInterface
+	repo Repository
 }
 
-func NewService(repo RepositoryInterface,) FeedService {
+func NewService(repo Repository,) FeedService {
 	return FeedService{
 		repo: repo,
 	}
@@ -73,16 +72,4 @@ func (fs FeedService) ResolveFeedStatuseAggregate(p graphql.ResolveParams) (inte
 		return nil, err
 	}
 	return fsAgg, nil
-}
-
-func (fs FeedService) ResolveDataPreview(p graphql.ResolveParams) (interface{}, error) {
-	vendor := p.Args["vendor"].(string)
-	feedName := p.Args["feedName"].(string)
-	fileName := p.Args["fileName"].(string)
-	s3Bucket := p.Args["s3Bucket"].(string)
-	dataPreview, err := fs.repo.GetDataPreview(vendor, feedName, fileName, s3Bucket)
-	if err != nil {
-		return nil, err
-	}
-	return dataPreview, nil
 }
