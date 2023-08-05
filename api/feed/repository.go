@@ -8,9 +8,11 @@ import (
 	"sync"
 	_ "github.com/lib/pq"
 	"github.com/jmoiron/sqlx/types"
+	"github.com/scoyne2/data-manager-api/datapreview"
+
 )
 
-type PostgressRepository struct {
+type Repository struct {
 	db *sql.DB
 	sync.Mutex
 }
@@ -27,7 +29,7 @@ func getEnv(key, fallback string) string {
     return fallback
 }
 
-func NewPostgressRepository() *PostgressRepository {
+func NewRepository() *Repository {
 	postgresPort := getEnv("POSTGRES_PORT", "5432")
 	port, err := strconv.Atoi(postgresPort)
     if err != nil {
@@ -41,12 +43,12 @@ func NewPostgressRepository() *PostgressRepository {
 		panic(err)
 	}
 
-	return &PostgressRepository{
+	return &Repository{
 		db: db,
 	}
 }
 
-func (pr *PostgressRepository) AddFeed(feed Feed) (string, error) {
+func (pr *Repository) AddFeed(feed Feed) (string, error) {
 	sqlStatement := `
 	INSERT INTO feeds (vendor, feed_name, feed_method)
 	SELECT $1, $2, $3
@@ -62,7 +64,7 @@ func (pr *PostgressRepository) AddFeed(feed Feed) (string, error) {
 	return "Feed Added", nil
 }
 
-func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, error) {
+func (pr *Repository) UpdateFeedStatus(fs FeedStatusUpdate) (string, error) {
 	// check if feed exists first
 	sqlStatementFd := `
 	SELECT id, vendor, feed_name, feed_method
@@ -164,7 +166,7 @@ func (d feedStatusResultsDetailedDTO) ToFeedStatusResultsDetailed() (*FeedStatus
 	return result, nil
 }
 
-func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetailed, error) {
+func (pr *Repository) GetFeedStatusDetails() ([]FeedStatusResultsDetailed, error) {
 	sqlStatement := `
 	WITH previous AS (
 		SELECT
@@ -215,7 +217,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	return feedStatuses, nil
 }
 
-func (pr *PostgressRepository) GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error) {
+func (pr *Repository) GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error) {
 	sqlStatement := `
 	SELECT 
 		COUNT(DISTINCT fs.id) AS files,
@@ -230,4 +232,12 @@ func (pr *PostgressRepository) GetFeedStatusesAggregate(startDate string, endDat
 		return FeedStatusAggregate{}, err
 	}
 	return fsAgg, nil
+}
+
+func (pr *Repository) GetDataPreview(vendor string, feedName string, fileName string, s3Bucket string) (datapreview.DataPreview, error) {
+	dataPreview, err := datapreview.DataPreviewAthena(vendor, feedName, fileName, s3Bucket)
+	if err != nil {
+		return datapreview.DataPreview{}, err
+	}
+	return dataPreview, nil
 }

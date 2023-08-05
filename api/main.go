@@ -21,7 +21,7 @@ var DATA_PREVIEW_BUCKET string = os.Getenv("RESOURCES_BUCKET_NAME")
 func main() {
 
 	feedService := feed.NewService(
-		feed.NewPostgressRepository(),
+		feed.NewRepository(),
 	)
 
 	schema, err := schemas.GenerateSchema(&feedService)
