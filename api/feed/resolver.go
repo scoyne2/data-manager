@@ -27,6 +27,8 @@ func (fs FeedService) UpdateFeedStatus(p graphql.ResolveParams) (interface{}, er
 	fileName := p.Args["fileName"].(string)
 	vendor := p.Args["vendor"].(string)
 	feedName := p.Args["feedName"].(string)
+	emrApplicationID := p.Args["emrApplicationID"].(string)
+	emrStepID := p.Args["emrStepID"].(string)
 
 
 	var feedStatusUpdate FeedStatusUpdate
@@ -37,6 +39,8 @@ func (fs FeedService) UpdateFeedStatus(p graphql.ResolveParams) (interface{}, er
 	feedStatusUpdate.FileName = fileName
 	feedStatusUpdate.Vendor = vendor
 	feedStatusUpdate.FeedName = feedName
+	feedStatusUpdate.EMRApplicationID = emrApplicationID
+	feedStatusUpdate.EMRStepID = emrStepID
 
 	return fs.repo.UpdateFeedStatus(feedStatusUpdate)
 }

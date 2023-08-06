@@ -100,13 +100,15 @@ postgresql:
               error_count INTEGER,
               feed_status TEXT,
               file_name TEXT,
+              emr_application_id TEXT,
+              emr_step_id TEXT,
               is_current BOOLEAN);
           INSERT INTO feed_status (feed_id, process_date, record_count, error_count, feed_status, file_name, is_current)
-          VALUES (1, '2021-03-31 22:30:20', 1958623, 0, 'Success', 'fake_file.txt', True),
-                 (1, '2017-03-31 14:30:20', 2389635, 61, 'Errors', 'fake_file2.txt', False),
-                 (2, '2022-03-31 08:30:20', 0, 500, 'Failed', 'fake_file3.txt', False),
-                 (2, '2022-03-30 06:21:20', 0, 500, 'Failed', 'fake_filebad.txt', False),
-                 (2, '2022-03-31 11:30:20', 13076, 0, 'Success', 'fake_file4.csv', True);
+          VALUES (1, '2021-03-31 22:30:20', 1958623, 0, 'Success', 'fake_file.txt', '1', '1', True),
+                 (1, '2017-03-31 14:30:20', 2389635, 61, 'Errors', 'fake_file2.txt', '1', '1', False),
+                 (2, '2022-03-31 08:30:20', 0, 500, 'Failed', 'fake_file3.txt', '1', '1', False),
+                 (2, '2022-03-30 06:21:20', 0, 500, 'Failed', 'fake_filebad.txt', '1', '1', False),
+                 (2, '2022-03-31 11:30:20', 13076, 0, 'Success', 'fake_file4.csv', '1', '1', True);
 
 # https://github.com/rowanruseler/helm-charts/blob/master/charts/pgadmin4/values.yaml
 pgadmin4:

@@ -1,6 +1,7 @@
 import argparse
 import logging
 from datetime import datetime
+import os
 
 import boto3
 import requests
@@ -8,6 +9,9 @@ import yaml
 
 from pyspark.sql.functions import lit
 from pyspark.sql.session import SparkSession
+
+EMR_CLUSTER_ID = os.environ.get('EMR_CLUSTER_ID')
+EMR_STEP_ID = os.environ.get('EMR_STEP_ID')
 
 
 def create_spark_session(input_file):
@@ -77,6 +81,8 @@ def update_feed_status(
     record_count: int,
     error_count: int,
     status: str,
+    emr_application_id: str,
+    emr_step_id: str
 ):
     process_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     vendor_clean = vendor.replace("_", " ").title()
@@ -91,6 +97,8 @@ def update_feed_status(
         f'  vendor: "{vendor_clean}"'
         f'  feedName: "{feed_name_clean}"'
         f'  processDate: "{process_date}"'
+        f'  EMRApplicationID: "{emr_application_id}"'
+        f'  EMRStepID: "{emr_step_id}"'
         f"  )"
         "}"
     )
@@ -231,6 +239,8 @@ if __name__ == "__main__":
         record_count,
         error_count,
         "Processing",
+        EMR_CLUSTER_ID,
+        EMR_STEP_ID
     )
     logging.warn(f"Update feed status response code {response_code}")
 
@@ -245,6 +255,8 @@ if __name__ == "__main__":
         record_count,
         error_count,
         "Validating",
+        EMR_CLUSTER_ID,
+        EMR_STEP_ID
     )
     logging.warn(f"Convert status response code {response_code}")
 
@@ -270,5 +282,7 @@ if __name__ == "__main__":
         record_count,
         error_count_from_qa,
         status,
+        EMR_CLUSTER_ID,
+        EMR_STEP_ID
     )
     logging.warn(f"Final status response code {response_code}")

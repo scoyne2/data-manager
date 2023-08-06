@@ -44,6 +44,10 @@ var feedStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "The file received",
 		},
+		"emr_logs": &graphql.Field{
+			Type:        graphql.String,
+			Description: "URL to the EMR logs",
+		},
 	},
 },
 )

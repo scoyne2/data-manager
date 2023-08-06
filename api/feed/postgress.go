@@ -114,17 +114,17 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 	if f.FileName == fs.FileName {
 		sqlUpdateStatement := `
 		UPDATE feed_status
-		SET process_date = $3, record_count = $4, error_count = $5, feed_status = $6, is_current = True
+		SET process_date = $3, record_count = $4, error_count = $5, feed_status = $6, emr_application_id = $7, emr_step_id = $8, is_current = True
 		WHERE feed_id = $1 AND file_name = $2;`
-		_, updateErr := pr.db.Exec(sqlUpdateStatement, f.FeedID, fs.FileName, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status)
+		_, updateErr := pr.db.Exec(sqlUpdateStatement, f.FeedID, fs.FileName, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.EMRApplicationID, fs.EMRStepID)
 		if updateErr != nil {
 			return "", updateErr
 		}
 	} else {
 		sqlInsertStatement := `
-		INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id, is_current)
-		VALUES ($1, $2, $3, $4, $5, $6, True);`
-		_, insertErr := pr.db.Exec(sqlInsertStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.FileName, fd.ID)
+		INSERT INTO feed_status (process_date, record_count, error_count, feed_status, file_name, feed_id, emr_application_id, emr_step_id, is_current)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, True);`
+		_, insertErr := pr.db.Exec(sqlInsertStatement, fs.ProcessDate, fs.RecordCount, fs.ErrorCount, fs.Status, fs.EMRApplicationID, fs.EMRStepID, fs.FileName, fd.ID)
 		if insertErr != nil {
 			return "", insertErr
 		}
@@ -171,7 +171,9 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 		    f.vendor, f.feed_name, f.feed_method, 
 			json_agg(json_build_object('id', fs.id, 'process_date', fs.process_date,
 			  'record_count', fs.record_count, 'error_count', fs.error_count, 'feed_status', fs.feed_status,
-			  'vendor', f.vendor, 'feed_name', f.feed_name, 'feed_method', f.feed_method, 'file_name', fs.file_name)
+			  'vendor', f.vendor, 'feed_name', f.feed_name, 'feed_method', f.feed_method, 'file_name', fs.file_name,
+			  'emr_log_url', 'https://p-' || emr_step_id || '-' || emr_application_id || '.emrappui-prod.us-west-2.amazonaws.com/shs/history/' || emr_step_id || '/jobs/'
+			)
 			  ORDER BY fs.process_date DESC) previous_feeds
 		FROM feed_status fs
 		INNER JOIN feeds f

@@ -43,6 +43,8 @@ def file_received(vendor: str, feed_name: str, file_name: str):
         f'    vendor: "{vendor_clean}"'
         f'    feedName: "{feed_name_clean}"'
         f'    processDate: "{process_date}"'
+        f'    EMRApplicationID: ""'
+        f'    EMRStepID: ""'
         f"  )"
         "}"
     )
