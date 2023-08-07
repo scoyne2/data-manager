@@ -10,10 +10,15 @@ import yaml
 from pyspark.sql.functions import lit
 from pyspark.sql.session import SparkSession
 
-EMR_CLUSTER_ID = os.environ.get('EMR_CLUSTER_ID', default='unknown')
-EMR_STEP_ID = os.environ.get('EMR_STEP_ID', default='unknown')
+from great_expectations.core.batch import RuntimeBatchRequest
+from great_expectations.data_context.types.base import (
+    DataContextConfig,
+    S3StoreBackendDefaults,
+)
+from great_expectations.util import get_context
 
-logging.warn(os.environ.items())
+EMR_CLUSTER_ID = os.environ.get('SERVERLESS_EMR_VIRTUAL_CLUSTER_ID', default='unknown')
+EMR_STEP_ID = os.environ.get('SERVERLESS_EMR_JOB_ID', default='unknown')
 
 def create_spark_session(input_file):
     spark = (
@@ -70,6 +75,44 @@ def perform_quality_checks(output_path, resources_bucket) -> int:
         Key="great_expectations/great_expectations.yml",
     )
     config_file = yaml.safe_load(response["Body"])
+    suite_name = "version-0.16.13 pandas_spark_suite"
+
+    df = spark.read.parquet(output_path)
+
+    config = DataContextConfig(
+            config_version=config_file["config_version"],
+            datasources=config_file["datasources"],
+            expectations_store_name=config_file["expectations_store_name"],
+            validations_store_name=config_file["validations_store_name"],
+            evaluation_parameter_store_name=config_file["evaluation_parameter_store_name"],
+            plugins_directory="/great_expectations/plugins",
+            stores=config_file["stores"],
+            data_docs_sites=config_file["data_docs_sites"],
+            config_variables_file_path=config_file["config_variables_file_path"],
+            anonymous_usage_statistics=config_file["anonymous_usage_statistics"],
+            checkpoint_store_name=config_file["checkpoint_store_name"],
+            store_backend_defaults=S3StoreBackendDefaults(
+                default_bucket_name=config_file["data_docs_sites"]["s3_site"][
+                    "store_backend"
+                ]["bucket"]
+            ),
+        )
+
+    context_gx = get_context(project_config=config)
+
+    batch_request = RuntimeBatchRequest(
+        datasource_name="version-0.16.13 spark_s3",
+        data_connector_name="version-0.16.13 default_inferred_data_connector_name",
+        data_asset_name="version-0.16.13 datafile_name",
+        batch_identifiers={"runtime_batch_identifier_name": "default_identifier"},
+        runtime_parameters={"path": output_path},
+    )
+    validator = context_gx.get_validator(
+        batch_request=batch_request,
+        expectation_suite_name=suite_name,
+    )
+    logging.warning(validator.head())
+
     error_count = 0
     return error_count
 
@@ -106,93 +149,6 @@ def update_feed_status(
     r = requests.post(graphql_url, json={"query": query})
     return r.status_code
 
-
-#    df = spark.read.parquet(output_path)
-
-#    config = DataContextConfig(
-#         config_version=config_file["config_version"],
-#         datasources=config_file["datasources"],
-#         expectations_store_name=config_file["expectations_store_name"],
-#         validations_store_name=config_file["validations_store_name"],
-#         evaluation_parameter_store_name=config_file["evaluation_parameter_store_name"],
-#         plugins_directory="/great_expectations/plugins",
-#         stores=config_file["stores"],
-#         data_docs_sites=config_file["data_docs_sites"],
-#         config_variables_file_path=config_file["config_variables_file_path"],
-#         anonymous_usage_statistics=config_file["anonymous_usage_statistics"],
-#         checkpoint_store_name=config_file["checkpoint_store_name"],
-#         store_backend_defaults=S3StoreBackendDefaults(
-#             default_bucket_name=config_file["data_docs_sites"]["s3_site"][
-#                 "store_backend"
-#             ]["bucket"]
-#         ),
-#     )
-
-#    context_gx = get_context(project_config=config)
-
-#    expectation_suite_name = suite_name
-#    suite = context_gx.get_expectation_suite(suite_name)
-
-#    batch_request = RuntimeBatchRequest(
-#      datasource_name="spark_s3",
-#      data_connector_name="default_inferred_data_connector_name",
-#      data_asset_name="datafile_name",
-#      batch_identifiers={"runtime_batch_identifier_name": "default_identifier"},
-#      runtime_parameters={"path": output_path},
-#    )
-#    validator = context_gx.get_validator(
-#      batch_request=batch_request,
-#      expectation_suite_name=expectation_suite_name,
-#    )
-#    print(validator.head())
-#    # TODO Add Tests
-#    # validator.expect_column_values_to_not_be_null(
-#    #  column="passenger_count"
-#    #)
-#    validator.save_expectation_suite(discard_failed_expectations=False)
-#    my_checkpoint_name = "in_memory_checkpoint"
-#    python_config = {
-#      "name": my_checkpoint_name,
-#      "class_name": "Checkpoint",
-#      "config_version": 1,
-#      "run_name_template": "%Y%m%d-%H%M%S-my-run-name-template",
-#      "action_list": [
-#          {
-#              "name": "store_validation_result",
-#              "action": {"class_name": "StoreValidationResultAction"},
-#          },
-#          {
-#              "name": "store_evaluation_params",
-#              "action": {"class_name": "StoreEvaluationParametersAction"},
-#          },
-#      ],
-#      "validations": [
-#          {
-#              "batch_request": {
-#                  "datasource_name": "spark_s3",
-#                  "data_connector_name": "default_runtime_data_connector_name",
-#                  "data_asset_name": "pyspark_df",
-#              },
-#              "expectation_suite_name": expectation_suite_name,
-#          }
-#      ],
-#    }
-#    context_gx.add_checkpoint(**python_config)
-
-#    results = context_gx.run_checkpoint(
-#      checkpoint_name=my_checkpoint_name,
-#      run_name="run_name",
-#      batch_request={
-#          "runtime_parameters": {"batch_data": df},
-#          "batch_identifiers": {
-#              "runtime_batch_identifier_name": "default_identifier"
-#          },
-#      },
-#    )
-
-#    validation_result_identifier = results.list_validation_result_identifiers()[0]
-#    context_gx.build_data_docs()
-
 if __name__ == "__main__":
     # Read args
     parser = argparse.ArgumentParser(description="Spark Job Arguments")
@@ -217,7 +173,7 @@ if __name__ == "__main__":
     output_path = args.output_path
     file_extension = args.file_extension
     resources_bucket = args.resources_bucket
-    logging.warn(f"Processing file: {input_file}")
+    logging.info(f"Processing file: {input_file}")
 
     # Create spark session
     spark = create_spark_session(input_file)
@@ -243,7 +199,7 @@ if __name__ == "__main__":
         EMR_CLUSTER_ID,
         EMR_STEP_ID
     )
-    logging.warn(f"Update feed status response code {response_code}")
+    logging.info(f"Update feed status response code {response_code}")
 
     # Convert file to parquet
     processed_count = process_file(spark, input_df, output_path, vendor, feed_name, file_name)
@@ -259,7 +215,7 @@ if __name__ == "__main__":
         EMR_CLUSTER_ID,
         EMR_STEP_ID
     )
-    logging.warn(f"Convert status response code {response_code}")
+    logging.info(f"Convert status response code {response_code}")
 
     # Run Quality Checks and log results
     error_count_from_qa = perform_quality_checks(output_path, resources_bucket)
@@ -286,4 +242,4 @@ if __name__ == "__main__":
         EMR_CLUSTER_ID,
         EMR_STEP_ID
     )
-    logging.warn(f"Final status response code {response_code}")
+    logging.info(f"Final status response code {response_code}")
