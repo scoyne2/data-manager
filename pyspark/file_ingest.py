@@ -75,7 +75,6 @@ def perform_quality_checks(output_path, resources_bucket) -> int:
         Key="great_expectations/great_expectations.yml",
     )
     config_file = yaml.safe_load(response["Body"])
-    suite_name = "version-0.16.13 pandas_spark_suite"
 
     df = spark.read.parquet(output_path)
 
@@ -101,18 +100,17 @@ def perform_quality_checks(output_path, resources_bucket) -> int:
     context_gx = get_context(project_config=config)
 
     batch_request = RuntimeBatchRequest(
-        datasource_name="version-0.16.13 spark_s3",
-        data_connector_name="version-0.16.13 default_inferred_data_connector_name",
-        data_asset_name="version-0.16.13 datafile_name",
+        datasource_name="spark_s3",
+        data_connector_name="default_runtime_data_connector_name",
+        data_asset_name="default_runtime_data_connector_name",
         batch_identifiers={"runtime_batch_identifier_name": "default_identifier"},
-        runtime_parameters={"path": output_path},
+        runtime_parameters={"batch_data": df},
     )
     validator = context_gx.get_validator(
         batch_request=batch_request,
-        expectation_suite_name=suite_name,
     )
-    logging.warning(validator.head())
-
+    validator.save_expectation_suite(discard_failed_expectations=False)
+    context_gx.build_data_docs()
     error_count = 0
     return error_count
 

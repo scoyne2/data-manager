@@ -7,14 +7,6 @@ datasources:
       module_name: great_expectations.execution_engine
       class_name: SparkDFExecutionEngine
     data_connectors:
-      default_inferred_data_connector_name:
-        class_name: InferredAssetS3DataConnector
-        bucket: data-manager-resources
-        prefix: data_folder/
-        default_regex:
-          pattern: (.*)
-          group_names:
-            - data_asset_name
       default_runtime_data_connector_name:
         batch_identifiers:
           - runtime_batch_identifier_name
@@ -26,14 +18,14 @@ config_variables_file_path: great_expectations/uncommitted/config_variables.yml
 plugins_directory: great_expectations/plugins/
 
 stores:
-  expectations_S3_store:
+  expectations_store:
     class_name: ExpectationsStore
     store_backend:
       class_name: TupleS3StoreBackend
       bucket: 'data-manager-resources'
       prefix: 'great_expectations/expectations/'
 
-  validations_S3_store:
+  validations_store:
     class_name: ValidationsStore
     store_backend:
       class_name: TupleS3StoreBackend
@@ -43,17 +35,17 @@ stores:
   evaluation_parameter_store:
     class_name: EvaluationParameterStore
 
-  checkpoint_S3_store:
+  checkpoint_store:
     class_name: CheckpointStore
     store_backend:
       class_name: TupleS3StoreBackend
       bucket: 'data-manager-resources'
       prefix: 'great_expectations/checkpoints/'
 
-expectations_store_name: expectations_S3_store
-validations_store_name: validations_S3_store
+expectations_store_name: expectations_store
+validations_store_name: validations_store
 evaluation_parameter_store_name: evaluation_parameter_store
-checkpoint_store_name: checkpoint_S3_store
+checkpoint_store_name: checkpoint_store
 
 data_docs_sites:
   s3_site:
@@ -63,9 +55,13 @@ data_docs_sites:
       class_name: TupleS3StoreBackend
       bucket: data-manager-resources
       boto3_options:
-        endpoint_url: https://data-manager-resources.s3.region.amazonaws.com/
+        endpoint_url: https://data-manager-resources.s3.us-west-2.amazonaws.com/
     site_index_builder:
       class_name: DefaultSiteIndexBuilder
+      show_cta_footer: true
+      validation_results_limit: 50
 
 anonymous_usage_statistics:
-  enabled: True
+  enabled: false
+  data_context_id: dfb6a4a5-6db0-4299-99f2-b4423de2f54d
+notebooks:
