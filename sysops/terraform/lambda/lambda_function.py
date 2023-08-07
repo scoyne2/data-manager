@@ -4,6 +4,7 @@ from datetime import datetime
 
 import boto3
 import requests
+import logging
 
 client = boto3.client("emr-serverless")
 
@@ -43,8 +44,6 @@ def file_received(vendor: str, feed_name: str, file_name: str):
         f'    vendor: "{vendor_clean}"'
         f'    feedName: "{feed_name_clean}"'
         f'    processDate: "{process_date}"'
-        f'    EMRApplicationID: ""'
-        f'    EMRStepID: ""'
         f"  )"
         "}"
     )
@@ -95,6 +94,8 @@ def lambda_handler(event, context):
     response_status_code, response_body = file_received(
         vendor.title(), feed.title(), file_id
     )
+    logging.warn(response_status_code)
+    logging.warn(response_body)
 
     python_zip_path = f"s3://{RESOURCE_BUCKET}/pyspark_requirements/pyspark_requirements.tar.gz#environment"
     spark_submit_args = (

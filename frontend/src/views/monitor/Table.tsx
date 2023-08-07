@@ -14,9 +14,9 @@ import TableCell from "@mui/material/TableCell";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import UnfoldMoreHorizontal from "mdi-material-ui/UnfoldMoreHorizontal";
-import FileAlert from "mdi-material-ui/FileAlert";
 
 import DataPreviewModal from 'src/@core/components/data-preview';
+import EMRLogs from 'src/@core/components/emr-logs';
 
 import {
   getColumns,
@@ -49,6 +49,7 @@ const GET_FEED_STATUSES = gql`
         record_count
         status
         vendor
+        emr_logs
       }
     }
   }
@@ -86,7 +87,7 @@ function DetailRows(previous_feeds: FeedStatusType[]){
             <DataPreviewModal vendor={prow.vendor} feed_name={prow.feed_name} file_name={prow.file_name} />
           </TableCell>
           <TableCell>
-            <a href={prow.emr_logs}><FileAlert /></a>
+            <EMRLogs log_url={prow.emr_logs} />
           </TableCell>
         </TableRow>
       )

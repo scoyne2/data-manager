@@ -10,9 +10,10 @@ import yaml
 from pyspark.sql.functions import lit
 from pyspark.sql.session import SparkSession
 
-EMR_CLUSTER_ID = os.environ.get('EMR_CLUSTER_ID')
-EMR_STEP_ID = os.environ.get('EMR_STEP_ID')
+EMR_CLUSTER_ID = os.environ.get('EMR_CLUSTER_ID', default='unknown')
+EMR_STEP_ID = os.environ.get('EMR_STEP_ID', default='unknown')
 
+logging.warn(os.environ.items())
 
 def create_spark_session(input_file):
     spark = (
@@ -97,8 +98,8 @@ def update_feed_status(
         f'  vendor: "{vendor_clean}"'
         f'  feedName: "{feed_name_clean}"'
         f'  processDate: "{process_date}"'
-        f'  EMRApplicationID: "{emr_application_id}"'
-        f'  EMRStepID: "{emr_step_id}"'
+        f'  emrApplicationID: "{emr_application_id}"'
+        f'  emrStepID: "{emr_step_id}"'
         f"  )"
         "}"
     )

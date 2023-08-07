@@ -27,9 +27,16 @@ func (fs FeedService) UpdateFeedStatus(p graphql.ResolveParams) (interface{}, er
 	fileName := p.Args["fileName"].(string)
 	vendor := p.Args["vendor"].(string)
 	feedName := p.Args["feedName"].(string)
-	emrApplicationID := p.Args["emrApplicationID"].(string)
-	emrStepID := p.Args["emrStepID"].(string)
 
+	var emrApplicationID string
+	if p.Args["emrApplicationID"] != nil {
+		emrApplicationID = p.Args["emrApplicationID"].(string)
+	} 
+	
+	var emrStepID string
+	if p.Args["emrStepID"] != nil {
+		emrStepID = p.Args["emrStepID"].(string)
+	}
 
 	var feedStatusUpdate FeedStatusUpdate
 	feedStatusUpdate.ProcessDate = processDate

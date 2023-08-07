@@ -39,7 +39,7 @@ type FeedStatusResults struct {
 	FeedName    string `json:"feed_name" db:"feed_name"`
 	FeedMethod  string `json:"feed_method" db:"feed_method"`
 	FileName    string `json:"file_name" db:"file_name"`
-	EMRLogURL   string `json:"emr_log_url" db:"emr_log_url"`
+	EMRLogs     string `json:"emr_logs" db:"emr_logs"`
 }
 
 type FeedStatusResultsDetailed struct {

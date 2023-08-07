@@ -39,6 +39,12 @@ var updateFeedStatusArgs = graphql.FieldConfigArgument{
 	"feedName": &graphql.ArgumentConfig{
 		Type: graphql.NewNonNull(graphql.String),
 	},
+	"emrApplicationID": &graphql.ArgumentConfig{
+		Type: graphql.String,
+	},
+	"emrStepID": &graphql.ArgumentConfig{
+		Type: graphql.String,
+	},
 }
 
 func generateRootMutation(fs *feed.FeedService) *graphql.Object {
