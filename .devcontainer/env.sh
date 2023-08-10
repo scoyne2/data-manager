@@ -56,4 +56,4 @@ chmod +x codecov
 export CODECOV_TOKEN=${CODECOV_TOKEN}
 
 # Add datadog
-export DD_API_KEY=${DD_API_KEY}
+export DD_API_KEY="12345"

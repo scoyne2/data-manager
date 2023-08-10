@@ -10,7 +10,7 @@ locals {
 provider "aws" {
   shared_config_files      = ["~/.aws/config"]
   shared_credentials_files = ["~/.aws/credentials"]
-  profile                  = local.envs[" "]
+  profile                  = local.envs["AWS_PROFILE"]
 }
 
 variable "app_name" {
@@ -46,8 +46,8 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
   timeout          = 60
   layers           = [
     var.layer_arn,
-    "arn:aws:lambda:us-west-2:464622532012:layer:Datadog-python39:78",
-    "arn:aws:lambda:us-west-2:464622532012:layer:Datadog-Extension:45"
+    "arn:aws:lambda:us-west-2:464622532012:layer:Datadog-Extension:45",
+    "arn:aws:lambda:us-west-2:464622532012:layer:Datadog-Python39:78",
     ]
   source_code_hash = filebase64sha256("${path.module}/main.zip")
   environment {
@@ -68,7 +68,6 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
 
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
-
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -79,7 +78,7 @@ resource "aws_iam_role" "iam_for_lambda" {
         "Service": "lambda.amazonaws.com"
       },
       "Effect": "Allow",
-      "Sid": ""
+      "Sid": "AssumeLambdaRole"
     }
   ]
 }
