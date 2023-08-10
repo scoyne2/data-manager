@@ -10,7 +10,7 @@ locals {
 provider "aws" {
   shared_config_files      = ["~/.aws/config"]
   shared_credentials_files = ["~/.aws/credentials"]
-  profile                  = local.envs["AWS_PROFILE"]
+  profile                  = local.envs[" "]
 }
 
 variable "app_name" {
@@ -42,18 +42,26 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
   role             = aws_iam_role.iam_for_lambda.arn
   filename         = "${path.module}/main.zip"
   runtime          = "python3.9"
-  handler          = "lambda_function.lambda_handler"
+  handler          = "datadog_lambda.handler.handler"
   timeout          = 60
-  layers           = [var.layer_arn]
+  layers           = [
+    var.layer_arn,
+    "arn:aws:lambda:us-west-2:464622532012:layer:Datadog-python39:78",
+    "arn:aws:lambda:us-west-2:464622532012:layer:Datadog-Extension:45"
+    ]
   source_code_hash = filebase64sha256("${path.module}/main.zip")
   environment {
     variables = {
-      APPLICATION_ID     = var.aws_emrserverless_application_id
-      OUTPUT_BUCKET      = aws_s3_bucket.data_manager_processed_s3.bucket
-      RESOURCE_BUCKET    = aws_s3_bucket.data_manager_resources_s3.bucket
-      SCRIPT_LOCATION    = "${aws_s3_bucket.data_manager_resources_s3.bucket}/scripts/file_ingest.py"
-      JOB_ROLE_ARN       = var.aws_emrserverless_role_arn
-      DOMAIN_NAME        = local.envs["DOMAIN_NAME"]
+      APPLICATION_ID        = var.aws_emrserverless_application_id
+      OUTPUT_BUCKET         = aws_s3_bucket.data_manager_processed_s3.bucket
+      RESOURCE_BUCKET       = aws_s3_bucket.data_manager_resources_s3.bucket
+      SCRIPT_LOCATION       = "${aws_s3_bucket.data_manager_resources_s3.bucket}/scripts/file_ingest.py"
+      JOB_ROLE_ARN          = var.aws_emrserverless_role_arn
+      DOMAIN_NAME           = local.envs["DOMAIN_NAME"]
+      DD_SITE               = "us5.datadoghq.com"
+      DD_LAMBDA_HANDLER     = "lambda_function.lambda_handler"
+      DD_API_KEY            = local.envs["DD_API_KEY"]
+      DD_TRACE_ENABLED      = "true"
     }
   }
 }

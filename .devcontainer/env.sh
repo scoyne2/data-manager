@@ -54,3 +54,6 @@ export RESOURCE_BUCKET="test_resource_bucket"
 curl -Os https://uploader.codecov.io/latest/linux/codecov
 chmod +x codecov
 export CODECOV_TOKEN=${CODECOV_TOKEN}
+
+# Add datadog
+export DD_API_KEY=${DD_API_KEY}

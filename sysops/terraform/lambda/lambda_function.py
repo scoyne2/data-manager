@@ -6,6 +6,9 @@ import boto3
 import requests
 import logging
 
+from ddtrace import tracer
+from datadog_lambda.metric import lambda_metric
+
 client = boto3.client("emr-serverless")
 
 EMR_SERVERLESS_APPLICATION_ID = os.environ.get("APPLICATION_ID", "999999999999")
@@ -17,7 +20,7 @@ DOMAIN_NAME = os.environ.get("DOMAIN_NAME", "localhost")
 
 GRAPHQL_URL = f"https://api.{DOMAIN_NAME}/graphql"
 
-
+@tracer.wrap()
 def add_feed(vendor: str, feed_name: str, feed_method: str):
     vendor_clean = vendor.replace("_", " ").title()
     feed_name_clean = feed_name.replace("_", " ").title()
@@ -29,7 +32,7 @@ def add_feed(vendor: str, feed_name: str, feed_method: str):
     r = requests.post(GRAPHQL_URL, json={"query": query})
     return r.status_code, r.json()
 
-
+@tracer.wrap()
 def file_received(vendor: str, feed_name: str, file_name: str):
     process_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     vendor_clean = vendor.replace("_", " ").title()
@@ -52,6 +55,12 @@ def file_received(vendor: str, feed_name: str, file_name: str):
 
 
 def lambda_handler(event, context):
+    current_span = tracer.current_span()
+    lambda_metric(
+        metric_name='data_manager.lambda_trigger',
+        value=1,
+    )
+    
     input_bucket = event["Records"][0]["s3"]["bucket"]["name"]
     key = urllib.parse.unquote_plus(
         event["Records"][0]["s3"]["object"]["key"], encoding="utf-8"
@@ -63,6 +72,8 @@ def lambda_handler(event, context):
     file_parts = file_id.split(".")
     file_name = file_parts[0]
     file_extension = file_parts[1]
+    if current_span:
+        current_span.set_tag('file_name', file_name)
 
     feed_method = "S3"
 
@@ -128,5 +139,9 @@ def lambda_handler(event, context):
                 }
             }
         },
+    )
+    lambda_metric(
+        metric_name='data_manager.lambda_complete',
+        value=1,
     )
     return {"statusCode": 200, "body": f"Processing file: {file_id}"}
