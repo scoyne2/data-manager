@@ -19,6 +19,7 @@ var POSTGRES_HOST string = os.Getenv("POSTGRES_HOST")
 var POSTGRES_USER string = os.Getenv("POSTGRES_USER")
 var POSTGRES_PASSWORD string= os.Getenv("POSTGRES_PASSWORD")
 var POSTGRES_DB_NAME string = os.Getenv("POSTGRES_DB_NAME")
+var S3_RESOURCES_BUCKET string = os.Getenv("RESOURCES_BUCKET_NAME")
 
 func getEnv(key, fallback string) string {
     if value, ok := os.LookupEnv(key); ok {
@@ -172,7 +173,8 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 			json_agg(json_build_object('id', fs.id, 'process_date', fs.process_date,
 			  'record_count', fs.record_count, 'error_count', fs.error_count, 'feed_status', fs.feed_status,
 			  'vendor', f.vendor, 'feed_name', f.feed_name, 'feed_method', f.feed_method, 'file_name', fs.file_name,
-			  'emr_logs', 'https://p-' || emr_step_id || '-' || emr_application_id || '.emrappui-prod.us-west-2.amazonaws.com/shs/history/' || emr_step_id || '/jobs/'
+			  'emr_logs', 'https://p-' || emr_step_id || '-' || emr_application_id || '.emrappui-prod.us-west-2.amazonaws.com/shs/history/' || emr_step_id || '/jobs/',
+			  'data_quality_url', 'http://' || $1 || '.s3-website-us-west-2.amazonaws.com/great_expectations/docs/expectations/' || f.vendor || '_' ||  f.feed_name || '_' || replace(replace(fs.file_name, '.txt', ''), '.csv', '') || '.html'
 			)
 			  ORDER BY fs.process_date DESC) previous_feeds
 		FROM feed_status fs
@@ -192,7 +194,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	WHERE fs.is_current = True
 	AND f.vendor != 'test'
 	;`
-	rows, err := pr.db.Query(sqlStatement)
+	rows, err := pr.db.Query(sqlStatement, S3_RESOURCES_BUCKET)
 	if err != nil {
 		return nil, err
 	}

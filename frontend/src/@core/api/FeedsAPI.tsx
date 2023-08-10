@@ -16,6 +16,7 @@ export interface FeedStatusType {
   feed_method: string;
   file_name: string;
   emr_logs: string;
+  data_quality_url: string;
 }
 
 export interface FeedStatusDetailedType {

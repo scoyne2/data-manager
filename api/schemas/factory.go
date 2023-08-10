@@ -48,6 +48,10 @@ var feedStatusType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "URL to the EMR logs",
 		},
+		"data_quality_url": &graphql.Field{
+			Type:        graphql.String,
+			Description: "URL to the Data Quality Results",
+		},
 	},
 },
 )

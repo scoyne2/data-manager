@@ -26,7 +26,8 @@ resource "aws_iam_policy" "emr_serverless_iam_policy" {
             "Effect": "Allow",
             "Action": [
                 "s3:GetObject",
-                "s3:ListBucket"
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
             ],
             "Resource": [
                 "arn:aws:s3:::*",

@@ -17,6 +17,7 @@ import UnfoldMoreHorizontal from "mdi-material-ui/UnfoldMoreHorizontal";
 
 import DataPreviewModal from 'src/@core/components/data-preview';
 import EMRLogs from 'src/@core/components/emr-logs';
+import DataQualityResults from 'src/@core/components/data-quality';
 
 import {
   getColumns,
@@ -50,6 +51,7 @@ const GET_FEED_STATUSES = gql`
         status
         vendor
         emr_logs
+        data_quality_url
       }
     }
   }
@@ -88,6 +90,9 @@ function DetailRows(previous_feeds: FeedStatusType[]){
           </TableCell>
           <TableCell>
             <EMRLogs log_url={prow.emr_logs} />
+          </TableCell>
+          <TableCell>
+            <DataQualityResults data_quality_url={prow.data_quality_url} />
           </TableCell>
         </TableRow>
       )
@@ -155,6 +160,7 @@ function FeedRow(row: FeedStatusDetailedType, open: boolean | undefined, setOpen
                   <TableCell>Status</TableCell>
                   <TableCell>Data Preview</TableCell>
                   <TableCell>EMR Logs</TableCell>
+                  <TableCell>Data Quality</TableCell>
                   </TableRow>
               </TableHead>
                 <TableBody>

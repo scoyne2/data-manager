@@ -2,6 +2,7 @@ import argparse
 import logging
 from datetime import datetime
 import os
+import tempfile
 
 import boto3
 import requests
@@ -9,13 +10,10 @@ import yaml
 
 from pyspark.sql.functions import lit
 from pyspark.sql.session import SparkSession
-
 from great_expectations.core.batch import RuntimeBatchRequest
-from great_expectations.data_context.types.base import (
-    DataContextConfig,
-    S3StoreBackendDefaults,
-)
-from great_expectations.util import get_context
+
+import great_expectations as ge
+from great_expectations.core.expectation_suite import ExpectationConfiguration
 
 EMR_CLUSTER_ID = os.environ.get('SERVERLESS_EMR_VIRTUAL_CLUSTER_ID', default='unknown')
 EMR_STEP_ID = os.environ.get('SERVERLESS_EMR_JOB_ID', default='unknown')
@@ -66,50 +64,37 @@ def process_file(spark, input_df, output_path, vendor, feed_name, file_name) -> 
     logging.info(f"Read {input_count} rows, wrote {output_count} rows.")
     return output_count
 
+def get_ge_context():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # download data_context_config from S3
+        destination = os.path.join(temp_dir, "great_expectations.yml")
+        s3 = boto3.client("s3")
+        key = "great_expectations/great_expectations.yml"
+        s3.download_file(resources_bucket, key, destination)
+        context = ge.DataContext(temp_dir)
+        return context
 
-def perform_quality_checks(output_path, resources_bucket) -> int:
-    session = boto3.Session()
-    s3_client = session.client("s3")
-    response = s3_client.get_object(
-        Bucket=resources_bucket,
-        Key="great_expectations/great_expectations.yml",
+
+def perform_quality_checks(pandas_df, qa_suite) -> int:
+    context_gx = get_ge_context()
+    suite = context_gx.create_expectation_suite(qa_suite, overwrite_existing=True)
+    exp_config = ExpectationConfiguration(
+        expectation_type="expect_column_values_to_not_be_null",
+            kwargs={
+                "auto": True,
+                "column": "file_name",
+            },
     )
-    config_file = yaml.safe_load(response["Body"])
+    suite.add_expectation(exp_config)
 
-    df = spark.read.parquet(output_path)
+    # Create Runtime Batch
+    pandasDataset = ge.dataset.PandasDataset(pandas_df, expectation_suite=suite)
+    batch_suite = pandasDataset.get_expectation_suite()
 
-    config = DataContextConfig(
-            config_version=config_file["config_version"],
-            datasources=config_file["datasources"],
-            expectations_store_name=config_file["expectations_store_name"],
-            validations_store_name=config_file["validations_store_name"],
-            evaluation_parameter_store_name=config_file["evaluation_parameter_store_name"],
-            plugins_directory="/great_expectations/plugins",
-            stores=config_file["stores"],
-            data_docs_sites=config_file["data_docs_sites"],
-            config_variables_file_path=config_file["config_variables_file_path"],
-            anonymous_usage_statistics=config_file["anonymous_usage_statistics"],
-            checkpoint_store_name=config_file["checkpoint_store_name"],
-            store_backend_defaults=S3StoreBackendDefaults(
-                default_bucket_name=config_file["data_docs_sites"]["s3_site"][
-                    "store_backend"
-                ]["bucket"]
-            ),
-        )
+    # Create expectations
+    context_gx.save_expectation_suite(batch_suite)
 
-    context_gx = get_context(project_config=config)
-
-    batch_request = RuntimeBatchRequest(
-        datasource_name="spark_s3",
-        data_connector_name="default_runtime_data_connector_name",
-        data_asset_name="default_runtime_data_connector_name",
-        batch_identifiers={"runtime_batch_identifier_name": "default_identifier"},
-        runtime_parameters={"batch_data": df},
-    )
-    validator = context_gx.get_validator(
-        batch_request=batch_request,
-    )
-    validator.save_expectation_suite(discard_failed_expectations=False)
+    # Build Data Docs
     context_gx.build_data_docs()
     error_count = 0
     return error_count
@@ -172,6 +157,7 @@ if __name__ == "__main__":
     file_extension = args.file_extension
     resources_bucket = args.resources_bucket
     logging.info(f"Processing file: {input_file}")
+    qa_suite = f"{vendor}_{feed_name}_{file_name.split('.')[0]}"
 
     # Create spark session
     spark = create_spark_session(input_file)
@@ -216,7 +202,9 @@ if __name__ == "__main__":
     logging.info(f"Convert status response code {response_code}")
 
     # Run Quality Checks and log results
-    error_count_from_qa = perform_quality_checks(output_path, resources_bucket)
+    output_df = spark.read.parquet(output_path)
+    pandas_df = output_df.toPandas()
+    error_count_from_qa = perform_quality_checks(pandas_df, qa_suite)
     error_count = error_count_from_qa
 
     # Determine status

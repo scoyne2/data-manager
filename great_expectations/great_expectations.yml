@@ -7,7 +7,7 @@ datasources:
       module_name: great_expectations.execution_engine
       class_name: SparkDFExecutionEngine
     data_connectors:
-      default_runtime_data_connector_name:
+      runtime_data_connector:
         batch_identifiers:
           - runtime_batch_identifier_name
         module_name: great_expectations.datasource.data_connector
@@ -54,8 +54,7 @@ data_docs_sites:
     store_backend:
       class_name: TupleS3StoreBackend
       bucket: data-manager-resources
-      boto3_options:
-        endpoint_url: https://data-manager-resources.s3.us-west-2.amazonaws.com/
+      prefix: 'great_expectations/docs/'
     site_index_builder:
       class_name: DefaultSiteIndexBuilder
       show_cta_footer: true
