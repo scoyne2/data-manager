@@ -92,7 +92,7 @@ function DetailRows(previous_feeds: FeedStatusType[]){
             <EMRLogs log_url={prow.emr_logs} />
           </TableCell>
           <TableCell>
-            <DataQualityResults data_quality_url={prow.data_quality_url} />
+            <DataQualityResults data_quality_url={prow.data_quality_url} status={prow.status} />
           </TableCell>
         </TableRow>
       )

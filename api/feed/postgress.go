@@ -174,7 +174,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 			  'record_count', fs.record_count, 'error_count', fs.error_count, 'feed_status', fs.feed_status,
 			  'vendor', f.vendor, 'feed_name', f.feed_name, 'feed_method', f.feed_method, 'file_name', fs.file_name,
 			  'emr_logs', 'https://p-' || emr_step_id || '-' || emr_application_id || '.emrappui-prod.us-west-2.amazonaws.com/shs/history/' || emr_step_id || '/jobs/',
-			  'data_quality_url', 'http://' || $1 || '.s3-website-us-west-2.amazonaws.com/great_expectations/docs/expectations/' || f.vendor || '_' ||  f.feed_name || '_' || replace(replace(fs.file_name, '.txt', ''), '.csv', '') || '.html'
+			  'data_quality_url', LOWER('http://' || $1 || '.s3-website-us-west-2.amazonaws.com/great_expectations/docs/expectations/' || replace(f.vendor,' ','_') || '_' ||  replace(f.feed_name,' ','_') || '_' || replace(replace(fs.file_name, '.txt', ''), '.csv', '') || '.html')
 			)
 			  ORDER BY fs.process_date DESC) previous_feeds
 		FROM feed_status fs

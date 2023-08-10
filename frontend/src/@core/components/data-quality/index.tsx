@@ -11,8 +11,9 @@ function openInNewTab(url: string) {
 }
 
 const DataQualityResults = (props: DataQualityResultsProps) => {
-    const { data_quality_url } = props;
-    if (data_quality_url === null || data_quality_url === undefined || data_quality_url === "") {
+    const { data_quality_url, status } = props;
+    // These statuses indicate data quality check has not yet been completed
+    if (status.toLowerCase() === "received" || status.toLowerCase() === "processing" || status.toLowerCase() === "validating")  {
         return (
             <>
             </>
