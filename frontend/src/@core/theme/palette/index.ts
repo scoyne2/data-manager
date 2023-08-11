@@ -10,17 +10,17 @@ const DefaultPalette = (mode: PaletteMode, themeColor: ThemeColor) => {
 
   const primaryGradient = () => {
     if (themeColor === "primary") {
-      return "#C6A7FE";
+      return "#364156";
     } else if (themeColor === "secondary") {
-      return "#9C9FA4";
+      return "#A7C4C2";
     } else if (themeColor === "success") {
-      return "#93DD5C";
+      return "#8FBC94";
     } else if (themeColor === "error") {
-      return "#FF8C90";
+      return "#D16666";
     } else if (themeColor === "warning") {
-      return "#FFCF5C";
+      return "#FFB563";
     } else {
-      return "#6ACDFF";
+      return "#94C5CC";
     }
   };
 
@@ -36,39 +36,39 @@ const DefaultPalette = (mode: PaletteMode, themeColor: ThemeColor) => {
     },
     mode: mode,
     primary: {
-      light: "#9E69FD",
-      main: "#9155FD",
-      dark: "#804BDF",
+      light: "#868d9a",
+      main: "#364156",
+      dark: "#262e3c",
       contrastText: "#FFF",
     },
     secondary: {
-      light: "#9C9FA4",
-      main: "#8A8D93",
-      dark: "#777B82",
+      light: "#cadcda",
+      main: "#A7C4C2",
+      dark: "#647674",
       contrastText: "#FFF",
     },
     success: {
-      light: "#6AD01F",
-      main: "#56CA00",
-      dark: "#4CB200",
+      light: "#bcd7bf",
+      main: "#8FBC94",
+      dark: "#567159",
       contrastText: "#FFF",
     },
     error: {
-      light: "#FF6166",
-      main: "#FF4C51",
-      dark: "#E04347",
+      light: "#e3a3a3",
+      main: "#D16666",
+      dark: "#7d3d3d",
       contrastText: "#FFF",
     },
     warning: {
-      light: "#FFCA64",
-      main: "#FFB400",
-      dark: "#E09E00",
+      light: "#ffd3a1",
+      main: "#FFB563",
+      dark: "#b37f45",
       contrastText: "#FFF",
     },
     info: {
-      light: "#32BAFF",
-      main: "#16B1FF",
-      dark: "#139CE0",
+      light: "#bfdce0",
+      main: "#94C5CC",
+      dark: "#59767a",
       contrastText: "#FFF",
     },
     grey: {
@@ -95,7 +95,7 @@ const DefaultPalette = (mode: PaletteMode, themeColor: ThemeColor) => {
     divider: `rgba(${mainColor}, 0.12)`,
     background: {
       paper: mode === "light" ? "#FFF" : "#312D4B",
-      default: mode === "light" ? "#F4F5FA" : "#28243D",
+      default: mode === "light" ? "#efefef" : "#625d79",
     },
     action: {
       active: `rgba(${mainColor}, 0.54)`,

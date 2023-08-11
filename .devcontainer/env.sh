@@ -38,8 +38,9 @@ cd frontend && npm install next && yarn install
 # Set default for local testing of Go API
 export API_HOST=localhost
 
-# Install lambda testing requirements
+# Install lambda and spark testing requirements
 pip install boto3==1.26.109
+pip install great-expectations==0.15.5
 pip install pytest-cov==4.0.0
 pip install pyspark==3.3.2
 pip install PyYAML==6.0
@@ -54,6 +55,3 @@ export RESOURCE_BUCKET="test_resource_bucket"
 curl -Os https://uploader.codecov.io/latest/linux/codecov
 chmod +x codecov
 export CODECOV_TOKEN=${CODECOV_TOKEN}
-
-# Add datadog
-export DD_API_KEY="12345"

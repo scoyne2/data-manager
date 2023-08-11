@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "export NEXT_PUBLIC_DOMAIN_NAME=datamanagertool.com && next dev",
+    "dev": "export NEXT_PUBLIC_DOMAIN_NAME=datamanagertool.com && export NEXT_PUBLIC_S3_RESOURCE_BUCKET=data-manager-resources && export NEXT_PUBLIC_AWS_REGION=us-west-2 && next dev",
     "build": "next build",
     "start": "next start",
     "export": "next export",

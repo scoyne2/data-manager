@@ -1,6 +1,5 @@
 // ** Icon imports
 import HomeOutline from "mdi-material-ui/HomeOutline";
-import AlertCircleOutline from "mdi-material-ui/AlertCircleOutline";
 import CogOutline from "mdi-material-ui/CogOutline";
 
 // ** Type import
@@ -13,16 +12,11 @@ const navigation = (): VerticalNavItemsType => {
       icon: HomeOutline,
       path: "/",
     },
-    // {
-    //   title: "Feed Settings",
-    //   icon: CogOutline,
-    //   path: "/feed-settings",
-    // },
-    // {
-    //   title: "Feed Details",
-    //   icon: AlertCircleOutline,
-    //   path: "/feed-details",
-    // },
+    {
+      title: "Resources",
+      icon: CogOutline,
+      path: "/resources-grid",
+    },
   ];
 };
 

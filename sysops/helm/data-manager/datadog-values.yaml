@@ -1,0 +1,16 @@
+datadog:
+  apiKeyExistingSecret: datadog
+  appKeyExistingSecret: datadog
+  site: us5.datadoghq.com
+  clusterAgent:
+    enabled: true
+  processAgent:
+    enabled: true
+    processCollection: true
+  logs:
+    enabled: true
+    containerCollectAll: true
+  networkMonitoring:
+    enabled: true
+  kubeStateMetricsCore:
+    enabled: true

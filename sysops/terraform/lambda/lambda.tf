@@ -60,7 +60,7 @@ resource "aws_lambda_function" "data_manager_filter_lambda_func" {
       DOMAIN_NAME           = local.envs["DOMAIN_NAME"]
       DD_SITE               = "us5.datadoghq.com"
       DD_LAMBDA_HANDLER     = "lambda_function.lambda_handler"
-      DD_API_KEY            = local.envs["DD_API_KEY"]
+      DD_API_KEY            = local.envs["DATADOG_API_KEY"]
       DD_TRACE_ENABLED      = "true"
     }
   }

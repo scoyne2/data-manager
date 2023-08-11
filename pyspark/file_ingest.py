@@ -15,6 +15,7 @@ from great_expectations.core.batch import RuntimeBatchRequest
 import great_expectations as ge
 from great_expectations.core.expectation_suite import ExpectationConfiguration
 
+
 EMR_CLUSTER_ID = os.environ.get('SERVERLESS_EMR_VIRTUAL_CLUSTER_ID', default='unknown')
 EMR_STEP_ID = os.environ.get('SERVERLESS_EMR_JOB_ID', default='unknown')
 

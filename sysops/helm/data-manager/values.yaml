@@ -147,4 +147,3 @@ pgadmin4:
        Host: "data-manager-postgresql"
        SSLMode: "disable"
        MaintenanceDB: "postgres"
-
