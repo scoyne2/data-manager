@@ -139,6 +139,7 @@ type feedStatusResultsDetailedDTO struct {
 	ProcessDate   string         `db:"process_date"`
 	RecordCount   int            `db:"record_count"`
 	ErrorCount	  int            `db:"error_count"`
+	SLAStatus	  string         `db:"sla_status"`
 	Status	      string         `db:"feed_status"`
 	Vendor     	  string         `db:"vendor"`
 	FeedName   	  string         `db:"feed_name"`
@@ -153,6 +154,7 @@ func (d feedStatusResultsDetailedDTO) ToFeedStatusResultsDetailed() (*FeedStatus
 	result.ProcessDate = d.ProcessDate
 	result.RecordCount = d.RecordCount
 	result.ErrorCount = d.ErrorCount
+	result.SLAStatus = d.SLAStatus
 	result.Status = d.Status
 	result.Vendor = d.Vendor
 	result.FeedName = d.FeedName
@@ -184,11 +186,15 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	)
 		
 	SELECT 
-	    fs.id, fs.process_date, fs.record_count, fs.error_count, fs.feed_status,
-		f.vendor, f.feed_name, f.feed_method, fs.file_name, COALESCE(p.previous_feeds, '[{}]'::json) AS previous_feeds
+	    fs.id, fs.process_date, fs.record_count, fs.error_count, 
+		CASE WHEN sl.sla_missed = false THEN 'Missed' WHEN sl.sla_missed = true THEN 'Met' ELSE 'No SLA' END AS sla_status,
+		fs.feed_status, f.vendor, f.feed_name, f.feed_method, fs.file_name,
+		COALESCE(p.previous_feeds, '[{}]'::json) AS previous_feeds
 	FROM feed_status fs
 	INNER JOIN feeds f
 	ON fs.feed_id = f.id
+	LEFT JOIN feed_sla sl
+	ON fs.id = sl.feed_id
 	LEFT JOIN previous p
 	ON f.vendor = p.vendor AND f.feed_name = p.feed_name AND f.feed_method = p.feed_method
 	WHERE fs.is_current = True
@@ -203,7 +209,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	var feedStatuses []FeedStatusResultsDetailed
 	for rows.Next() {
 		var result feedStatusResultsDetailedDTO
-		err = rows.Scan(&result.ID, &result.ProcessDate, &result.RecordCount, &result.ErrorCount, &result.Status, &result.Vendor, &result.FeedName, &result.FeedMethod, &result.FileName, &result.PreviousFeeds)
+		err = rows.Scan(&result.ID, &result.ProcessDate, &result.RecordCount, &result.ErrorCount, &result.SLAStatus, &result.Status, &result.Vendor, &result.FeedName, &result.FeedMethod, &result.FileName, &result.PreviousFeeds)
 		if err != nil {
 			return nil, err
 		}

@@ -14,6 +14,8 @@ certificateARN: ""
 
 wafARN: ""
 
+schedule: "0 0 * * *"
+
 # https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
 aws-load-balancer-controller:
   clusterName: data-manager-eks
@@ -43,6 +45,12 @@ api:
     minReplicas: 1
     maxReplicas: 5
     targetCPUUtilizationPercentage: 80
+
+sla:
+  image:
+    repository: ""
+    pullPolicy: Always
+    tag: "latest"
 
 frontend:
   serviceName: frontend
@@ -109,6 +117,15 @@ postgresql:
                  (2, '2022-03-31 08:30:20', 0, 500, 'Failed', 'fake_file3.txt', null, null, False),
                  (2, '2022-03-30 06:21:20', 0, 500, 'Failed', 'fake_filebad.txt', null, null, False),
                  (2, '2022-03-31 11:30:20', 13076, 0, 'Success', 'fake_file4.csv', '00fc7702k1h55b0l', '00fc82pijortg80m', True);
+          CREATE TABLE feed_sla (
+            id serial PRIMARY KEY,
+            feed_id INTEGER REFERENCES feeds (id),
+            schedule TEXT,
+            last_load_date TEXT,
+            sla_missed BOOLEAN
+          );
+          INSERT INTO feed_sla(feed_id, schedule, last_load_date, sla_missed)
+          VALUES (1, 'daily', '2021-03-31 22:30:20', True);
 
 # https://github.com/rowanruseler/helm-charts/blob/master/charts/pgadmin4/values.yaml
 pgadmin4:

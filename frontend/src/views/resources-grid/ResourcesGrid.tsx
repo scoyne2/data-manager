@@ -10,7 +10,6 @@ function openInNewTab(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');
 }
 
-// TODO use dynamic resource bucket name
 const S3_RESOURCE_BUCKET = process.env.NEXT_PUBLIC_S3_RESOURCE_BUCKET;
 const AWS_REGION = process.env.NEXT_PUBLIC_AWS_REGION
 const dd_kubernetes_url = "https://us5.datadoghq.com/kubernetes"

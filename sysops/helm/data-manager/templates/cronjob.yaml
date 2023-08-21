@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: data-manager-sla
+  labels:
+    {{- include "data-manager.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.schedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: sla
+              image: "{{ .Values.sla.image.repository }}:{{ .Values.sla.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.sla.image.pullPolicy }}
+              env:
+                - name: "POSTGRES_USER"
+                  value:  {{ .Values.api.env.postgres_user }}
+                - name: "POSTGRES_PASSWORD"
+                  value:  {{ .Values.api.env.postgres_password }}
+                - name: "POSTGRES_PORT"
+                  value: "{{ .Values.api.env.postgres_port }}"
+                - name: "POSTGRES_HOST"
+                  value: "{{ .Values.api.env.postgres_host }}"
+                - name: "POSTGRES_DB_NAME"
+                  value: {{ .Values.api.env.postgres_db_name }}
+          restartPolicy: OnFailure

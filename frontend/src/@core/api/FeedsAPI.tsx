@@ -13,6 +13,7 @@ export interface FeedStatusType {
   vendor: string;
   error_count: number;
   status: string;
+  sla_status: string;
   feed_method: string;
   file_name: string;
   emr_logs: string;
@@ -26,6 +27,7 @@ export interface FeedStatusDetailedType {
   process_date: string;
   vendor: string;
   error_count: number;
+  sla_status: string;
   status: string;
   feed_method: string;
   file_name: string;
@@ -54,7 +56,8 @@ const column_names: string[] = [
   "Date",
   "Rows",
   "Errors",
-  "Status"
+  "Status",
+  "SLA Status"
 ];
 
 export function getColumns(): string[] {

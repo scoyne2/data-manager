@@ -13,6 +13,7 @@ cd sysops/helm/data-manager && helm dependency build && helm upgrade --install d
 helm dependency build && helm upgrade --install data-manager . --set domainName=$DOMAIN_NAME --set hostedZoneId=$HOSTED_ZONE_ID \
     --values values.yaml --set api.image.repository=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/data-manager-api \
     --set frontend.image.repository=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/data-manager-frontend \
+    --set sla.image.repository=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/data-manager-sla \
     --set postgresql.auth.postgresPassword=$POSTGRES_PASSWORD --set postgresql.auth.password=$POSTGRES_PASSWORD \
     --set postgresql.primary.initdb.password=$POSTGRES_PASSWORD --set postgresql.primary.initdb.user=$POSTGRES_USER  \
     --set api.env.postgres_password=$POSTGRES_PASSWORD --set api.env.postgres_user=$POSTGRES_USER \

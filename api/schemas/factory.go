@@ -75,6 +75,10 @@ var feedStatusDetailsType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Int,
 			Description: "The number of records that had errors",
 		},
+		"sla_status": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The SLA status of the feed",
+		},
 		"status": &graphql.Field{
 			Type:        graphql.String,
 			Description: "The status of the feed",
