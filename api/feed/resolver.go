@@ -66,6 +66,17 @@ func (fs FeedService) AddFeed(p graphql.ResolveParams) (interface{}, error) {
 	return fs.repo.AddFeed(feed)
 }
 
+func (fs FeedService) UpdateSLA(p graphql.ResolveParams) (interface{}, error) {
+	feedID := p.Args["feedID"].(int)
+	schedule := p.Args["schedule"].(string)
+
+	var sla SLAUpdate
+	sla.FeedID = feedID
+	sla.Schedule = schedule
+
+	return fs.repo.UpdateSLA(sla)
+}
+
 
 func (fs FeedService) ResolveGetFeedStatusDetails(p graphql.ResolveParams) (interface{}, error) {
 	fsDetails, err := fs.repo.GetFeedStatusDetails()

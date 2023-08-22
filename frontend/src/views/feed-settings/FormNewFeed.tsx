@@ -24,7 +24,7 @@ import { useMutation, gql } from "@apollo/client";
 // import { FormEvent } from "react";
 
 const ADD_FEED = gql`
-  mutation AddFeed (
+  mutation c (
     $vendor: String!
     $feedName: String!
     $feedMethod: String!

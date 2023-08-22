@@ -63,8 +63,14 @@ type FeedStatusAggregate struct {
 	Errors		int `json:"errors"`
 }
 
+type SLAUpdate struct {
+	FeedID   int    `json:"feed_id" db:"feed_id"`
+	Schedule string `json:"schedule" db:"schedule"`
+}
+
 type Repository interface {
 	AddFeed(feed Feed) (string, error)
+	UpdateSLA(feed SLAUpdate) (string, error)
 	UpdateFeedStatus(feedStatusUpdate FeedStatusUpdate) (string, error)
 	GetFeedStatusDetails() ([]FeedStatusResultsDetailed, error)
 	GetFeedStatusesAggregate(startDate string, endDate string) (FeedStatusAggregate, error)

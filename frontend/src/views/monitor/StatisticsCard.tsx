@@ -9,7 +9,6 @@ import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 
 // ** Icons Imports
-import DotsVertical from "mdi-material-ui/DotsVertical";
 import TrendingUp from "mdi-material-ui/TrendingUp";
 import Alert from "mdi-material-ui/Alert";
 import AccountOutline from "mdi-material-ui/AccountOutline";

@@ -4,7 +4,7 @@ module.exports = {
   env: {
     NEXT_PUBLIC_DOMAIN_NAME: process.env.NEXT_PUBLIC_DOMAIN_NAME,
     NEXT_PUBLIC_S3_RESOURCE_BUCKET: process.env.NEXT_PUBLIC_S3_RESOURCE_BUCKET,
-    NEXT_PUBLIC_AWS_REGION: process.env.NEXT_PUBLIC_AWS_REGION
+    NEXT_PUBLIC_AWS_REGION: process.env.NEXT_PUBLIC_AWS_REGION,
   },
   trailingSlash: true,
   reactStrictMode: false,

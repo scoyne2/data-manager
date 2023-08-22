@@ -63,6 +63,41 @@ func (pr *PostgressRepository) AddFeed(feed Feed) (string, error) {
 	return "Feed Added", nil
 }
 
+func (pr *PostgressRepository) UpdateSLA(sl SLAUpdate) (string, error) {
+    // Try to update the row
+    sqlUpdateStatement := `
+    UPDATE feed_sla
+    SET schedule = $2
+    WHERE feed_id = $1`
+
+    result, err := pr.db.Exec(sqlUpdateStatement, sl.FeedID, sl.Schedule)
+    if err != nil {
+        return "", err
+    }
+
+    // Check how many rows were affected
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        return "", err
+    }
+
+    if rowsAffected == 0 {
+        // No rows were updated, so insert a new row
+        sqlInsertStatement := `
+        INSERT INTO feed_sla (feed_id, is_current, last_load_date, sla_missed)
+        VALUES ($1, $2, (SELECT MAX(process_date) FROM feed_status WHERE feed_id = $1), False)
+		`
+        _, err := pr.db.Exec(sqlInsertStatement, sl.FeedID, sl.Schedule)
+        if err != nil {
+            return "", err
+        }
+        return "SLA Inserted", nil
+    }
+
+    return "SLA Updated", nil
+}
+
+
 func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, error) {
 	// check if feed exists first
 	sqlStatementFd := `

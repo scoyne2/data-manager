@@ -16,9 +16,9 @@ import TableContainer from "@mui/material/TableContainer";
 import UnfoldMoreHorizontal from "mdi-material-ui/UnfoldMoreHorizontal";
 
 import DataPreviewModal from 'src/@core/components/data-preview';
+import SLADialog from 'src/@core/components/sla-dialog';
 import EMRLogs from 'src/@core/components/emr-logs';
 import DataQualityResults from 'src/@core/components/data-quality';
-import { CheckCircle, CloseCircle, MinusCircle } from 'mdi-material-ui';
 
 import {
   getColumns,
@@ -29,23 +29,6 @@ import {
 } from "../../@core/api/FeedsAPI";
 
 import { useQuery, gql } from "@apollo/client";
-
-const getIconForStatus = (status: string) => {
-  const iconStyles = {
-    fontSize: 'inherit', // to make the icon size consistent with the text
-  };
-
-  switch (status) {
-    case "Met":
-      return <CheckCircle style={{ ...iconStyles, color: 'green' }} />;
-    case "Missed":
-      return <CloseCircle style={{ ...iconStyles, color: 'red' }} />;
-    case "No SLA":
-      return <MinusCircle style={{ ...iconStyles, color: 'grey' }} />;
-    default:
-      return <MinusCircle style={{ ...iconStyles, color: 'grey' }} />;
-  }
-};
 
 
 const GET_FEED_STATUSES = gql`
@@ -105,9 +88,6 @@ function DetailRows(previous_feeds: FeedStatusType[]){
               }}
             />
           </TableCell>
-          <TableCell >
-            {getIconForStatus(prow.sla_status)}
-          </TableCell>
           <TableCell>
             <DataPreviewModal vendor={prow.vendor} feed_name={prow.feed_name} file_name={prow.file_name} />
           </TableCell>
@@ -166,6 +146,9 @@ function FeedRow(row: FeedStatusDetailedType, open: boolean | undefined, setOpen
               "& .MuiChip-label": { fontWeight: 500 },
             }}
           />
+        </TableCell>
+        <TableCell >
+          { SLADialog }
         </TableCell>
         </TableRow>
         {/* Feed Details */}

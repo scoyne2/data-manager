@@ -64,6 +64,11 @@ The `addFeed` endpoint is used to add a new feed to the Postgres database. This 
 - `feedMethod`: The way the file was dropped. Either `SFTP` or `S3`.
 This endpoint returns either the string `Feed Added` or an error.
 
+The `updateSLA` endpoint is used to add add or adjust an SLA on an existing feed in the Postgres database. This query requires the following parameters.
+- `feedID`: The ID of the feed to update/set and SLA for.
+- `schedule`: The expected schedule of the file, options include `daily`, `weekly`, `monthly`, `none`.
+This endpoint returns error only if one occurs..
+
 
 The `updateFeedStatus` endpoint is used to update the status of a feed. This query requires the following parameters.
 - `processDate`: The timestamp the feed status changed.
