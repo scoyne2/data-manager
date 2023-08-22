@@ -84,7 +84,7 @@ func (pr *PostgressRepository) UpdateSLA(sl SLAUpdate) (string, error) {
     if rowsAffected == 0 {
         // No rows were updated, so insert a new row
         sqlInsertStatement := `
-        INSERT INTO feed_sla (feed_id, is_current, last_load_date, sla_missed)
+        INSERT INTO feed_sla (feed_id, schedulebash, last_load_date, sla_missed)
         VALUES ($1, $2, (SELECT MAX(process_date) FROM feed_status WHERE feed_id = $1), False)
 		`
         _, err := pr.db.Exec(sqlInsertStatement, sl.FeedID, sl.Schedule)
@@ -175,6 +175,7 @@ type feedStatusResultsDetailedDTO struct {
 	RecordCount   int            `db:"record_count"`
 	ErrorCount	  int            `db:"error_count"`
 	SLAStatus	  string         `db:"sla_status"`
+	Schedule	  string         `db:"schedule"`
 	Status	      string         `db:"feed_status"`
 	Vendor     	  string         `db:"vendor"`
 	FeedName   	  string         `db:"feed_name"`
@@ -190,6 +191,7 @@ func (d feedStatusResultsDetailedDTO) ToFeedStatusResultsDetailed() (*FeedStatus
 	result.RecordCount = d.RecordCount
 	result.ErrorCount = d.ErrorCount
 	result.SLAStatus = d.SLAStatus
+	result.Schedule = d.Schedule
 	result.Status = d.Status
 	result.Vendor = d.Vendor
 	result.FeedName = d.FeedName
@@ -223,7 +225,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	SELECT 
 	    fs.id, fs.process_date, fs.record_count, fs.error_count, 
 		CASE WHEN sl.sla_missed = false THEN 'Missed' WHEN sl.sla_missed = true THEN 'Met' ELSE 'No SLA' END AS sla_status,
-		fs.feed_status, f.vendor, f.feed_name, f.feed_method, fs.file_name,
+		COALESCE(sl.schedule, 'none') AS schedule, fs.feed_status, f.vendor, f.feed_name, f.feed_method, fs.file_name,
 		COALESCE(p.previous_feeds, '[{}]'::json) AS previous_feeds
 	FROM feed_status fs
 	INNER JOIN feeds f
@@ -244,7 +246,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	var feedStatuses []FeedStatusResultsDetailed
 	for rows.Next() {
 		var result feedStatusResultsDetailedDTO
-		err = rows.Scan(&result.ID, &result.ProcessDate, &result.RecordCount, &result.ErrorCount, &result.SLAStatus, &result.Status, &result.Vendor, &result.FeedName, &result.FeedMethod, &result.FileName, &result.PreviousFeeds)
+		err = rows.Scan(&result.ID, &result.ProcessDate, &result.RecordCount, &result.ErrorCount, &result.SLAStatus, &result.Schedule, &result.Status, &result.Vendor, &result.FeedName, &result.FeedMethod, &result.FileName, &result.PreviousFeeds)
 		if err != nil {
 			return nil, err
 		}

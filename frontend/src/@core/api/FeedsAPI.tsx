@@ -14,6 +14,7 @@ export interface FeedStatusType {
   error_count: number;
   status: string;
   sla_status: string;
+  schedule: string;
   feed_method: string;
   file_name: string;
   emr_logs: string;
@@ -28,6 +29,7 @@ export interface FeedStatusDetailedType {
   vendor: string;
   error_count: number;
   sla_status: string;
+  schedule: string;
   status: string;
   feed_method: string;
   file_name: string;

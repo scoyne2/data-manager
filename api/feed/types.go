@@ -50,6 +50,7 @@ type FeedStatusResultsDetailed struct {
 	ErrorCount	  int                 `json:"error_count" db:"error_count"`
 	Status	      string              `json:"feed_status" db:"feed_status"`
 	SLAStatus	  string              `json:"sla_status" db:"sla_status"`
+	Schedule	  string              `json:"schedule" db:"schedule"`
 	Vendor     	  string              `json:"vendor" db:"vendor"`
 	FeedName   	  string              `json:"feed_name" db:"feed_name"`
 	FeedMethod	  string              `json:"feed_method" db:"feed_method"`

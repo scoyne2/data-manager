@@ -41,6 +41,7 @@ const GET_FEED_STATUSES = gql`
       process_date
       record_count
       sla_status
+      schedule
       status
       vendor
       previous_feeds {
@@ -148,7 +149,7 @@ function FeedRow(row: FeedStatusDetailedType, open: boolean | undefined, setOpen
           />
         </TableCell>
         <TableCell >
-          { SLADialog }
+          < SLADialog feed_id={row.id} sla_status={row.sla_status} schedule={row.schedule}/>
         </TableCell>
         </TableRow>
         {/* Feed Details */}

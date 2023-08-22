@@ -17,7 +17,7 @@ import { useMutation, gql } from "@apollo/client";
 
 const UPDATE_SLA = gql`
   mutation UpdateSLA (
-    $feedID: Integer!
+    $feedID: Int!
     $schedule: String!
   ) {
     updateSLA(feedID: $feedID, schedule: $schedule)
@@ -89,7 +89,7 @@ const SLADialog = (props: SLADialogProps) => {
   };
 
   return (
-    <div>
+    <>
       {getIconButtonForStatus(sla_status, handleClickOpen)}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>SLA Settings</DialogTitle>
@@ -105,8 +105,8 @@ const SLADialog = (props: SLADialogProps) => {
             onChange={handleChange}
           >
             <MenuItem value={"daily"}>Daily</MenuItem>
-            <MenuItem value={"weekly"}>Monthly</MenuItem>
-            <MenuItem value={"monthly"}>Weekly</MenuItem>
+            <MenuItem value={"weekly"}>Weekly</MenuItem>
+            <MenuItem value={"monthly"}>Monthly</MenuItem>
             <MenuItem value={"none"}>None</MenuItem>
           </Select>
         </DialogContent>
@@ -115,7 +115,7 @@ const SLADialog = (props: SLADialogProps) => {
           <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   );
 }
 export default SLADialog;

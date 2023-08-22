@@ -79,6 +79,10 @@ var feedStatusDetailsType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "The SLA status of the feed",
 		},
+		"schedule": &graphql.Field{
+			Type:        graphql.String,
+			Description: "The schedule of the feed",
+		},
 		"status": &graphql.Field{
 			Type:        graphql.String,
 			Description: "The status of the feed",
