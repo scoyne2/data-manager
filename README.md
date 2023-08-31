@@ -5,6 +5,9 @@
 Data manager is a platform that allows ingestion of flat files into a raw layer of a datalake. It requires use of AWS and uses the following technology: `terraform`, `helm`, `go`, `nextjs`, `react`, `typescript`.
 <img width="1728" alt="Data Manager Data Flow" src="docs/images/data_flow.png">
 
+## Video Demo
+https://github.com/scoyne2/data-manager/assets/5367834/1700274b-2ce7-4740-8d98-82a5a9884a47
+
 ## Screenshots
 ### Feed Stats
 <img width="1728" alt="Data Manager Demo" src="docs/images/feed_stats.png">
