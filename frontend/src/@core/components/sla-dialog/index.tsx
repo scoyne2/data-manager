@@ -15,6 +15,8 @@ import { SLADialogProps } from "src/@core/components/sla-dialog/types";
 
 import { useMutation, gql } from "@apollo/client";
 
+
+
 const UPDATE_SLA = gql`
   mutation UpdateSLA (
     $feedID: Int!
@@ -58,11 +60,7 @@ const SLADialog = (props: SLADialogProps) => {
   };
 
   const handleClickOpen = () => {
-    let currentSchedule = "none"
-    if(schedule == "" || schedule == "none"){
-      currentSchedule = schedule
-    }
-    setSecheduleSelection(currentSchedule)
+    setSecheduleSelection(schedule)
     setOpen(true);
   };
 
@@ -81,16 +79,13 @@ const SLADialog = (props: SLADialogProps) => {
   });
 
   const handleSave = () => {
-    // Make call to API to update sla status for feed
-    console.log(feed_id)
-    console.log(scheduleSelection)
     updateSLA({ variables: { feedID: feed_id, schedule: scheduleSelection } })
     setOpen(false);
   };
 
   return (
     <>
-      {getIconButtonForStatus(sla_status, handleClickOpen)}
+      {getIconButtonForStatus(sla_status, handleClickOpen)} {schedule}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>SLA Settings</DialogTitle>
         <DialogContent>

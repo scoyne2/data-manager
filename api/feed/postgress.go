@@ -72,24 +72,24 @@ func (pr *PostgressRepository) UpdateSLA(sl SLAUpdate) (string, error) {
 
     result, err := pr.db.Exec(sqlUpdateStatement, sl.FeedID, sl.Schedule)
     if err != nil {
-        return "", err
+        return "", fmt.Errorf("could not update sla via sql %s. Error: %s", sqlUpdateStatement, err)
     }
 
     // Check how many rows were affected
     rowsAffected, err := result.RowsAffected()
     if err != nil {
-        return "", err
+        return "", fmt.Errorf("could not check rows affected Error: %s", err)
     }
 
     if rowsAffected == 0 {
         // No rows were updated, so insert a new row
         sqlInsertStatement := `
-        INSERT INTO feed_sla (feed_id, schedulebash, last_load_date, sla_missed)
+        INSERT INTO feed_sla (feed_id, schedule, last_load_date, sla_missed)
         VALUES ($1, $2, (SELECT MAX(process_date) FROM feed_status WHERE feed_id = $1), False)
 		`
         _, err := pr.db.Exec(sqlInsertStatement, sl.FeedID, sl.Schedule)
         if err != nil {
-            return "", err
+            return "", fmt.Errorf("could not insert sla via sql %s. Error: %s", sqlInsertStatement, err)
         }
         return "SLA Inserted", nil
     }
@@ -171,6 +171,7 @@ func (pr *PostgressRepository) UpdateFeedStatus(fs FeedStatusUpdate) (string, er
 
 type feedStatusResultsDetailedDTO struct {
 	ID         	  int            `db:"id"`
+	FeedID        int            `db:"feded_id"`
 	ProcessDate   string         `db:"process_date"`
 	RecordCount   int            `db:"record_count"`
 	ErrorCount	  int            `db:"error_count"`
@@ -187,6 +188,7 @@ type feedStatusResultsDetailedDTO struct {
 func (d feedStatusResultsDetailedDTO) ToFeedStatusResultsDetailed() (*FeedStatusResultsDetailed, error) {
 	result := new(FeedStatusResultsDetailed)
 	result.ID = d.ID
+	result.FeedID = d.FeedID
 	result.ProcessDate = d.ProcessDate
 	result.RecordCount = d.RecordCount
 	result.ErrorCount = d.ErrorCount
@@ -223,7 +225,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	)
 		
 	SELECT 
-	    fs.id, fs.process_date, fs.record_count, fs.error_count, 
+	    fs.id, f.id AS feed_id, fs.process_date, fs.record_count, fs.error_count, 
 		CASE WHEN sl.sla_missed = false THEN 'Missed' WHEN sl.sla_missed = true THEN 'Met' ELSE 'No SLA' END AS sla_status,
 		COALESCE(sl.schedule, 'none') AS schedule, fs.feed_status, f.vendor, f.feed_name, f.feed_method, fs.file_name,
 		COALESCE(p.previous_feeds, '[{}]'::json) AS previous_feeds
@@ -231,7 +233,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	INNER JOIN feeds f
 	ON fs.feed_id = f.id
 	LEFT JOIN feed_sla sl
-	ON fs.id = sl.feed_id
+	ON f.id = sl.feed_id
 	LEFT JOIN previous p
 	ON f.vendor = p.vendor AND f.feed_name = p.feed_name AND f.feed_method = p.feed_method
 	WHERE fs.is_current = True
@@ -246,7 +248,7 @@ func (pr *PostgressRepository) GetFeedStatusDetails() ([]FeedStatusResultsDetail
 	var feedStatuses []FeedStatusResultsDetailed
 	for rows.Next() {
 		var result feedStatusResultsDetailedDTO
-		err = rows.Scan(&result.ID, &result.ProcessDate, &result.RecordCount, &result.ErrorCount, &result.SLAStatus, &result.Schedule, &result.Status, &result.Vendor, &result.FeedName, &result.FeedMethod, &result.FileName, &result.PreviousFeeds)
+		err = rows.Scan(&result.ID, &result.FeedID, &result.ProcessDate, &result.RecordCount, &result.ErrorCount, &result.SLAStatus, &result.Schedule, &result.Status, &result.Vendor, &result.FeedName, &result.FeedMethod, &result.FileName, &result.PreviousFeeds)
 		if err != nil {
 			return nil, err
 		}

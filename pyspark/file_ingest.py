@@ -6,14 +6,13 @@ import tempfile
 
 import boto3
 import requests
-import yaml
 
-from pyspark.sql.functions import lit
+from pyspark.sql.functions import lit, col, countDistinct
 from pyspark.sql.session import SparkSession
-from great_expectations.core.batch import RuntimeBatchRequest
 
 import great_expectations as ge
-from great_expectations.core.expectation_suite import ExpectationConfiguration
+from great_expectations.core.batch import RuntimeBatchRequest
+
 
 
 EMR_CLUSTER_ID = os.environ.get('SERVERLESS_EMR_VIRTUAL_CLUSTER_ID', default='unknown')
@@ -76,26 +75,76 @@ def get_ge_context():
         return context
 
 
-def perform_quality_checks(pandas_df, qa_suite) -> int:
+def implement_expectations(col, summary, validator):
+    validator.expect_column_to_exist(col)
+    if summary[col]["pct_null"] == 0:
+        validator.expect_column_values_to_not_be_null(column=col, mostly=0.9)
+
+    if summary[col]["pct_unique"] == 1.0:
+        validator.expect_column_values_to_be_unique(column=col, mostly=0.9)
+
+
+def get_data_summary(df):
+    # Total number of rows
+    total_rows = df.count()
+    summary  = {}
+    for col_name in df.columns:
+        null_count = df.filter(col(col_name).isNull()).count()
+        unique_count = df.agg(countDistinct(col_name)).collect()[0][0]
+        pct_unique = (unique_count / (total_rows - null_count)) * 100
+        pct_null = (null_count / total_rows) * 100
+        summary[col_name] = {"pct_unique": pct_unique, "pct_null": pct_null} 
+
+    return summary
+
+def perform_quality_checks(pandas_df, qa_suite, summary) -> int:
     context_gx = get_ge_context()
     suite = context_gx.create_expectation_suite(qa_suite, overwrite_existing=True)
-    exp_config = ExpectationConfiguration(
-        expectation_type="expect_column_values_to_not_be_null",
-            kwargs={
-                "auto": True,
-                "column": "file_name",
-            },
+
+    context_gx.save_expectation_suite(suite)
+
+    batch_request = RuntimeBatchRequest(
+        datasource_name="pandas_datasource",
+        data_connector_name="runtime_data_connector",
+        data_asset_name=qa_suite,
+        runtime_parameters={"batch_data": pandas_df}, 
+        batch_identifiers={"runtime_batch_identifier_name": qa_suite},
     )
-    suite.add_expectation(exp_config)
 
-    # Create Runtime Batch
-    pandasDataset = ge.dataset.PandasDataset(pandas_df, expectation_suite=suite)
-    batch_suite = pandasDataset.get_expectation_suite()
+    validator = context_gx.get_validator(
+        batch_request=batch_request, expectation_suite_name=qa_suite)
 
-    # Create expectations
-    context_gx.save_expectation_suite(batch_suite)
+    for col in list(pandas_df.columns.values):
+        implement_expectations(col, summary, validator)
 
-    # Build Data Docs
+    validator.save_expectation_suite(discard_failed_expectations=False)
+
+    cfg_checkpoint={
+        "name": f"{qa_suite}_checkpoint",
+        "config_version": 1,
+        "class_name": "SimpleCheckpoint",
+        "run_name_template": "%Y-%m",
+        "validations": [{
+            "batch_request": {
+                "datasource_name": "pandas_datasource",
+                "data_connector_name": "runtime_data_connector",
+                "data_asset_name": "dataframe"
+            },
+            "expectation_suite_name": qa_suite
+        }]
+        }
+
+    context_gx.add_checkpoint(**cfg_checkpoint)
+
+    checkpoint_result = context_gx.run_checkpoint(
+        checkpoint_name=f"{qa_suite}_checkpoint",
+        batch_request={
+            "runtime_parameters": { "batch_data": pandas_df },
+            "batch_identifiers": { "runtime_batch_identifier_name": qa_suite }
+        }
+    )
+    logging.warn(checkpoint_result)
+
     context_gx.build_data_docs()
     error_count = 0
     return error_count
@@ -205,7 +254,8 @@ if __name__ == "__main__":
     # Run Quality Checks and log results
     output_df = spark.read.parquet(output_path)
     pandas_df = output_df.toPandas()
-    error_count_from_qa = perform_quality_checks(pandas_df, qa_suite)
+    summary = get_data_summary(output_df)
+    error_count_from_qa = perform_quality_checks(pandas_df, qa_suite, summary)
     error_count = error_count_from_qa
 
     # Determine status

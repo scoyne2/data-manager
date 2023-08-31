@@ -23,6 +23,7 @@ export interface FeedStatusType {
 
 export interface FeedStatusDetailedType {
   id: number;
+  feed_id: number;
   record_count: number;
   feed_name: string;
   process_date: string;

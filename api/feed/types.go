@@ -45,6 +45,7 @@ type FeedStatusResults struct {
 
 type FeedStatusResultsDetailed struct {
 	ID         	  int                 `json:"id" db:"id"`
+	FeedID        int                 `json:"feed_id" db:"feed_id"`
 	ProcessDate   string              `json:"process_date" db:"process_date"`
 	RecordCount   int                 `json:"record_count" db:"record_count"`
 	ErrorCount	  int                 `json:"error_count" db:"error_count"`

@@ -63,6 +63,10 @@ var feedStatusDetailsType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.ID,
 			Description: "The ID that is used to identify unique feed status",
 		},
+		"feed_id": &graphql.Field{
+			Type:        graphql.ID,
+			Description: "The ID that is used to identify the feed ",
+		},
 		"process_date": &graphql.Field{
 			Type:        graphql.String,
 			Description: "The date the feed was processed",

@@ -1,11 +1,11 @@
 config_version: 3.0
 datasources:
-  spark_s3:
+  pandas_datasource:
     module_name: great_expectations.datasource
     class_name: Datasource
     execution_engine:
       module_name: great_expectations.execution_engine
-      class_name: SparkDFExecutionEngine
+      class_name: PandasExecutionEngine
     data_connectors:
       runtime_data_connector:
         batch_identifiers:
