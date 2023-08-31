@@ -6,7 +6,20 @@ Data manager is a platform that allows ingestion of flat files into a raw layer 
 <img width="1728" alt="Data Manager Data Flow" src="docs/images/data_flow.png">
 
 ## Screenshots
-<img width="1728" alt="Data Manager Demo" src="docs/images/demo.png">
+### Feed Stats
+<img width="1728" alt="Data Manager Demo" src="docs/images/feed_stats.png">
+
+### Data Preview
+<img width="1728" alt="Data Manager Demo" src="docs/images/data_preview.png">
+
+### SLA Settings
+<img width="1728" alt="Data Manager Demo" src="docs/images/sla_monitoring.png">
+
+### Quality Checks
+<img width="1728" alt="Data Manager Demo" src="docs/images/quality_checks.png">
+
+### Resources
+<img width="1728" alt="Data Manager Demo" src="docs/images/resources.png">
 
 ## Codespaces
 If you are running this in codespaces you can skip the below homebrew install. Create [codespace secrets](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-encrypted-secrets-for-your-codespaces) for `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. You will still need to complete the `Env Setup` steps.
