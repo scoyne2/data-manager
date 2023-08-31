@@ -3,6 +3,9 @@
 [![codecov](https://codecov.io/gh/scoyne2/data-manager/branch/main/graph/badge.svg?token=GWRFE77EFG)](https://codecov.io/gh/scoyne2/data-manager)
 # Data Manager
 Data manager is a platform that allows ingestion of flat files into a raw layer of a datalake. It requires use of AWS and uses the following technology: `terraform`, `helm`, `go`, `nextjs`, `react`, `typescript`.
+<img width="1728" alt="Data Manager Data Flow" src="docs/images/data_flow.png">
+
+## Screenshots
 <img width="1728" alt="Data Manager Demo" src="docs/images/demo.png">
 
 ## Codespaces
