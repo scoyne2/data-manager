@@ -1,0 +1,8 @@
+---
+coverage:
+  notify:
+    slack: # The URL is actually the Opslevel Webhook, but Codecov doesn't support it
+      default:
+        only_pulls: false
+        #url: secret:v2::8+vQyOTKrZ0hX0VRWsVHZRtx5bCvZ7vXsOnrIZ8BsqI5cFeYVaTiaJiAPXf6RsV2Qn8igZ8xAkty8G0icujaMjPfZgZqSabpb05LbDvVdt1YS5CwxgSCp10Q75DeXzjp0yb1XQTX7E9BLt9RC0JUKHZTTp+h976cyNS205RIXTuzJV4GlINrDgU16KPmEF6N
+        url: "https://webhook.site/2cf738ba-83dd-43ed-b2db-932575697b08" # Test so I can see the JSON shape.
