@@ -1,24 +1,32 @@
-The below details how data-manager ingests a file.
+# Data Ingestion Process
 
-# Trigger Lambda
-The data-manager Lambda is triggered when a file is dropepd in the associated trigger S3 bucket. The lambda is built
-using the python file `sysops/terraform/lambda/lambda_function.py` and tested via `sysops/terraform/lambda/test_lambda_function.py`.
-Terraform will build `sysops/terraform/lambda/main.zip` which is deployed to AWS. Python libraries are made available to the Lambda via
-LambdaLayer which is built by terraform from `sysops/terraform/lambda_layer/requirements.txt`. If you want the lambda to have additional libraries
-you must add them to the `requirements.txt` file.
+Below details how Data Manager ingests a file end-to-end.
 
-The lambda is triggered by the S3 trigger which is built in terraform here https://github.com/scoyne2/data-manager/blob/f23515314ff8fd66ceded930d7b1e9f7c4896534/sysops/terraform/lambda/lambda.tf#L143 when a file is dropped in the trigger bucket, it will
-spin up the Lambda and the Lambda will start a spark job on EMRServerless which sill run pyspark file `pyspark/file_ingest.py`
+## Trigger Lambda
 
-# EMR Serverless
-The spark jobs for file ingestion are executed using EMRServerless, the serverless cluster is defined using terraform at `sysops/terraform/emr/emr-serverless.tf`. Terraform will build and upload the spark requirements using the S3 resources bucket https://github.com/scoyne2/data-manager/blob/f1736065ff758d7f53ffae1bb2a299b009ba50d3/sysops/terraform/lambda/lambda.tf#L106
+When a file is dropped in the S3 trigger bucket, an AWS Lambda (`sysops/terraform/lambda/lambda_function.py`) is invoked. Terraform packages this handler into `sysops/terraform/lambda/main.zip` and deploys it. Python libraries are provided via a Lambda Layer built from `sysops/terraform/lambda_layer/requirements.txt`. To add extra libraries for the Lambda, update that `requirements.txt` and re-deploy.
 
-If any additional python requirements are needed by `pyspark/file_ingest.py` you should update `pyspark/requirements/requirements.txt`
+The Lambda reads the S3 event, parses the S3 key to extract `vendor`, `feed`, and `file_name`, then:
+1. Calls the GraphQL API to add or update feed metadata.
+2. Starts an EMR Serverless Spark job to process the file.
 
-The Spark job that the Lambda will run is `pyspark/file_ingest.py` which is tested by `pyspark/test_file_ingest.py`
-The spark job will:
-* create a spark session
-* read in the csv file
-* convert the data to parquet and write to the s3 output path
-* perform quality checks
-* notify downstream steps so that the data processing results can be seen via the data-manager UI
+## EMR Serverless
+
+EMR Serverless jobs are defined in Terraform (`sysops/terraform/emr/emr-serverless.tf`) and run the PySpark script `pyspark/file_ingest.py`. Spark requirements are uploaded to S3 via Terraform as part of the resources bucket.
+
+If additional Python dependencies are needed by the Spark job, update `pyspark/requirements/requirements.txt`.
+
+The Spark job will:
+- Create or connect to the Hive/Glue database `data_manager_output_{vendor}`
+- Read and parse the flat file (automatic delimiter and quote detection)
+- Write data to Parquet partitioned by date (`/dt=YYYY-MM-DD/`) and register as a Glue table
+- Perform data quality checks using Great Expectations
+- Update the feed status via GraphQL mutations at each stage
+
+## Deployment
+
+Use the provided Helm chart (`sysops/helm/data-manager`) to deploy the ingestion components:
+```bash
+bash scripts/deploy_helm.sh
+```
+This script applies the Kubernetes resources for the Lambda triggers (via respective controllers) and EMR Serverless configurations.
